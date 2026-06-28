@@ -3,1514 +3,791 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Factuur Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Demo Factuur Generator — AFAS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
-    /* === CSS VARIABLES === */
     :root {
-      --primary: #0f2a5e;
-      --primary-light: #1a3f7a;
-      --accent: #e8f0fe;
-      --accent-border: #3b82f6;
-      --text: #1f2937;
-      --text-light: #6b7280;
-      --bg: #f5f7fa;
+      --primary: #005FAA;
+      --primary-light: #0074D0;
+      --primary-very-light: #D7EAFF;
+      --accent: #D7EAFF;
+      --accent-border: #0074D0;
+      --orange: #F59F39;
+      --orange-hover: #e08c2a;
+      --green: #3CC658;
+      --green-hover: #2eaa47;
+      --text: #41474D;
+      --text-dark: #1A1F24;
+      --text-light: #41474D;
+      --bg: #F2F5F8;
       --white: #ffffff;
-      --border: #e5e7eb;
-      --success: #22c55e;
+      --border: #C3CBD3;
+      --border-light: #e8ecf0;
       --danger: #ef4444;
       --danger-light: #fee2e2;
-      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,95,170,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0,95,170,0.1), 0 4px 6px -2px rgba(0,0,0,0.04);
       --radius: 8px;
     }
-
-    /* === RESET & BASE === */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400; font-size: 15px; line-height: 1.6;
+      background: var(--bg); color: var(--text); min-height: 100vh;
     }
+    h1,h2,h3,h4,h5 { font-family: 'Roboto', sans-serif; font-weight: 700; color: var(--text-dark); }
 
-    /* === HEADER === */
     .app-header {
-      background: var(--primary);
-      color: white;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-      box-shadow: var(--shadow-lg);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: var(--primary); color: white; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 100;
     }
-    .app-header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+    .app-header h1 { font-family: 'Roboto'; font-size: 18px; font-weight: 900; }
     .tab-nav { display: flex; gap: 4px; height: 100%; }
     .tab-btn {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.7);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 0 20px;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
+      background: none; border: none; color: rgba(255,255,255,0.7);
+      font-family: 'Roboto'; font-size: 13px; font-weight: 700;
+      padding: 0 16px; cursor: pointer; border-bottom: 3px solid transparent;
+      transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
-    .tab-btn.active { color: white; border-bottom-color: white; }
+    .tab-btn.active { color: white; border-bottom-color: var(--orange); }
 
-    /* === MAIN CONTENT === */
     .tab-content { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
     .tab-content.active { display: block; }
 
-    /* === TAB 1: FACTUUR MAKEN === */
     .factuur-layout { display: grid; grid-template-columns: 400px 1fr; gap: 24px; align-items: start; }
     .form-panel {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 24px; display: flex; flex-direction: column; gap: 20px;
     }
-    .preview-panel {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      position: sticky;
-      top: 72px;
-    }
-    .preview-wrapper {
-      width: 100%;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-    }
+    .preview-panel { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position: sticky; top: 76px; }
+    .preview-wrapper { width: 100%; overflow: hidden; border: 1px solid var(--border); border-radius: 4px; }
     .preview-scaler { transform-origin: top left; }
 
-    /* === FORMS === */
-    .form-section { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .form-section { border-bottom: 1px solid var(--border-light); padding-bottom: 16px; }
     .form-section:last-child { border-bottom: none; padding-bottom: 0; }
-    .form-section h3 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
+    .form-section h3 { font-family: 'Roboto'; font-size: 12px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
     .form-group { margin-bottom: 10px; }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-light);
-      margin-bottom: 4px;
-    }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-light); margin-bottom: 4px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     input, select, textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text);
-      transition: border-color 0.2s;
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-family: 'Open Sans'; font-size: 13px; color: var(--text); transition: border-color 0.2s;
     }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-border);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,95,170,0.12); }
     textarea { resize: vertical; min-height: 60px; }
 
-    /* === BUTTONS === */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 16px;
-      border: none;
-      border-radius: 6px;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border: none; border-radius: 6px;
+      font-family: 'Roboto'; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 0.3px;
     }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-light); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #16a34a; }
+    .btn-orange { background: var(--orange); color: white; }
+    .btn-orange:hover { background: var(--orange-hover); }
+    .btn-success { background: var(--green); color: white; }
+    .btn-success:hover { background: var(--green-hover); }
     .btn-danger { background: var(--danger); color: white; }
     .btn-danger:hover { background: #dc2626; }
-    .btn-outline {
-      background: white;
-      color: var(--primary);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { background: var(--accent); border-color: var(--accent-border); }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--border); }
+    .btn-outline:hover { background: var(--accent); border-color: var(--primary); }
+    .btn-sm { padding: 6px 12px; font-size: 11px; }
     .btn-block { width: 100%; justify-content: center; }
     .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* === REGELITEMS TABEL === */
     .regelitems-tabel { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .regelitems-tabel th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      padding: 6px 4px;
-      border-bottom: 2px solid var(--border);
-    }
+    .regelitems-tabel th { text-align: left; font-family: 'Roboto'; font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 4px; border-bottom: 2px solid var(--border); }
     .regelitems-tabel td { padding: 4px; vertical-align: middle; }
     .regelitems-tabel input { padding: 6px 8px; }
     .regelitems-tabel .col-omschrijving { width: 45%; }
     .regelitems-tabel .col-aantal { width: 15%; }
     .regelitems-tabel .col-prijs { width: 20%; }
-    .regelitems-tabel .col-bedrag { width: 15%; text-align: right; font-weight: 500; padding-right: 8px; }
+    .regelitems-tabel .col-bedrag { width: 15%; text-align: right; font-weight: 600; padding-right: 8px; }
     .regelitems-tabel .col-actie { width: 5%; }
-    .btn-remove-row {
-      background: none;
-      border: none;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
+    .btn-remove-row { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px; padding: 2px 6px; border-radius: 4px; }
     .btn-remove-row:hover { background: var(--danger-light); }
 
-    /* === TAB 2: CREDITEUREN === */
-    .crediteuren-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .crediteuren-header h2 { font-size: 20px; font-weight: 600; }
+    .crediteuren-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .crediteuren-header h2 { font-family: 'Roboto'; font-size: 22px; font-weight: 900; }
+    .crediteuren-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .crediteuren-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .crediteur-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: box-shadow 0.2s;
-    }
+    .crediteur-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; align-items: center; gap: 16px; transition: box-shadow 0.2s; border-left: 4px solid var(--primary); }
     .crediteur-card:hover { box-shadow: var(--shadow-lg); }
-    .crediteur-card-logo {
-      width: 56px;
-      height: 56px;
-      border-radius: 8px;
-      object-fit: contain;
-      background: var(--bg);
-      padding: 4px;
-      flex-shrink: 0;
-    }
-    .crediteur-card-logo.placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: var(--text-light);
-      background: var(--accent);
-    }
+    .crediteur-card-logo { width: 56px; height: 56px; border-radius: 8px; object-fit: contain; background: var(--bg); padding: 4px; flex-shrink: 0; }
+    .crediteur-card-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-light); background: var(--accent); }
     .crediteur-card-info { flex: 1; min-width: 0; }
-    .crediteur-card-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .crediteur-card-info h4 { font-family: 'Roboto'; font-size: 15px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .crediteur-card-info p { font-size: 12px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .crediteur-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-light);
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
     .empty-state p { font-size: 15px; margin-bottom: 16px; }
 
-    /* === MODALS === */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal {
-      background: var(--white);
-      border-radius: 12px;
-      box-shadow: var(--shadow-lg);
-      width: 100%;
-      max-width: 640px;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    .modal-header h2 { font-size: 18px; font-weight: 600; }
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      color: var(--text-light);
-      cursor: pointer;
-      padding: 4px;
-      line-height: 1;
-    }
-    .modal-close:hover { color: var(--text); }
-    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
+    .excel-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); margin-bottom: 20px; }
+    .excel-upload-area:hover { border-color: var(--green); background: #f0fdf4; }
+    .excel-upload-area.dragover { border-color: var(--green); background: #dcfce7; }
+    .excel-upload-area p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
+    .excel-upload-area .upload-icon { font-size: 32px; margin-bottom: 4px; }
+    .excel-upload-area .upload-title { font-family: 'Roboto'; font-weight: 700; font-size: 14px; color: var(--text-dark); }
+    .excel-upload-area input[type="file"] { display: none; }
 
-    /* === TOAST === */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--primary);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 999;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,31,36,0.6); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--white); border-radius: 12px; box-shadow: var(--shadow-lg); width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
+    .modal-header h2 { font-family: 'Roboto'; font-size: 18px; font-weight: 900; }
+    .modal-close { background: none; border: none; font-size: 24px; color: var(--text-light); cursor: pointer; padding: 4px; line-height: 1; }
+    .modal-close:hover { color: var(--text-dark); }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 8px; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--primary); color: white; padding: 12px 20px; border-radius: 8px; font-family: 'Roboto'; font-size: 14px; font-weight: 700; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 999; }
     .toast.show { transform: translateY(0); opacity: 1; }
 
-    /* === FACTUUR A4 LAYOUT (PREVIEW + PDF) === */
-    .factuur-a4 {
-      width: 794px;
-      min-height: 1123px;
-      background: white;
-      padding: 48px 56px;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px;
-      color: #1f2937;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
+    .factuur-a4 { width: 794px; min-height: 1123px; background: white; padding: 48px 56px; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #41474D; position: relative; display: flex; flex-direction: column; }
     .factuur-a4 * { box-sizing: border-box; }
     .fa4-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
     .fa4-header-left { max-width: 55%; }
     .fa4-header-right { text-align: right; }
     .fa4-logo { max-height: 56px; max-width: 180px; margin-bottom: 10px; display: block; }
-    .fa4-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-    .fa4-badge-betaald {
-      font-size: 11px;
-      font-weight: 700;
-      background: #dcfce7;
-      color: #166534;
-      padding: 4px 10px;
-      border-radius: 4px;
-      letter-spacing: 0.5px;
-      border: 1.5px solid #86efac;
-    }
-    .fa4-crediteur-naam { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-    .fa4-crediteur-adres { font-size: 12px; color: #6b7280; white-space: pre-line; margin-bottom: 4px; }
-    .fa4-crediteur-detail { font-size: 11px; color: #9ca3af; }
-    .fa4-meta-line { font-size: 13px; margin-bottom: 3px; color: #374151; }
-    .fa4-meta-label { color: #6b7280; }
-    .fa4-lijn { border: none; border-top: 1.5px solid var(--primary); margin: 16px 0; opacity: 0.3; }
+    .fa4-title { font-family: 'Roboto'; font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+    .fa4-badge-betaald { font-family: 'Roboto'; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px; border: 1.5px solid #86efac; }
+    .fa4-crediteur-naam { font-family: 'Roboto'; font-size: 15px; font-weight: 700; color: #1A1F24; margin-bottom: 2px; }
+    .fa4-crediteur-adres { font-size: 12px; color: #41474D; white-space: pre-line; margin-bottom: 4px; }
+    .fa4-crediteur-detail { font-size: 11px; color: #41474D; opacity: 0.7; }
+    .fa4-meta-line { font-size: 13px; margin-bottom: 3px; color: #41474D; }
+    .fa4-meta-label { color: #41474D; opacity: 0.7; }
+    .fa4-lijn { border: none; border-top: 1.5px solid var(--primary); margin: 16px 0; opacity: 0.25; }
     .fa4-adressen { display: flex; justify-content: space-between; margin-bottom: 4px; }
     .fa4-adressen-links { max-width: 55%; }
     .fa4-adressen-rechts { text-align: right; }
-    .fa4-section-label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .fa4-section-label { font-family: 'Roboto'; font-size: 11px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
     .fa4-adres-tekst { font-size: 13px; white-space: pre-line; line-height: 1.5; }
     .fa4-tabel { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    .fa4-tabel thead th {
-      background: var(--primary);
-      color: white;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 10px 12px;
-      text-align: left;
-    }
-    .fa4-tabel thead th:last-child,
-    .fa4-tabel thead th:nth-child(2),
-    .fa4-tabel thead th:nth-child(3) { text-align: right; }
-    .fa4-tabel tbody td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
-    .fa4-tabel tbody td:last-child,
-    .fa4-tabel tbody td:nth-child(2),
-    .fa4-tabel tbody td:nth-child(3) { text-align: right; }
+    .fa4-tabel thead th { background: var(--primary); color: white; font-family: 'Roboto'; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; }
+    .fa4-tabel thead th:last-child, .fa4-tabel thead th:nth-child(2), .fa4-tabel thead th:nth-child(3) { text-align: right; }
+    .fa4-tabel tbody td { padding: 10px 12px; border-bottom: 1px solid #F2F5F8; font-size: 13px; }
+    .fa4-tabel tbody td:last-child, .fa4-tabel tbody td:nth-child(2), .fa4-tabel tbody td:nth-child(3) { text-align: right; }
     .fa4-totalen { margin-top: 16px; display: flex; justify-content: flex-end; }
     .fa4-totalen-tabel { width: 280px; }
     .fa4-totalen-rij { display: flex; justify-content: space-between; padding: 5px 12px; font-size: 13px; }
-    .fa4-totalen-rij.totaal {
-      background: var(--primary);
-      color: white;
-      font-weight: 700;
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-top: 4px;
-    }
-    .fa4-betaalblok {
-      margin-top: auto;
-      background: var(--accent);
-      border-left: 4px solid var(--accent-border);
-      border-radius: 0 6px 6px 0;
-      padding: 16px 20px;
-    }
-    .fa4-betaalblok h4 { font-size: 12px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .fa4-betaalblok p { font-size: 12px; color: #374151; line-height: 1.6; }
-    .fa4-footer {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 10px;
-      color: #9ca3af;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
-    }
+    .fa4-totalen-rij.totaal { background: var(--primary); color: white; font-family: 'Roboto'; font-weight: 700; border-radius: 4px; padding: 8px 12px; margin-top: 4px; }
+    .fa4-betaalblok { margin-top: auto; background: var(--primary-very-light); border-left: 4px solid var(--primary); border-radius: 0 6px 6px 0; padding: 16px 20px; }
+    .fa4-betaalblok h4 { font-family: 'Roboto'; font-size: 12px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .fa4-betaalblok p { font-size: 12px; color: #41474D; line-height: 1.6; }
+    .fa4-footer { margin-top: 20px; text-align: center; font-size: 10px; color: #41474D; opacity: 0.6; padding-top: 12px; border-top: 1px solid #C3CBD3; }
 
-    /* === PDF RENDER (off-screen) === */
-    #pdf-render-area {
-      position: fixed;
-      left: -9999px;
-      top: 0;
-      z-index: -1;
-    }
+    #pdf-render-area { position: fixed; left: -9999px; top: 0; z-index: -1; }
 
-    /* === LOGO UPLOAD === */
-    .logo-upload-area {
-      border: 2px dashed var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .logo-upload-area:hover { border-color: var(--accent-border); background: var(--accent); }
+    .logo-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .logo-upload-area:hover { border-color: var(--primary); background: var(--accent); }
     .logo-upload-area img { max-height: 64px; max-width: 100%; margin-bottom: 8px; }
     .logo-upload-area p { font-size: 12px; color: var(--text-light); }
     .logo-upload-area input[type="file"] { display: none; }
 
-    /* === PROGRESS === */
-    .reeks-progress {
-      margin-top: 16px;
-      display: none;
-    }
+    .reeks-progress { margin-top: 16px; display: none; }
     .reeks-progress.active { display: block; }
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent-border);
-      border-radius: 4px;
-      transition: width 0.3s;
-      width: 0%;
-    }
-    .progress-text {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-top: 6px;
-    }
+    .progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--orange); border-radius: 4px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+    .import-result { margin-top: 12px; padding: 12px 16px; border-radius: 6px; font-size: 13px; display: none; }
+    .import-result.success { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .import-result.error { display: block; background: var(--danger-light); color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* Demo-set specific */
+    .demoset-crediteur-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 8px; }
+    .demoset-crediteur-item label { margin-bottom: 0; font-size: 13px; font-weight: 600; flex: 1; }
+    .demoset-crediteur-item input[type="checkbox"] { width: auto; }
+    .info-box { background: var(--primary-very-light); border-left: 4px solid var(--primary); border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: var(--text); }
+    .info-box strong { color: var(--primary); }
+
+    /* Debiteur saved indicator */
+    .saved-debiteur { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--accent); border-radius: 6px; margin-bottom: 10px; font-size: 12px; }
+    .saved-debiteur .remove-saved { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; }
   </style>
 </head>
 <body>
 
-  <!-- ═══ HEADER ═══ -->
-  <header class="app-header">
-    <h1>📄 Demo Factuur Generator</h1>
-    <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="factuur">Factuur maken</button>
-      <button class="tab-btn" data-tab="crediteuren">Crediteuren beheren</button>
-    </nav>
-  </header>
+<header class="app-header">
+  <h1>📄 Demo Factuur Generator</h1>
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="factuur">Factuur maken</button>
+    <button class="tab-btn" data-tab="crediteuren">Crediteuren</button>
+    <button class="tab-btn" data-tab="demoset">Demo-set</button>
+    <button class="tab-btn" data-tab="instellingen">Instellingen</button>
+  </nav>
+</header>
 
-  <!-- ═══ TAB 1: FACTUUR MAKEN ═══ -->
-  <div class="tab-content active" id="tab-factuur">
-    <div class="factuur-layout">
-      <!-- Linker paneel: formulier -->
-      <div class="form-panel">
-
-        <div class="form-section">
-          <h3>Crediteur</h3>
-          <div class="form-group">
-            <label>Selecteer crediteur</label>
-            <select id="crediteur-select">
-              <option value="">— Kies een crediteur —</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Debiteur</h3>
-          <div class="form-group">
-            <label>Naam</label>
-            <input type="text" id="debiteur-naam" placeholder="Bedrijfsnaam debiteur">
-          </div>
-          <div class="form-group">
-            <label>Adres</label>
-            <textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Factuurgegevens</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Factuurnummer</label>
-              <input type="text" id="factuurnummer">
-            </div>
-            <div class="form-group">
-              <label>Referentie</label>
-              <input type="text" id="referentie" placeholder="PO-0001">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Factuurdatum</label>
-              <input type="date" id="factuurdatum">
-            </div>
-            <div class="form-group">
-              <label>Vervaldatum</label>
-              <input type="date" id="vervaldatum">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>BTW-tarief</label>
-              <select id="btw-tarief">
-                <option value="0.21">21%</option>
-                <option value="0.09">9%</option>
-                <option value="0">0% (vrijgesteld)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Status</label>
-              <select id="factuur-status">
-                <option value="open">Open</option>
-                <option value="betaald">Betaald</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3>Regelitems</h3>
-          <table class="regelitems-tabel">
-            <thead>
-              <tr>
-                <th class="col-omschrijving">Omschrijving</th>
-                <th class="col-aantal">Aantal</th>
-                <th class="col-prijs">Stuksprijs</th>
-                <th class="col-bedrag">Bedrag</th>
-                <th class="col-actie"></th>
-              </tr>
-            </thead>
-            <tbody id="regelitems-body"></tbody>
-          </table>
-          <button class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="addRegelitem()">+ Regel toevoegen</button>
-        </div>
-
-        <div class="btn-group">
-          <button class="btn btn-primary btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
-          <button class="btn btn-outline btn-block" onclick="openReeksModal()">📋 Reeks genereren</button>
+<!-- ═══ TAB 1: FACTUUR MAKEN ═══ -->
+<div class="tab-content active" id="tab-factuur">
+  <div class="factuur-layout">
+    <div class="form-panel">
+      <div class="form-section">
+        <h3>Crediteur</h3>
+        <div class="form-group">
+          <label>Selecteer crediteur</label>
+          <select id="crediteur-select"><option value="">— Kies een crediteur —</option></select>
         </div>
       </div>
 
-      <!-- Rechter paneel: live preview -->
-      <div class="preview-panel">
-        <div class="preview-wrapper">
-          <div class="preview-scaler" id="preview-scaler">
-            <div class="factuur-a4" id="factuur-preview"></div>
-          </div>
+      <div class="form-section">
+        <h3>Debiteur</h3>
+        <div id="saved-debiteur-indicator"></div>
+        <div class="form-group">
+          <label>Naam</label>
+          <input type="text" id="debiteur-naam" placeholder="Bedrijfsnaam debiteur">
+        </div>
+        <div class="form-group">
+          <label>Adres</label>
+          <textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="saveDebiteur()">💾 Debiteur onthouden</button>
+      </div>
+
+      <div class="form-section">
+        <h3>Factuurgegevens</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Factuurnummer</label><input type="text" id="factuurnummer"></div>
+          <div class="form-group"><label>Referentie</label><input type="text" id="referentie" placeholder="PO-0001"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Factuurdatum</label><input type="date" id="factuurdatum"></div>
+          <div class="form-group"><label>Vervaldatum</label><input type="date" id="vervaldatum"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>BTW-tarief</label><select id="btw-tarief"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
+          <div class="form-group"><label>Status</label><select id="factuur-status"><option value="open">Open</option><option value="betaald">Betaald</option></select></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Regelitems</h3>
+        <table class="regelitems-tabel">
+          <thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Stuksprijs</th><th class="col-bedrag">Bedrag</th><th class="col-actie"></th></tr></thead>
+          <tbody id="regelitems-body"></tbody>
+        </table>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="addRegelitem()">+ Regel toevoegen</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-orange btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <div class="preview-wrapper">
+        <div class="preview-scaler" id="preview-scaler">
+          <div class="factuur-a4" id="factuur-preview"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ═══ TAB 2: CREDITEUREN BEHEREN ═══ -->
-  <div class="tab-content" id="tab-crediteuren">
-    <div class="crediteuren-header">
-      <h2>Crediteuren</h2>
+<!-- ═══ TAB 2: CREDITEUREN ═══ -->
+<div class="tab-content" id="tab-crediteuren">
+  <div class="crediteuren-header">
+    <h2>Crediteuren</h2>
+    <div class="crediteuren-actions">
       <button class="btn btn-primary" onclick="openCrediteurModal()">+ Nieuwe crediteur</button>
-    </div>
-    <div class="crediteuren-grid" id="crediteuren-grid"></div>
-  </div>
-
-  <!-- ═══ MODAL: CREDITEUR BEWERKEN ═══ -->
-  <div class="modal-overlay" id="modal-crediteur">
-    <div class="modal" style="max-width: 700px;">
-      <div class="modal-header">
-        <h2 id="modal-crediteur-titel">Nieuwe crediteur</h2>
-        <button class="modal-close" onclick="sluitCrediteurModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="crediteur-id">
-
-        <div class="form-row" style="margin-bottom: 16px;">
-          <div style="flex: 1;">
-            <div class="form-group">
-              <label>Bedrijfsnaam *</label>
-              <input type="text" id="cred-naam" placeholder="Bedrijfsnaam B.V.">
-            </div>
-            <div class="form-group">
-              <label>Adres</label>
-              <textarea id="cred-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
-            </div>
-          </div>
-          <div style="flex: 0 0 160px;">
-            <label style="display:block; font-size:12px; font-weight:500; color:var(--text-light); margin-bottom:4px;">Logo</label>
-            <div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()">
-              <img id="cred-logo-preview" src="" style="display:none;">
-              <p id="cred-logo-text">Klik om logo te uploaden</p>
-              <input type="file" id="cred-logo-input" accept="image/png,image/jpeg" onchange="handleLogoUpload(event)">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>KvK-nummer</label>
-            <input type="text" id="cred-kvk" placeholder="12345678">
-          </div>
-          <div class="form-group">
-            <label>BTW-nummer</label>
-            <input type="text" id="cred-btw" placeholder="NL123456789B01">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>IBAN</label>
-            <input type="text" id="cred-iban" placeholder="NL00 BANK 0123 4567 89">
-          </div>
-          <div class="form-group">
-            <label>E-mailadres</label>
-            <input type="text" id="cred-email" placeholder="info@bedrijf.nl">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Betalingstermijn (dagen)</label>
-          <input type="number" id="cred-termijn" value="30" min="0" max="365" style="width: 120px;">
-        </div>
-
-        <h3 style="font-size:13px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px; margin: 20px 0 12px;">Standaard regelitems</h3>
-        <table class="regelitems-tabel">
-          <thead>
-            <tr>
-              <th class="col-omschrijving">Omschrijving</th>
-              <th class="col-aantal">Aantal</th>
-              <th class="col-prijs">Stuksprijs</th>
-              <th class="col-actie"></th>
-            </tr>
-          </thead>
-          <tbody id="cred-regelitems-body"></tbody>
-        </table>
-        <button class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="addCredRegelitem()">+ Regel toevoegen</button>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="sluitCrediteurModal()">Annuleren</button>
-        <button class="btn btn-primary" onclick="saveCrediteur()">Opslaan</button>
-      </div>
+      <button class="btn btn-success" onclick="document.getElementById('excel-file-input').click()">📊 Import Excel</button>
+      <button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button>
+      <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelUpload(event)">
     </div>
   </div>
+  <div class="excel-upload-area" id="excel-drop-area" onclick="document.getElementById('excel-file-input').click()">
+    <div class="upload-icon">📊</div>
+    <div class="upload-title">Sleep een Excel-bestand hierheen of klik om te uploaden</div>
+    <p>Verwachte kolommen: Naam, Adres, KvK, BTW, IBAN, Email, Betalingstermijn</p>
+  </div>
+  <div class="import-result" id="import-result"></div>
+  <div class="crediteuren-grid" id="crediteuren-grid"></div>
+</div>
 
-  <!-- ═══ MODAL: FACTUURREEKS ═══ -->
-  <div class="modal-overlay" id="modal-reeks">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Factuurreeks genereren</h2>
-        <button class="modal-close" onclick="sluitReeksModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Crediteur</label>
-          <select id="reeks-crediteur">
-            <option value="">— Kies een crediteur —</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Debiteur naam</label>
-          <input type="text" id="reeks-debiteur-naam" placeholder="Bedrijfsnaam debiteur">
-        </div>
-        <div class="form-group">
-          <label>Debiteur adres</label>
-          <textarea id="reeks-debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Startmaand</label>
-            <input type="month" id="reeks-startmaand">
-          </div>
-          <div class="form-group">
-            <label>Aantal maanden</label>
-            <input type="number" id="reeks-aantal" value="12" min="1" max="60">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Start factuurnummer</label>
-          <input type="text" id="reeks-startnummer">
-        </div>
-        <div class="form-group">
-          <label>BTW-tarief</label>
-          <select id="reeks-btw">
-            <option value="0.21">21%</option>
-            <option value="0.09">9%</option>
-            <option value="0">0% (vrijgesteld)</option>
-          </select>
-        </div>
+<!-- ═══ TAB 3: DEMO-SET ═══ -->
+<div class="tab-content" id="tab-demoset">
+  <h2 style="font-family:'Roboto';font-weight:900;margin-bottom:16px;">🚀 Genereer Demo-set</h2>
+  <div class="info-box">
+    <strong>Eén klik = complete inkoopstroom.</strong> Selecteer crediteuren, stel een periode in, en genereer automatisch een realistische set facturen als ZIP. Ideaal voor het demonstreren van Scan & Herken.
+  </div>
 
-        <h3 style="font-size:13px; font-weight:600; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px; margin: 16px 0 10px;">Regelitems (maandnaam wordt automatisch toegevoegd)</h3>
-        <table class="regelitems-tabel">
-          <thead>
-            <tr>
-              <th class="col-omschrijving">Omschrijving</th>
-              <th class="col-aantal">Aantal</th>
-              <th class="col-prijs">Stuksprijs</th>
-              <th class="col-actie"></th>
-            </tr>
-          </thead>
-          <tbody id="reeks-regelitems-body"></tbody>
-        </table>
-        <button class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="addReeksRegelitem()">+ Regel toevoegen</button>
-
-        <div class="reeks-progress" id="reeks-progress">
-          <div class="progress-bar"><div class="progress-bar-fill" id="reeks-progress-fill"></div></div>
-          <p class="progress-text" id="reeks-progress-text"></p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="sluitReeksModal()">Annuleren</button>
-        <button class="btn btn-primary" id="btn-reeks-genereer" onclick="generateReeks()">Reeks genereren</button>
+  <div class="form-panel" style="max-width:700px;">
+    <div class="form-section">
+      <h3>Debiteur (ontvanger)</h3>
+      <div id="demoset-debiteur-info"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Naam</label><input type="text" id="demoset-debiteur-naam"></div>
+        <div class="form-group"><label>Adres</label><input type="text" id="demoset-debiteur-adres"></div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══ BEVESTIG VERWIJDEREN MODAL ═══ -->
-  <div class="modal-overlay" id="modal-confirm">
-    <div class="modal" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2>Bevestigen</h2>
-        <button class="modal-close" onclick="sluitConfirmModal()">&times;</button>
+    <div class="form-section">
+      <h3>Periode</h3>
+      <div class="form-row-3">
+        <div class="form-group"><label>Van maand</label><input type="month" id="demoset-van"></div>
+        <div class="form-group"><label>Tot maand</label><input type="month" id="demoset-tot"></div>
+        <div class="form-group"><label>Start factuurnr</label><input type="text" id="demoset-startnr"></div>
       </div>
-      <div class="modal-body">
-        <p id="confirm-message">Weet je zeker dat je deze crediteur wilt verwijderen?</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline" onclick="sluitConfirmModal()">Annuleren</button>
-        <button class="btn btn-danger" id="btn-confirm-ok" onclick="">Verwijderen</button>
+      <div class="form-row">
+        <div class="form-group"><label>BTW-tarief</label><select id="demoset-btw"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
+        <div class="form-group"><label>Bedragvariatie</label><select id="demoset-variatie"><option value="0">Geen (vast bedrag)</option><option value="0.05">±5%</option><option value="0.10">±10%</option><option value="0.15">±15%</option></select></div>
       </div>
     </div>
+
+    <div class="form-section">
+      <h3>Crediteuren (selecteer welke)</h3>
+      <div id="demoset-crediteuren-lijst"></div>
+      <p style="font-size:12px;color:var(--text-light);margin-top:8px;">Elke geselecteerde crediteur genereert facturen voor elke maand in de periode. Standaard regelitems van de crediteur worden gebruikt.</p>
+    </div>
+
+    <div class="reeks-progress" id="demoset-progress">
+      <div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div>
+      <p class="progress-text" id="demoset-progress-text"></p>
+    </div>
+
+    <button class="btn btn-orange btn-block" id="btn-demoset-genereer" onclick="generateDemoSet()">🚀 Genereer Demo-set (ZIP)</button>
   </div>
+</div>
 
-  <!-- ═══ TOAST ═══ -->
-  <div class="toast" id="toast"></div>
+<!-- ═══ TAB 4: INSTELLINGEN ═══ -->
+<div class="tab-content" id="tab-instellingen">
+  <h2 style="font-family:'Roboto';font-weight:900;margin-bottom:16px;">⚙️ Instellingen</h2>
 
-  <!-- ═══ PDF RENDER AREA (off-screen) ═══ -->
-  <div id="pdf-render-area">
-    <div class="factuur-a4" id="pdf-factuur"></div>
+  <div class="form-panel" style="max-width:600px;">
+    <div class="form-section">
+      <h3>Opgeslagen debiteur</h3>
+      <p id="inst-debiteur-info" style="font-size:13px;margin-bottom:8px;"></p>
+      <button class="btn btn-outline btn-sm" onclick="clearDebiteur()">Debiteur wissen</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Exporteer / Importeer alles</h3>
+      <p style="font-size:13px;margin-bottom:12px;">Exporteer al je crediteuren, logo's en instellingen als één JSON-bestand. Handig voor een backup of om op een andere computer te laden.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="exportAlles()">⬇ Exporteer JSON</button>
+        <button class="btn btn-outline" onclick="document.getElementById('import-json-input').click()">⬆ Importeer JSON</button>
+        <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importAlles(event)">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Alles wissen</h3>
+      <p style="font-size:13px;margin-bottom:12px;color:var(--danger);">Verwijdert alle crediteuren, debiteur en instellingen uit deze browser.</p>
+      <button class="btn btn-danger btn-sm" onclick="confirmWisAlles()">🗑 Alles wissen</button>
+    </div>
   </div>
+</div>
 
+<!-- ═══ MODAL: CREDITEUR ═══ -->
+<div class="modal-overlay" id="modal-crediteur">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header"><h2 id="modal-crediteur-titel">Nieuwe crediteur</h2><button class="modal-close" onclick="sluitCrediteurModal()">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="crediteur-id">
+      <div class="form-row" style="margin-bottom:16px;">
+        <div style="flex:1;">
+          <div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="cred-naam" placeholder="Bedrijfsnaam B.V."></div>
+          <div class="form-group"><label>Adres</label><textarea id="cred-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
+        </div>
+        <div style="flex:0 0 160px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:4px;">Logo</label>
+          <div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()">
+            <img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om logo te uploaden</p>
+            <input type="file" id="cred-logo-input" accept="image/png,image/jpeg" onchange="handleLogoUpload(event)">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>KvK-nummer</label><input type="text" id="cred-kvk" placeholder="12345678"></div>
+        <div class="form-group"><label>BTW-nummer</label><input type="text" id="cred-btw" placeholder="NL123456789B01"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>IBAN</label><input type="text" id="cred-iban" placeholder="NL00 BANK 0123 4567 89"></div>
+        <div class="form-group"><label>E-mailadres</label><input type="text" id="cred-email" placeholder="info@bedrijf.nl"></div>
+      </div>
+      <div class="form-group"><label>Betalingstermijn (dagen)</label><input type="number" id="cred-termijn" value="30" min="0" max="365" style="width:120px;"></div>
+      <h3 style="font-family:'Roboto';font-size:12px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 12px;">Standaard regelitems</h3>
+      <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Stuksprijs</th><th class="col-actie"></th></tr></thead><tbody id="cred-regelitems-body"></tbody></table>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="addCredRegelitem()">+ Regel toevoegen</button>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitCrediteurModal()">Annuleren</button><button class="btn btn-orange" onclick="saveCrediteur()">Opslaan</button></div>
+  </div>
+</div>
+
+<!-- ═══ CONFIRM MODAL ═══ -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h2>Bevestigen</h2><button class="modal-close" onclick="sluitConfirmModal()">&times;</button></div>
+    <div class="modal-body"><p id="confirm-message"></p></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitConfirmModal()">Annuleren</button><button class="btn btn-danger" id="btn-confirm-ok">Verwijderen</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="pdf-render-area"><div class="factuur-a4" id="pdf-factuur"></div></div>
 
 <script>
-/* ════════════════════════════════════════════════════════
-   STATE & CONSTANTS
-   ════════════════════════════════════════════════════════ */
-
+/* ═══════════ STATE ═══════════ */
 const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-const LS_CREDITEUREN = 'df_crediteuren';
-const LS_FACTUURNR = 'df_factuurnummer';
+const LS_CRED = 'df_crediteuren', LS_NR = 'df_factuurnummer', LS_DEB = 'df_debiteur';
+let crediteuren = [], currentLogoBase64 = '';
 
-let crediteuren = [];
-let currentLogoBase64 = '';
+/* ═══════════ UTILS ═══════════ */
+const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const formatBedrag = n => '€ ' + new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const formatDatum = ds => { if(!ds)return''; const d=new Date(ds+'T00:00:00'); return d.getDate()+' '+MAANDEN[d.getMonth()]+' '+d.getFullYear(); };
+const addDagen = (ds,d) => { const x=new Date(ds+'T00:00:00'); x.setDate(x.getDate()+d); return x.toISOString().split('T')[0]; };
+const todayStr = () => new Date().toISOString().split('T')[0];
+const curMonth = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+function escapeHtml(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function incrementNr(nr){const m=nr.match(/^(.*?)(\d+)$/);if(m)return m[1]+String(+m[2]+1).padStart(m[2].length,'0');return nr+'_2';}
+function varyAmount(base,pct){if(!pct)return base;const factor=1+(Math.random()*2-1)*pct;return Math.round(base*factor*100)/100;}
 
-/* ════════════════════════════════════════════════════════
-   UTILITY FUNCTIONS
-   ════════════════════════════════════════════════════════ */
+/* ═══════════ STORAGE ═══════════ */
+function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(LS_CRED))||[];}catch{crediteuren=[];}}
+function saveCred(){localStorage.setItem(LS_CRED,JSON.stringify(crediteuren));}
+function loadNr(){return localStorage.getItem(LS_NR)||(new Date().getFullYear()+'001');}
+function saveNr(n){localStorage.setItem(LS_NR,n);}
+function loadDebiteur(){try{return JSON.parse(localStorage.getItem(LS_DEB))||null;}catch{return null;}}
+function saveDebiteurData(d){localStorage.setItem(LS_DEB,JSON.stringify(d));}
 
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+/* ═══════════ TABS ═══════════ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  if(btn.dataset.tab==='factuur')updatePreview();
+  if(btn.dataset.tab==='demoset')initDemoSetTab();
+  if(btn.dataset.tab==='instellingen')updateInstellingen();
+});});
+
+/* ═══════════ DEBITEUR OPSLAAN ═══════════ */
+function saveDebiteur(){
+  const n=document.getElementById('debiteur-naam').value.trim();
+  const a=document.getElementById('debiteur-adres').value.trim();
+  if(!n){showToast('Vul eerst een debiteur naam in');return;}
+  saveDebiteurData({naam:n,adres:a});
+  showToast('Debiteur opgeslagen');
+  renderSavedDebiteur();
+}
+function clearDebiteur(){localStorage.removeItem(LS_DEB);showToast('Debiteur gewist');renderSavedDebiteur();updateInstellingen();}
+function renderSavedDebiteur(){
+  const el=document.getElementById('saved-debiteur-indicator');
+  const d=loadDebiteur();
+  if(d){el.innerHTML=`<div class="saved-debiteur">💾 <strong>${escapeHtml(d.naam)}</strong> — ${escapeHtml(d.adres||'geen adres')} <button class="remove-saved" onclick="clearDebiteur()">×</button></div>`;}
+  else{el.innerHTML='';}
+}
+function prefillDebiteur(){
+  const d=loadDebiteur();if(!d)return;
+  document.getElementById('debiteur-naam').value=d.naam||'';
+  document.getElementById('debiteur-adres').value=d.adres||'';
 }
 
-function formatBedrag(n) {
-  return '€ ' + new Intl.NumberFormat('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+/* ═══════════ EXCEL IMPORT ═══════════ */
+const dropArea=document.getElementById('excel-drop-area');
+['dragenter','dragover'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.add('dragover');});});
+['dragleave','drop'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.remove('dragover');});});
+dropArea.addEventListener('drop',e=>{if(e.dataTransfer.files[0])processExcel(e.dataTransfer.files[0]);});
+function handleExcelUpload(e){if(e.target.files[0])processExcel(e.target.files[0]);e.target.value='';}
+
+function processExcel(file){
+  const res=document.getElementById('import-result');res.className='import-result';
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+      if(!rows.length){res.className='import-result error';res.textContent='Geen data gevonden.';return;}
+      const map=buildColMap(Object.keys(rows[0]));let n=0;
+      rows.forEach(r=>{
+        const naam=String(r[map.naam]||'').trim();if(!naam)return;
+        const existing=crediteuren.find(c=>c.naam.toLowerCase()===naam.toLowerCase());
+        const d={id:existing?existing.id:genId(),naam,adres:String(r[map.adres]||'').trim(),kvk:String(r[map.kvk]||'').trim(),btw:String(r[map.btw]||'').trim(),iban:String(r[map.iban]||'').trim(),email:String(r[map.email]||'').trim(),betalingstermijn:parseInt(r[map.termijn])||30,logo:existing?existing.logo:'',regelitems:existing?existing.regelitems:[{omschrijving:'',aantal:1,stuksprijs:0}]};
+        if(existing){crediteuren[crediteuren.findIndex(c=>c.id===existing.id)]=d;}else{crediteuren.push(d);}n++;
+      });
+      saveCred();renderCredLijst();renderCredOpties();
+      res.className='import-result success';res.textContent=`✓ ${n} crediteur(en) geïmporteerd. Logo's apart uploaden via ✏️.`;
+      showToast(`${n} crediteuren geïmporteerd`);
+    }catch(err){res.className='import-result error';res.textContent='Fout: '+err.message;}
+  };reader.readAsArrayBuffer(file);
 }
+function buildColMap(h){const l=h.map(x=>x.toLowerCase().trim());return{naam:fc(h,l,['naam','name','bedrijfsnaam','bedrijf','crediteur','leverancier']),adres:fc(h,l,['adres','address','straat']),kvk:fc(h,l,['kvk','kvknummer','kvk-nummer']),btw:fc(h,l,['btw','btwnummer','btw-nummer','vat']),iban:fc(h,l,['iban','bankrekening','rekeningnummer','bank']),email:fc(h,l,['email','e-mail','emailadres','mail']),termijn:fc(h,l,['termijn','betalingstermijn','betaaltermijn','dagen'])};}
+function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h[i];}for(const t of terms){let i=l.findIndex(x=>x.includes(t));if(i>=0)return h[i];}return'__';}
 
-function formatDatum(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.getDate() + ' ' + MAANDEN[d.getMonth()] + ' ' + d.getFullYear();
-}
-
-function addDagen(dateStr, dagen) {
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() + dagen);
-  return d.toISOString().split('T')[0];
-}
-
-function todayStr() {
-  return new Date().toISOString().split('T')[0];
-}
-
-function currentMonthStr() {
-  const d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-/* ════════════════════════════════════════════════════════
-   LOCALSTORAGE
-   ════════════════════════════════════════════════════════ */
-
-function loadCrediteuren() {
-  try {
-    crediteuren = JSON.parse(localStorage.getItem(LS_CREDITEUREN)) || [];
-  } catch { crediteuren = []; }
-}
-
-function saveCrediteuren() {
-  localStorage.setItem(LS_CREDITEUREN, JSON.stringify(crediteuren));
-}
-
-function loadFactuurnummer() {
-  return localStorage.getItem(LS_FACTUURNR) || (new Date().getFullYear() + '001');
-}
-
-function saveFactuurnummer(nr) {
-  localStorage.setItem(LS_FACTUURNR, nr);
-}
-
-function incrementFactuurnummer(nr) {
-  const match = nr.match(/^(.*?)(\d+)$/);
-  if (match) {
-    const prefix = match[1];
-    const num = parseInt(match[2], 10) + 1;
-    return prefix + String(num).padStart(match[2].length, '0');
-  }
-  return nr + '_2';
-}
-
-/* ════════════════════════════════════════════════════════
-   TAB SWITCHING
-   ════════════════════════════════════════════════════════ */
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    if (btn.dataset.tab === 'factuur') updatePreview();
+/* ═══════════ VOORBEELD CREDITEUREN ═══════════ */
+function loadVoorbeeldCrediteuren(){
+  const voorbeelden=[
+    {naam:'Schoonmaakbedrijf De Blinker B.V.',adres:'Industrieweg 42\n3542 AD Utrecht',kvk:'56781234',btw:'NL856781234B01',iban:'NL91 ABNA 0417 1643 00',email:'info@deblinker.nl',betalingstermijn:30,regelitems:[{omschrijving:'Schoonmaakdiensten kantoor',aantal:1,stuksprijs:875}]},
+    {naam:'Koffieleverancier Barista B.V.',adres:'Koffielaan 7\n1012 AB Amsterdam',kvk:'34567890',btw:'NL834567890B01',iban:'NL20 INGB 0001 2345 67',email:'orders@barista.nl',betalingstermijn:14,regelitems:[{omschrijving:'Koffiebonen & supplies',aantal:1,stuksprijs:245.50}]},
+    {naam:'ICT Solutions Nederland',adres:'Databoulevard 15\n5611 KE Eindhoven',kvk:'78901234',btw:'NL878901234B01',iban:'NL44 RABO 0123 4567 89',email:'facturatie@ictsolutions.nl',betalingstermijn:30,regelitems:[{omschrijving:'Managed IT services',aantal:1,stuksprijs:1850},{omschrijving:'Licenties Microsoft 365',aantal:25,stuksprijs:12.50}]},
+    {naam:'Kantoormeubelen Van Dijk',adres:'Meubelstraat 88\n2511 CK Den Haag',kvk:'45678901',btw:'NL845678901B01',iban:'NL55 ABNA 0987 6543 21',email:'verkoop@vandijkmeubelen.nl',betalingstermijn:60,regelitems:[{omschrijving:'Ergonomische bureaustoel',aantal:2,stuksprijs:449},{omschrijving:'Zit-sta bureau',aantal:1,stuksprijs:789}]},
+    {naam:'Lease Plan Nederland N.V.',adres:'Postbus 1085\n1300 BB Almere',kvk:'12345678',btw:'NL812345678B01',iban:'NL33 INGB 0000 0012 34',email:'facturen@leaseplan.nl',betalingstermijn:14,regelitems:[{omschrijving:'Operationele autolease',aantal:1,stuksprijs:695}]}
+  ];
+  let added=0;
+  voorbeelden.forEach(v=>{
+    if(crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase()))return;
+    crediteuren.push({...v,id:genId(),logo:''});added++;
   });
-});
-
-/* ════════════════════════════════════════════════════════
-   CREDITEUREN BEHEER
-   ════════════════════════════════════════════════════════ */
-
-function renderCrediteurenLijst() {
-  const grid = document.getElementById('crediteuren-grid');
-  if (crediteuren.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><p>Nog geen crediteuren aangemaakt.</p><button class="btn btn-primary" onclick="openCrediteurModal()">+ Eerste crediteur toevoegen</button></div>';
-    return;
-  }
-  grid.innerHTML = crediteuren.map(c => `
-    <div class="crediteur-card">
-      ${c.logo
-        ? `<img class="crediteur-card-logo" src="${c.logo}" alt="${escapeHtml(c.naam)}">`
-        : `<div class="crediteur-card-logo placeholder">🏢</div>`}
-      <div class="crediteur-card-info">
-        <h4>${escapeHtml(c.naam)}</h4>
-        <p>${escapeHtml(c.email || c.kvk || '—')}</p>
-      </div>
-      <div class="crediteur-card-actions">
-        <button class="btn btn-outline btn-sm" onclick="openCrediteurModal('${c.id}')">✏️</button>
-        <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="confirmDeleteCrediteur('${c.id}')">🗑</button>
-      </div>
-    </div>
-  `).join('');
+  if(added){saveCred();renderCredLijst();renderCredOpties();showToast(`${added} voorbeeldcrediteuren toegevoegd`);}
+  else{showToast('Voorbeeldcrediteuren bestaan al');}
 }
 
-function renderCrediteurOpties() {
-  const selects = [document.getElementById('crediteur-select'), document.getElementById('reeks-crediteur')];
-  selects.forEach(sel => {
-    if (!sel) return;
-    const val = sel.value;
-    sel.innerHTML = '<option value="">— Kies een crediteur —</option>' +
-      crediteuren.map(c => `<option value="${c.id}">${escapeHtml(c.naam)}</option>`).join('');
-    sel.value = val;
+/* ═══════════ CREDITEUREN BEHEER ═══════════ */
+function renderCredLijst(){
+  const g=document.getElementById('crediteuren-grid');
+  if(!crediteuren.length){g.innerHTML='<div class="empty-state"><p>Nog geen crediteuren.</p><button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button></div>';return;}
+  g.innerHTML=crediteuren.map(c=>`<div class="crediteur-card">${c.logo?`<img class="crediteur-card-logo" src="${c.logo}">`:'<div class="crediteur-card-logo placeholder">🏢</div>'}<div class="crediteur-card-info"><h4>${escapeHtml(c.naam)}</h4><p>${escapeHtml(c.email||c.kvk||'—')}</p></div><div class="crediteur-card-actions"><button class="btn btn-outline btn-sm" onclick="openCrediteurModal('${c.id}')">✏️</button><button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="confirmDel('${c.id}')">🗑</button></div></div>`).join('');
+}
+function renderCredOpties(){
+  [document.getElementById('crediteur-select'),document.getElementById('reeks-crediteur')].forEach(s=>{
+    if(!s)return;const v=s.value;
+    s.innerHTML='<option value="">— Kies een crediteur —</option>'+crediteuren.map(c=>`<option value="${c.id}">${escapeHtml(c.naam)}</option>`).join('');
+    s.value=v;
   });
 }
-
-function openCrediteurModal(id) {
-  const modal = document.getElementById('modal-crediteur');
-  const titel = document.getElementById('modal-crediteur-titel');
-  currentLogoBase64 = '';
-
-  if (id) {
-    const c = crediteuren.find(x => x.id === id);
-    if (!c) return;
-    titel.textContent = 'Crediteur bewerken';
-    document.getElementById('crediteur-id').value = c.id;
-    document.getElementById('cred-naam').value = c.naam || '';
-    document.getElementById('cred-adres').value = c.adres || '';
-    document.getElementById('cred-kvk').value = c.kvk || '';
-    document.getElementById('cred-btw').value = c.btw || '';
-    document.getElementById('cred-iban').value = c.iban || '';
-    document.getElementById('cred-email').value = c.email || '';
-    document.getElementById('cred-termijn').value = c.betalingstermijn || 30;
-    currentLogoBase64 = c.logo || '';
-    if (c.logo) {
-      document.getElementById('cred-logo-preview').src = c.logo;
-      document.getElementById('cred-logo-preview').style.display = 'block';
-      document.getElementById('cred-logo-text').style.display = 'none';
-    } else {
-      document.getElementById('cred-logo-preview').style.display = 'none';
-      document.getElementById('cred-logo-text').style.display = 'block';
-    }
-    renderCredRegelitems(c.regelitems || []);
-  } else {
-    titel.textContent = 'Nieuwe crediteur';
-    document.getElementById('crediteur-id').value = '';
-    document.getElementById('cred-naam').value = '';
-    document.getElementById('cred-adres').value = '';
-    document.getElementById('cred-kvk').value = '';
-    document.getElementById('cred-btw').value = '';
-    document.getElementById('cred-iban').value = '';
-    document.getElementById('cred-email').value = '';
-    document.getElementById('cred-termijn').value = 30;
-    document.getElementById('cred-logo-preview').style.display = 'none';
-    document.getElementById('cred-logo-text').style.display = 'block';
-    renderCredRegelitems([{ omschrijving: '', aantal: 1, stuksprijs: 0 }]);
+function openCrediteurModal(id){
+  const modal=document.getElementById('modal-crediteur');currentLogoBase64='';
+  if(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;
+    document.getElementById('modal-crediteur-titel').textContent='Crediteur bewerken';
+    document.getElementById('crediteur-id').value=c.id;
+    document.getElementById('cred-naam').value=c.naam||'';document.getElementById('cred-adres').value=c.adres||'';
+    document.getElementById('cred-kvk').value=c.kvk||'';document.getElementById('cred-btw').value=c.btw||'';
+    document.getElementById('cred-iban').value=c.iban||'';document.getElementById('cred-email').value=c.email||'';
+    document.getElementById('cred-termijn').value=c.betalingstermijn||30;currentLogoBase64=c.logo||'';
+    if(c.logo){document.getElementById('cred-logo-preview').src=c.logo;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';}
+    else{document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';}
+    renderCredRegels(c.regelitems||[]);
+  }else{
+    document.getElementById('modal-crediteur-titel').textContent='Nieuwe crediteur';
+    document.getElementById('crediteur-id').value='';
+    ['cred-naam','cred-adres','cred-kvk','cred-btw','cred-iban','cred-email'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('cred-termijn').value=30;
+    document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';
+    renderCredRegels([{omschrijving:'',aantal:1,stuksprijs:0}]);
   }
   modal.classList.add('active');
 }
+function sluitCrediteurModal(){document.getElementById('modal-crediteur').classList.remove('active');}
+function handleLogoUpload(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){showToast('Max 2 MB');return;}const r=new FileReader();r.onload=ev=>{currentLogoBase64=ev.target.result;document.getElementById('cred-logo-preview').src=ev.target.result;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';};r.readAsDataURL(f);}
+function renderCredRegels(items){document.getElementById('cred-regelitems-body').innerHTML=items.map((it,i)=>`<tr><td><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving"></td><td><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal"></td><td><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs"></td><td><button class="btn-remove-row" onclick="rmCredRegel(${i})">×</button></td></tr>`).join('');}
+function getCredRegels(){return Array.from(document.querySelectorAll('#cred-regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
+function addCredRegelitem(){const i=getCredRegels();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderCredRegels(i);}
+function rmCredRegel(idx){const i=getCredRegels();i.splice(idx,1);renderCredRegels(i);}
+function saveCrediteur(){
+  const naam=document.getElementById('cred-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
+  const id=document.getElementById('crediteur-id').value;
+  const d={id:id||genId(),naam,adres:document.getElementById('cred-adres').value.trim(),kvk:document.getElementById('cred-kvk').value.trim(),btw:document.getElementById('cred-btw').value.trim(),iban:document.getElementById('cred-iban').value.trim(),email:document.getElementById('cred-email').value.trim(),betalingstermijn:parseInt(document.getElementById('cred-termijn').value)||30,logo:currentLogoBase64,regelitems:getCredRegels()};
+  if(id){const idx=crediteuren.findIndex(c=>c.id===id);if(idx>=0)crediteuren[idx]=d;}else{crediteuren.push(d);}
+  saveCred();renderCredLijst();renderCredOpties();sluitCrediteurModal();showToast('Crediteur opgeslagen');
+}
+function confirmDel(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;document.getElementById('confirm-message').textContent=`"${c.naam}" verwijderen?`;document.getElementById('btn-confirm-ok').onclick=()=>{crediteuren=crediteuren.filter(x=>x.id!==id);saveCred();renderCredLijst();renderCredOpties();sluitConfirmModal();showToast('Verwijderd');};document.getElementById('modal-confirm').classList.add('active');}
+function sluitConfirmModal(){document.getElementById('modal-confirm').classList.remove('active');}
 
-function sluitCrediteurModal() {
-  document.getElementById('modal-crediteur').classList.remove('active');
+/* ═══════════ FACTUUR FORMULIER ═══════════ */
+function selectCrediteur(){
+  const id=document.getElementById('crediteur-select').value;if(!id)return;
+  const c=crediteuren.find(x=>x.id===id);if(!c)return;
+  const d=document.getElementById('factuurdatum').value;
+  if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);
+  const items=(c.regelitems||[]).map(r=>({...r}));
+  if(!items.length)items.push({omschrijving:'',aantal:1,stuksprijs:0});
+  renderRegelitems(items);updatePreview();
+}
+function renderRegelitems(items){document.getElementById('regelitems-body').innerHTML=items.map((it,i)=>`<tr><td class="col-omschrijving"><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving" oninput="updatePreview()"></td><td class="col-aantal"><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal" oninput="updRegel(this);updatePreview()"></td><td class="col-prijs"><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs" oninput="updRegel(this);updatePreview()"></td><td class="col-bedrag">${formatBedrag(it.aantal*it.stuksprijs)}</td><td class="col-actie"><button class="btn-remove-row" onclick="rmRegel(${i})">×</button></td></tr>`).join('');}
+function getRegelitems(){return Array.from(document.querySelectorAll('#regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
+function addRegelitem(){const i=getRegelitems();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
+function rmRegel(idx){const i=getRegelitems();i.splice(idx,1);if(!i.length)i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
+function updRegel(el){const r=el.closest('tr');const a=parseFloat(r.querySelector('[data-field="aantal"]').value)||0;const p=parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0;r.querySelector('.col-bedrag').textContent=formatBedrag(a*p);}
+
+function getFactuurData(){const cId=document.getElementById('crediteur-select').value;return{crediteur:crediteuren.find(c=>c.id===cId)||{},debiteurNaam:document.getElementById('debiteur-naam').value,debiteurAdres:document.getElementById('debiteur-adres').value,factuurnummer:document.getElementById('factuurnummer').value,referentie:document.getElementById('referentie').value,factuurdatum:document.getElementById('factuurdatum').value,vervaldatum:document.getElementById('vervaldatum').value,btwTarief:parseFloat(document.getElementById('btw-tarief').value),status:document.getElementById('factuur-status').value,regelitems:getRegelitems()};}
+
+document.getElementById('factuurdatum').addEventListener('change',function(){const c=crediteuren.find(x=>x.id===document.getElementById('crediteur-select').value);if(c&&this.value)document.getElementById('vervaldatum').value=addDagen(this.value,c.betalingstermijn||30);updatePreview();});
+['crediteur-select','debiteur-naam','debiteur-adres','factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',updatePreview);el.addEventListener('change',updatePreview);});
+document.getElementById('crediteur-select').addEventListener('change',selectCrediteur);
+
+/* ═══════════ FACTUUR RENDER ═══════════ */
+function renderFactuurHTML(data){
+  const c=data.crediteur||{},items=data.regelitems||[],btwPct=data.btwTarief||0;
+  let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});sub=Math.round(sub*100)/100;
+  const btw=Math.round(sub*btwPct*100)/100,tot=Math.round((sub+btw)*100)/100;
+  const btwL=btwPct===0.21?'21%':btwPct===0.09?'9%':'0%';
+  const badge=data.status==='betaald'?'<span class="fa4-badge-betaald">BETAALD</span>':'';
+  const det=[c.kvk?'KvK: '+escapeHtml(c.kvk):'',c.btw?'BTW: '+escapeHtml(c.btw):'',c.email?escapeHtml(c.email):''].filter(Boolean).join(' | ');
+  return `<div class="fa4-header"><div class="fa4-header-left">${c.logo?`<img class="fa4-logo" src="${c.logo}">`:''}<div class="fa4-crediteur-naam">${escapeHtml(c.naam)||'Crediteur'}</div><div class="fa4-crediteur-adres">${escapeHtml(c.adres)||''}</div>${det?`<div class="fa4-crediteur-detail">${det}</div>`:''}</div><div class="fa4-header-right"><div class="fa4-title">FACTUUR ${badge}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ${escapeHtml(data.factuurnummer)||'—'}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ${formatDatum(data.factuurdatum)||'—'}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ${formatDatum(data.vervaldatum)||'—'}</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">${escapeHtml(data.debiteurNaam)||'Debiteur'}\n${escapeHtml(data.debiteurAdres)||''}\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">${data.referentie?'Referentie: '+escapeHtml(data.referentie):''}</div><div class="fa4-meta-line">Betalingstermijn: ${c.betalingstermijn||30} dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>${items.map(r=>{const b=(r.aantal||0)*(r.stuksprijs||0);return`<tr><td>${escapeHtml(r.omschrijving)||'—'}</td><td style="text-align:right">${r.aantal||0}</td><td style="text-align:right">${formatBedrag(r.stuksprijs||0)}</td><td style="text-align:right">${formatBedrag(b)}</td></tr>`;}).join('')}</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>${formatBedrag(sub)}</span></div><div class="fa4-totalen-rij"><span>BTW ${btwL}</span><span>${formatBedrag(btw)}</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>${formatBedrag(tot)}</span></div></div></div><div class="fa4-betaalblok" style="margin-top:40px;"><h4>Betaalinstructies</h4><p>${c.iban?'IBAN: <strong>'+escapeHtml(c.iban)+'</strong>':''}${c.naam?'<br>t.n.v. '+escapeHtml(c.naam):''}${data.factuurnummer?'<br>o.v.v. factuurnummer <strong>'+escapeHtml(data.factuurnummer)+'</strong>':''}</p></div><div class="fa4-footer">${[c.naam,c.kvk?'KvK: '+c.kvk:'',c.btw?'BTW: '+c.btw:'',c.email].filter(Boolean).join(' | ')}</div>`;
 }
 
-function handleLogoUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) {
-    showToast('Logo mag maximaal 2 MB zijn');
-    return;
+/* ═══════════ PREVIEW ═══════════ */
+function updatePreview(){document.getElementById('factuur-preview').innerHTML=renderFactuurHTML(getFactuurData());scalePreview();}
+function scalePreview(){const w=document.querySelector('.preview-wrapper'),s=document.getElementById('preview-scaler'),a=document.getElementById('factuur-preview');if(!w||!a)return;const sc=w.clientWidth/794;s.style.transform=`scale(${sc})`;s.style.width='794px';w.style.height=(a.offsetHeight*sc)+'px';}
+window.addEventListener('resize',scalePreview);
+
+/* ═══════════ PDF ═══════════ */
+async function genPDF(data){
+  const ra=document.getElementById('pdf-factuur');ra.innerHTML=renderFactuurHTML(data);
+  const c=document.getElementById('pdf-render-area');c.style.left='0';c.style.opacity='0';c.style.pointerEvents='none';
+  await Promise.all(Array.from(ra.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=r;img.onerror=r;})));
+  const canvas=await html2canvas(ra,{scale:2,useCORS:true,backgroundColor:'#fff',width:794,windowWidth:794});
+  c.style.left='-9999px';c.style.opacity='';c.style.pointerEvents='';
+  const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+  const imgData=canvas.toDataURL('image/png');const aspect=canvas.height/canvas.width;const h=210*aspect;
+  if(h<=297)pdf.addImage(imgData,'PNG',0,0,210,h);else pdf.addImage(imgData,'PNG',0,0,297/aspect,297);
+  return pdf;
+}
+async function downloadPDF(){
+  const data=getFactuurData();if(!data.factuurnummer){showToast('Vul factuurnummer in');return;}if(!data.crediteur.id){showToast('Selecteer crediteur');return;}
+  const pdf=await genPDF(data);pdf.save('Factuur-'+data.factuurnummer+'.pdf');
+  const next=incrementNr(data.factuurnummer);saveNr(next);document.getElementById('factuurnummer').value=next;
+  showToast('PDF gedownload');updatePreview();
+}
+
+/* ═══════════ DEMO-SET TAB ═══════════ */
+function initDemoSetTab(){
+  const d=loadDebiteur();
+  document.getElementById('demoset-debiteur-naam').value=d?d.naam:'';
+  document.getElementById('demoset-debiteur-adres').value=d?d.adres:'';
+  document.getElementById('demoset-van').value=curMonth();
+  // default "tot" = 11 maanden later
+  const now=new Date();now.setMonth(now.getMonth()+11);
+  document.getElementById('demoset-tot').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  document.getElementById('demoset-startnr').value=loadNr();
+  // Render crediteur checkboxes
+  const el=document.getElementById('demoset-crediteuren-lijst');
+  if(!crediteuren.length){el.innerHTML='<p style="font-size:13px;color:var(--text-light);">Geen crediteuren beschikbaar. Voeg eerst crediteuren toe.</p>';return;}
+  el.innerHTML=crediteuren.map(c=>`<div class="demoset-crediteur-item"><input type="checkbox" id="ds-${c.id}" value="${c.id}" checked><label for="ds-${c.id}">${escapeHtml(c.naam)}</label><span style="font-size:11px;color:var(--text-light);">${c.regelitems&&c.regelitems[0]?escapeHtml(c.regelitems[0].omschrijving):''}</span></div>`).join('');
+}
+
+async function generateDemoSet(){
+  const debiteurNaam=document.getElementById('demoset-debiteur-naam').value;
+  const debiteurAdres=document.getElementById('demoset-debiteur-adres').value;
+  const vanStr=document.getElementById('demoset-van').value;
+  const totStr=document.getElementById('demoset-tot').value;
+  let nr=document.getElementById('demoset-startnr').value;
+  const btwTarief=parseFloat(document.getElementById('demoset-btw').value);
+  const variatie=parseFloat(document.getElementById('demoset-variatie').value);
+
+  if(!vanStr||!totStr){showToast('Vul van en tot maand in');return;}
+  if(!nr){showToast('Vul startnummer in');return;}
+
+  const selected=Array.from(document.querySelectorAll('#demoset-crediteuren-lijst input:checked')).map(el=>el.value);
+  if(!selected.length){showToast('Selecteer minimaal één crediteur');return;}
+
+  // Calculate months
+  const [vanJ,vanM]=vanStr.split('-').map(Number);
+  const [totJ,totM]=totStr.split('-').map(Number);
+  const totalMonths=((totJ-vanJ)*12)+(totM-vanM)+1;
+  if(totalMonths<1||totalMonths>120){showToast('Ongeldige periode');return;}
+
+  const totalFacturen=selected.length*totalMonths;
+  const progress=document.getElementById('demoset-progress');
+  const fill=document.getElementById('demoset-progress-fill');
+  const txt=document.getElementById('demoset-progress-text');
+  const btn=document.getElementById('btn-demoset-genereer');
+
+  progress.classList.add('active');btn.disabled=true;fill.style.width='0%';
+
+  const zip=new JSZip();let count=0;
+
+  for(const credId of selected){
+    const cred=crediteuren.find(c=>c.id===credId);if(!cred)continue;
+
+    for(let i=0;i<totalMonths;i++){
+      const mIdx=(vanM-1+i)%12;
+      const jaar=vanJ+Math.floor((vanM-1+i)/12);
+      const maand=MAANDEN[mIdx];
+      const datum=`${jaar}-${String(mIdx+1).padStart(2,'0')}-01`;
+
+      const regelitems=(cred.regelitems||[]).map(r=>({
+        omschrijving:r.omschrijving?`${r.omschrijving} — ${maand} ${jaar}`:`${maand} ${jaar}`,
+        aantal:r.aantal||1,
+        stuksprijs:varyAmount(r.stuksprijs||0,variatie)
+      }));
+
+      const data={crediteur:cred,debiteurNaam,debiteurAdres,factuurnummer:nr,referentie:'',factuurdatum:datum,vervaldatum:addDagen(datum,cred.betalingstermijn||30),btwTarief,status:'open',regelitems};
+
+      count++;
+      const pct=Math.round((count/totalFacturen)*100);
+      fill.style.width=pct+'%';
+      txt.textContent=`${count}/${totalFacturen} — ${escapeHtml(cred.naam)} (${maand} ${jaar})`;
+
+      const pdf=await genPDF(data);
+      const blob=pdf.output('arraybuffer');
+      zip.file(`${cred.naam.replace(/[^a-zA-Z0-9 ]/g,'')}/Factuur-${nr}.pdf`,blob);
+
+      nr=incrementNr(nr);
+      await new Promise(r=>setTimeout(r,100));
+    }
   }
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    currentLogoBase64 = e.target.result;
-    document.getElementById('cred-logo-preview').src = e.target.result;
-    document.getElementById('cred-logo-preview').style.display = 'block';
-    document.getElementById('cred-logo-text').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+
+  saveNr(nr);document.getElementById('factuurnummer').value=nr;
+
+  txt.textContent=`ZIP genereren...`;
+  const content=await zip.generateAsync({type:'blob'});
+  const url=URL.createObjectURL(content);
+  const a=document.createElement('a');a.href=url;a.download=`Demo-facturen-${vanStr}-tot-${totStr}.zip`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+
+  txt.textContent=`✓ Klaar! ${totalFacturen} facturen in ZIP gedownload.`;
+  btn.disabled=false;
+  showToast(`${totalFacturen} facturen als ZIP gedownload`);
 }
 
-function renderCredRegelitems(items) {
-  const tbody = document.getElementById('cred-regelitems-body');
-  tbody.innerHTML = items.map((item, i) => `
-    <tr>
-      <td><input type="text" value="${escapeHtml(item.omschrijving)}" data-field="omschrijving" data-index="${i}"></td>
-      <td><input type="number" value="${item.aantal}" min="0" step="1" data-field="aantal" data-index="${i}"></td>
-      <td><input type="number" value="${item.stuksprijs}" min="0" step="0.01" data-field="stuksprijs" data-index="${i}"></td>
-      <td><button class="btn-remove-row" onclick="removeCredRegelitem(${i})">×</button></td>
-    </tr>
-  `).join('');
+/* ═══════════ INSTELLINGEN ═══════════ */
+function updateInstellingen(){
+  const d=loadDebiteur();
+  document.getElementById('inst-debiteur-info').textContent=d?`Opgeslagen: ${d.naam} — ${d.adres||'(geen adres)'}`:'Geen debiteur opgeslagen.';
 }
 
-function getCredRegelitems() {
-  const rows = document.querySelectorAll('#cred-regelitems-body tr');
-  return Array.from(rows).map(row => ({
-    omschrijving: row.querySelector('[data-field="omschrijving"]').value,
-    aantal: parseFloat(row.querySelector('[data-field="aantal"]').value) || 0,
-    stuksprijs: parseFloat(row.querySelector('[data-field="stuksprijs"]').value) || 0
-  }));
+function exportAlles(){
+  const data={crediteuren,debiteur:loadDebiteur(),factuurnummer:loadNr()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='demo-facturen-backup.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('Backup geëxporteerd');
 }
 
-function addCredRegelitem() {
-  const items = getCredRegelitems();
-  items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderCredRegelitems(items);
+function importAlles(event){
+  const file=event.target.files[0];if(!file)return;event.target.value='';
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();renderCredOpties();}
+      if(data.debiteur){saveDebiteurData(data.debiteur);prefillDebiteur();renderSavedDebiteur();}
+      if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}
+      showToast('Backup geïmporteerd');updateInstellingen();
+    }catch(err){showToast('Ongeldig JSON-bestand');}
+  };reader.readAsText(file);
 }
 
-function removeCredRegelitem(index) {
-  const items = getCredRegelitems();
-  items.splice(index, 1);
-  renderCredRegelitems(items);
-}
-
-function saveCrediteur() {
-  const naam = document.getElementById('cred-naam').value.trim();
-  if (!naam) { showToast('Vul een bedrijfsnaam in'); return; }
-
-  const id = document.getElementById('crediteur-id').value;
-  const data = {
-    id: id || generateId(),
-    naam,
-    adres: document.getElementById('cred-adres').value.trim(),
-    kvk: document.getElementById('cred-kvk').value.trim(),
-    btw: document.getElementById('cred-btw').value.trim(),
-    iban: document.getElementById('cred-iban').value.trim(),
-    email: document.getElementById('cred-email').value.trim(),
-    betalingstermijn: parseInt(document.getElementById('cred-termijn').value) || 30,
-    logo: currentLogoBase64,
-    regelitems: getCredRegelitems()
-  };
-
-  if (id) {
-    const idx = crediteuren.findIndex(c => c.id === id);
-    if (idx >= 0) crediteuren[idx] = data;
-  } else {
-    crediteuren.push(data);
-  }
-
-  saveCrediteuren();
-  renderCrediteurenLijst();
-  renderCrediteurOpties();
-  sluitCrediteurModal();
-  showToast('Crediteur opgeslagen');
-}
-
-function confirmDeleteCrediteur(id) {
-  const c = crediteuren.find(x => x.id === id);
-  if (!c) return;
-  document.getElementById('confirm-message').textContent = `Weet je zeker dat je "${c.naam}" wilt verwijderen?`;
-  document.getElementById('btn-confirm-ok').onclick = () => {
-    deleteCrediteur(id);
-    sluitConfirmModal();
+function confirmWisAlles(){
+  document.getElementById('confirm-message').textContent='ALLES wissen? Dit verwijdert alle crediteuren, debiteur en instellingen.';
+  document.getElementById('btn-confirm-ok').onclick=()=>{
+    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);
+    crediteuren=[];renderCredLijst();renderCredOpties();renderSavedDebiteur();
+    document.getElementById('factuurnummer').value=loadNr();
+    sluitConfirmModal();showToast('Alles gewist');updateInstellingen();
   };
   document.getElementById('modal-confirm').classList.add('active');
 }
 
-function sluitConfirmModal() {
-  document.getElementById('modal-confirm').classList.remove('active');
-}
-
-function deleteCrediteur(id) {
-  crediteuren = crediteuren.filter(c => c.id !== id);
-  saveCrediteuren();
-  renderCrediteurenLijst();
-  renderCrediteurOpties();
-  showToast('Crediteur verwijderd');
-}
-
-/* ════════════════════════════════════════════════════════
-   FACTUUR FORMULIER
-   ════════════════════════════════════════════════════════ */
-
-function selectCrediteur() {
-  const id = document.getElementById('crediteur-select').value;
-  if (!id) return;
-  const c = crediteuren.find(x => x.id === id);
-  if (!c) return;
-
-  // Vervaldatum berekenen
-  const datum = document.getElementById('factuurdatum').value;
-  if (datum && c.betalingstermijn) {
-    document.getElementById('vervaldatum').value = addDagen(datum, c.betalingstermijn);
-  }
-
-  // Regelitems laden (kopie, niet referentie)
-  const items = (c.regelitems || []).map(r => ({ ...r }));
-  if (items.length === 0) items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderRegelitems(items);
+/* ═══════════ INIT ═══════════ */
+function init(){
+  loadCred();renderCredLijst();renderCredOpties();
+  document.getElementById('factuurnummer').value=loadNr();
+  document.getElementById('factuurdatum').value=todayStr();
+  prefillDebiteur();renderSavedDebiteur();
+  renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);
   updatePreview();
 }
-
-function renderRegelitems(items) {
-  const tbody = document.getElementById('regelitems-body');
-  tbody.innerHTML = items.map((item, i) => `
-    <tr>
-      <td class="col-omschrijving"><input type="text" value="${escapeHtml(item.omschrijving)}" data-field="omschrijving" oninput="updatePreview()"></td>
-      <td class="col-aantal"><input type="number" value="${item.aantal}" min="0" step="1" data-field="aantal" oninput="updateRegelBedrag(this); updatePreview()"></td>
-      <td class="col-prijs"><input type="number" value="${item.stuksprijs}" min="0" step="0.01" data-field="stuksprijs" oninput="updateRegelBedrag(this); updatePreview()"></td>
-      <td class="col-bedrag">${formatBedrag(item.aantal * item.stuksprijs)}</td>
-      <td class="col-actie"><button class="btn-remove-row" onclick="removeRegelitem(${i})">×</button></td>
-    </tr>
-  `).join('');
-}
-
-function getRegelitems() {
-  const rows = document.querySelectorAll('#regelitems-body tr');
-  return Array.from(rows).map(row => ({
-    omschrijving: row.querySelector('[data-field="omschrijving"]').value,
-    aantal: parseFloat(row.querySelector('[data-field="aantal"]').value) || 0,
-    stuksprijs: parseFloat(row.querySelector('[data-field="stuksprijs"]').value) || 0
-  }));
-}
-
-function addRegelitem() {
-  const items = getRegelitems();
-  items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderRegelitems(items);
-  updatePreview();
-}
-
-function removeRegelitem(index) {
-  const items = getRegelitems();
-  items.splice(index, 1);
-  if (items.length === 0) items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderRegelitems(items);
-  updatePreview();
-}
-
-function updateRegelBedrag(input) {
-  const row = input.closest('tr');
-  const aantal = parseFloat(row.querySelector('[data-field="aantal"]').value) || 0;
-  const prijs = parseFloat(row.querySelector('[data-field="stuksprijs"]').value) || 0;
-  row.querySelector('.col-bedrag').textContent = formatBedrag(aantal * prijs);
-}
-
-function getFactuurData() {
-  const credId = document.getElementById('crediteur-select').value;
-  const cred = crediteuren.find(c => c.id === credId) || {};
-  return {
-    crediteur: cred,
-    debiteurNaam: document.getElementById('debiteur-naam').value,
-    debiteurAdres: document.getElementById('debiteur-adres').value,
-    factuurnummer: document.getElementById('factuurnummer').value,
-    referentie: document.getElementById('referentie').value,
-    factuurdatum: document.getElementById('factuurdatum').value,
-    vervaldatum: document.getElementById('vervaldatum').value,
-    btwTarief: parseFloat(document.getElementById('btw-tarief').value),
-    status: document.getElementById('factuur-status').value,
-    regelitems: getRegelitems()
-  };
-}
-
-// Auto-update vervaldatum bij wijziging factuurdatum
-document.getElementById('factuurdatum').addEventListener('change', function() {
-  const credId = document.getElementById('crediteur-select').value;
-  const cred = crediteuren.find(c => c.id === credId);
-  if (cred && this.value) {
-    document.getElementById('vervaldatum').value = addDagen(this.value, cred.betalingstermijn || 30);
-  }
-  updatePreview();
-});
-
-// Live preview triggers
-['crediteur-select', 'debiteur-naam', 'debiteur-adres', 'factuurnummer', 'referentie',
- 'vervaldatum', 'btw-tarief', 'factuur-status'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('input', updatePreview);
-  el.addEventListener('change', updatePreview);
-});
-
-document.getElementById('crediteur-select').addEventListener('change', selectCrediteur);
-
-/* ════════════════════════════════════════════════════════
-   FACTUUR HTML RENDERING
-   ════════════════════════════════════════════════════════ */
-
-function renderFactuurHTML(data) {
-  const c = data.crediteur || {};
-  const items = data.regelitems || [];
-  const btwPct = data.btwTarief || 0;
-
-  let subtotaal = 0;
-  items.forEach(r => { subtotaal += (r.aantal || 0) * (r.stuksprijs || 0); });
-  subtotaal = Math.round(subtotaal * 100) / 100;
-  const btwBedrag = Math.round(subtotaal * btwPct * 100) / 100;
-  const totaal = Math.round((subtotaal + btwBedrag) * 100) / 100;
-
-  const btwLabel = btwPct === 0.21 ? '21%' : btwPct === 0.09 ? '9%' : '0%';
-  const statusBadge = data.status === 'betaald' ? '<span class="fa4-badge-betaald">BETAALD</span>' : '';
-
-  const crediteurDetails = [c.kvk ? 'KvK: ' + escapeHtml(c.kvk) : '', c.btw ? 'BTW: ' + escapeHtml(c.btw) : '', c.email ? escapeHtml(c.email) : ''].filter(Boolean).join(' | ');
-
-  return `
-    <div class="fa4-header">
-      <div class="fa4-header-left">
-        ${c.logo ? `<img class="fa4-logo" src="${c.logo}" alt="Logo">` : ''}
-        <div class="fa4-crediteur-naam">${escapeHtml(c.naam) || 'Crediteur'}</div>
-        <div class="fa4-crediteur-adres">${escapeHtml(c.adres) || ''}</div>
-        ${crediteurDetails ? `<div class="fa4-crediteur-detail">${crediteurDetails}</div>` : ''}
-      </div>
-      <div class="fa4-header-right">
-        <div class="fa4-title">FACTUUR ${statusBadge}</div>
-        <div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ${escapeHtml(data.factuurnummer) || '—'}</div>
-        <div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ${formatDatum(data.factuurdatum) || '—'}</div>
-        <div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ${formatDatum(data.vervaldatum) || '—'}</div>
-      </div>
-    </div>
-
-    <hr class="fa4-lijn">
-
-    <div class="fa4-adressen">
-      <div class="fa4-adressen-links">
-        <div class="fa4-section-label">Factuur aan</div>
-        <div class="fa4-adres-tekst">${escapeHtml(data.debiteurNaam) || 'Debiteur'}\n${escapeHtml(data.debiteurAdres) || ''}\nNederland</div>
-      </div>
-      <div class="fa4-adressen-rechts">
-        <div class="fa4-section-label">Referentie</div>
-        <div class="fa4-meta-line">${data.referentie ? 'Referentie: ' + escapeHtml(data.referentie) : ''}</div>
-        <div class="fa4-meta-line">Betalingstermijn: ${c.betalingstermijn || 30} dagen</div>
-      </div>
-    </div>
-
-    <hr class="fa4-lijn">
-
-    <table class="fa4-tabel">
-      <thead>
-        <tr>
-          <th>Omschrijving</th>
-          <th>Aantal</th>
-          <th>Stuksprijs</th>
-          <th>Bedrag</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${items.map(r => {
-          const bedrag = (r.aantal || 0) * (r.stuksprijs || 0);
-          return `<tr>
-            <td>${escapeHtml(r.omschrijving) || '—'}</td>
-            <td style="text-align:right">${r.aantal || 0}</td>
-            <td style="text-align:right">${formatBedrag(r.stuksprijs || 0)}</td>
-            <td style="text-align:right">${formatBedrag(bedrag)}</td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>
-
-    <div class="fa4-totalen">
-      <div class="fa4-totalen-tabel">
-        <div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>${formatBedrag(subtotaal)}</span></div>
-        <div class="fa4-totalen-rij"><span>BTW ${btwLabel}</span><span>${formatBedrag(btwBedrag)}</span></div>
-        <div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>${formatBedrag(totaal)}</span></div>
-      </div>
-    </div>
-
-    <div class="fa4-betaalblok" style="margin-top: 40px;">
-      <h4>Betaalinstructies</h4>
-      <p>
-        ${c.iban ? 'IBAN: <strong>' + escapeHtml(c.iban) + '</strong>' : ''}
-        ${c.naam ? '<br>t.n.v. ' + escapeHtml(c.naam) : ''}
-        ${data.factuurnummer ? '<br>o.v.v. factuurnummer <strong>' + escapeHtml(data.factuurnummer) + '</strong>' : ''}
-      </p>
-    </div>
-
-    <div class="fa4-footer">
-      ${[c.naam, c.kvk ? 'KvK: ' + c.kvk : '', c.btw ? 'BTW: ' + c.btw : '', c.email].filter(Boolean).join(' | ')}
-    </div>
-  `;
-}
-
-/* ════════════════════════════════════════════════════════
-   LIVE PREVIEW
-   ════════════════════════════════════════════════════════ */
-
-function updatePreview() {
-  const data = getFactuurData();
-  const previewEl = document.getElementById('factuur-preview');
-  previewEl.innerHTML = renderFactuurHTML(data);
-  scalePreview();
-}
-
-function scalePreview() {
-  const wrapper = document.querySelector('.preview-wrapper');
-  const scaler = document.getElementById('preview-scaler');
-  const a4 = document.getElementById('factuur-preview');
-  if (!wrapper || !a4) return;
-  const availableWidth = wrapper.clientWidth;
-  const scale = availableWidth / 794;
-  scaler.style.transform = `scale(${scale})`;
-  scaler.style.width = '794px';
-  wrapper.style.height = (a4.offsetHeight * scale) + 'px';
-}
-
-window.addEventListener('resize', scalePreview);
-
-/* ════════════════════════════════════════════════════════
-   PDF GENERATIE
-   ════════════════════════════════════════════════════════ */
-
-async function generatePDF(data, filename) {
-  const renderArea = document.getElementById('pdf-factuur');
-  renderArea.innerHTML = renderFactuurHTML(data);
-
-  // Ensure render area is visible for html2canvas
-  const container = document.getElementById('pdf-render-area');
-  container.style.left = '0';
-  container.style.opacity = '0';
-  container.style.pointerEvents = 'none';
-
-  // Wait for images (logo) to load
-  const images = renderArea.querySelectorAll('img');
-  await Promise.all(Array.from(images).map(img => {
-    if (img.complete) return Promise.resolve();
-    return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
-  }));
-
-  const canvas = await html2canvas(renderArea, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    width: 794,
-    windowWidth: 794
-  });
-
-  container.style.left = '-9999px';
-  container.style.opacity = '';
-  container.style.pointerEvents = '';
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgData = canvas.toDataURL('image/png');
-  const canvasAspect = canvas.height / canvas.width;
-  const imgHeight = pageWidth * canvasAspect;
-
-  if (imgHeight <= pageHeight) {
-    pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-  } else {
-    // Scale to fit page height
-    const scaledWidth = pageHeight / canvasAspect;
-    pdf.addImage(imgData, 'PNG', 0, 0, scaledWidth, pageHeight);
-  }
-
-  pdf.save(filename || 'factuur.pdf');
-}
-
-async function downloadPDF() {
-  const data = getFactuurData();
-  if (!data.factuurnummer) { showToast('Vul een factuurnummer in'); return; }
-  if (!data.crediteur.id) { showToast('Selecteer een crediteur'); return; }
-
-  const filename = 'Factuur-' + data.factuurnummer + '.pdf';
-  await generatePDF(data, filename);
-
-  // Update factuurnummer voor de volgende
-  const nextNr = incrementFactuurnummer(data.factuurnummer);
-  saveFactuurnummer(nextNr);
-  document.getElementById('factuurnummer').value = nextNr;
-
-  showToast('PDF gedownload: ' + filename);
-  updatePreview();
-}
-
-/* ════════════════════════════════════════════════════════
-   FACTUURREEKS
-   ════════════════════════════════════════════════════════ */
-
-function openReeksModal() {
-  const modal = document.getElementById('modal-reeks');
-
-  // Pre-fill van huidig formulier
-  const credId = document.getElementById('crediteur-select').value;
-  if (credId) document.getElementById('reeks-crediteur').value = credId;
-  document.getElementById('reeks-debiteur-naam').value = document.getElementById('debiteur-naam').value;
-  document.getElementById('reeks-debiteur-adres').value = document.getElementById('debiteur-adres').value;
-  document.getElementById('reeks-startmaand').value = currentMonthStr();
-  document.getElementById('reeks-startnummer').value = document.getElementById('factuurnummer').value || loadFactuurnummer();
-  document.getElementById('reeks-btw').value = document.getElementById('btw-tarief').value;
-
-  // Regelitems laden van crediteur
-  const cred = crediteuren.find(c => c.id === credId);
-  const items = cred && cred.regelitems && cred.regelitems.length > 0
-    ? cred.regelitems.map(r => ({ ...r }))
-    : [{ omschrijving: '', aantal: 1, stuksprijs: 0 }];
-  renderReeksRegelitems(items);
-
-  // Reset progress
-  document.getElementById('reeks-progress').classList.remove('active');
-  document.getElementById('btn-reeks-genereer').disabled = false;
-
-  modal.classList.add('active');
-}
-
-function sluitReeksModal() {
-  document.getElementById('modal-reeks').classList.remove('active');
-}
-
-function renderReeksRegelitems(items) {
-  const tbody = document.getElementById('reeks-regelitems-body');
-  tbody.innerHTML = items.map((item, i) => `
-    <tr>
-      <td><input type="text" value="${escapeHtml(item.omschrijving)}" data-field="omschrijving"></td>
-      <td><input type="number" value="${item.aantal}" min="0" step="1" data-field="aantal"></td>
-      <td><input type="number" value="${item.stuksprijs}" min="0" step="0.01" data-field="stuksprijs"></td>
-      <td><button class="btn-remove-row" onclick="removeReeksRegelitem(${i})">×</button></td>
-    </tr>
-  `).join('');
-}
-
-function getReeksRegelitems() {
-  const rows = document.querySelectorAll('#reeks-regelitems-body tr');
-  return Array.from(rows).map(row => ({
-    omschrijving: row.querySelector('[data-field="omschrijving"]').value,
-    aantal: parseFloat(row.querySelector('[data-field="aantal"]').value) || 0,
-    stuksprijs: parseFloat(row.querySelector('[data-field="stuksprijs"]').value) || 0
-  }));
-}
-
-function addReeksRegelitem() {
-  const items = getReeksRegelitems();
-  items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderReeksRegelitems(items);
-}
-
-function removeReeksRegelitem(index) {
-  const items = getReeksRegelitems();
-  items.splice(index, 1);
-  if (items.length === 0) items.push({ omschrijving: '', aantal: 1, stuksprijs: 0 });
-  renderReeksRegelitems(items);
-}
-
-// Update reeks regelitems wanneer crediteur wijzigt
-document.getElementById('reeks-crediteur').addEventListener('change', function() {
-  const cred = crediteuren.find(c => c.id === this.value);
-  if (cred && cred.regelitems && cred.regelitems.length > 0) {
-    renderReeksRegelitems(cred.regelitems.map(r => ({ ...r })));
-  }
-});
-
-async function generateReeks() {
-  const credId = document.getElementById('reeks-crediteur').value;
-  const cred = crediteuren.find(c => c.id === credId);
-  if (!cred) { showToast('Selecteer een crediteur'); return; }
-
-  const debiteurNaam = document.getElementById('reeks-debiteur-naam').value;
-  const debiteurAdres = document.getElementById('reeks-debiteur-adres').value;
-  const startmaand = document.getElementById('reeks-startmaand').value;
-  const aantalMaanden = parseInt(document.getElementById('reeks-aantal').value) || 1;
-  let factuurnummer = document.getElementById('reeks-startnummer').value;
-  const btwTarief = parseFloat(document.getElementById('reeks-btw').value);
-  const baseRegelitems = getReeksRegelitems();
-
-  if (!startmaand) { showToast('Selecteer een startmaand'); return; }
-  if (!factuurnummer) { showToast('Vul een start factuurnummer in'); return; }
-
-  const progress = document.getElementById('reeks-progress');
-  const progressFill = document.getElementById('reeks-progress-fill');
-  const progressText = document.getElementById('reeks-progress-text');
-  const btnGenereer = document.getElementById('btn-reeks-genereer');
-
-  progress.classList.add('active');
-  btnGenereer.disabled = true;
-
-  const [startJaar, startMaandNr] = startmaand.split('-').map(Number);
-
-  for (let i = 0; i < aantalMaanden; i++) {
-    const maandIndex = (startMaandNr - 1 + i) % 12;
-    const jaar = startJaar + Math.floor((startMaandNr - 1 + i) / 12);
-    const maandNaam = MAANDEN[maandIndex];
-    const datumStr = `${jaar}-${String(maandIndex + 1).padStart(2, '0')}-01`;
-
-    // Regelitems met maandnaam
-    const regelitems = baseRegelitems.map(r => ({
-      ...r,
-      omschrijving: r.omschrijving ? `${r.omschrijving} — ${maandNaam} ${jaar}` : `${maandNaam} ${jaar}`
-    }));
-
-    const data = {
-      crediteur: cred,
-      debiteurNaam,
-      debiteurAdres,
-      factuurnummer,
-      referentie: '',
-      factuurdatum: datumStr,
-      vervaldatum: addDagen(datumStr, cred.betalingstermijn || 30),
-      btwTarief,
-      status: 'open',
-      regelitems
-    };
-
-    // Update progress
-    const pct = Math.round(((i + 1) / aantalMaanden) * 100);
-    progressFill.style.width = pct + '%';
-    progressText.textContent = `Factuur ${i + 1} van ${aantalMaanden} (${maandNaam} ${jaar})...`;
-
-    await generatePDF(data, `Factuur-${factuurnummer}.pdf`);
-
-    factuurnummer = incrementFactuurnummer(factuurnummer);
-
-    // Korte pauze zodat browser downloads niet blokkeert
-    if (i < aantalMaanden - 1) {
-      await new Promise(r => setTimeout(r, 800));
-    }
-  }
-
-  saveFactuurnummer(factuurnummer);
-  document.getElementById('factuurnummer').value = factuurnummer;
-
-  progressText.textContent = `Klaar! ${aantalMaanden} facturen gedownload.`;
-  btnGenereer.disabled = false;
-  showToast(`${aantalMaanden} facturen gedownload`);
-}
-
-/* ════════════════════════════════════════════════════════
-   INITIALISATIE
-   ════════════════════════════════════════════════════════ */
-
-function init() {
-  loadCrediteuren();
-  renderCrediteurenLijst();
-  renderCrediteurOpties();
-
-  // Standaard waarden
-  const nr = loadFactuurnummer();
-  document.getElementById('factuurnummer').value = nr;
-  document.getElementById('factuurdatum').value = todayStr();
-
-  // Standaard regelitem
-  renderRegelitems([{ omschrijving: '', aantal: 1, stuksprijs: 0 }]);
-
-  // Eerste preview
-  updatePreview();
-}
-
 init();
 </script>
 </body>
