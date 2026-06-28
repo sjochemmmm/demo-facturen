@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Demo Factuur Generator — AFAS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -12,250 +13,340 @@
   <script src="logo-data.js"></script>
   <style>
     :root {
-      --primary: #005FAA;
-      --primary-light: #0074D0;
-      --primary-very-light: #D7EAFF;
-      --accent: #D7EAFF;
-      --accent-border: #0074D0;
-      --orange: #F59F39;
-      --orange-hover: #e08c2a;
-      --green: #3CC658;
-      --green-hover: #2eaa47;
-      --text: #41474D;
-      --text-dark: #1A1F24;
-      --text-light: #41474D;
-      --bg: #F2F5F8;
-      --white: #ffffff;
-      --border: #C3CBD3;
-      --border-light: #e8ecf0;
-      --danger: #ef4444;
-      --danger-light: #fee2e2;
-      --shadow: 0 1px 3px rgba(0,95,170,0.08), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-lg: 0 10px 15px -3px rgba(0,95,170,0.1), 0 4px 6px -2px rgba(0,0,0,0.04);
-      --radius: 8px;
+      --primary: #0066CC;
+      --primary-light: #3399FF;
+      --primary-very-light: #EBF5FF;
+      --primary-bg: #F0F7FF;
+      --accent: #FF8C00;
+      --accent-hover: #E67E00;
+      --green: #10B981;
+      --green-light: #D1FAE5;
+      --text: #1E293B;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --border-hover: #CBD5E1;
+      --danger: #EF4444;
+      --danger-light: #FEF2F2;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 400; font-size: 15px; line-height: 1.6;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 400; font-size: 14px; line-height: 1.6;
       background: var(--bg); color: var(--text); min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    h1,h2,h3,h4,h5 { font-family: 'Roboto', sans-serif; font-weight: 700; color: var(--text-dark); }
+    h1,h2,h3,h4,h5 { font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
 
+    /* ═══ HEADER ═══ */
     .app-header {
-      background: var(--primary); color: white; padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 60px; box-shadow: var(--shadow-lg); position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+      height: 64px; position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px); background: rgba(255,255,255,0.92);
     }
-    .app-header h1 { font-family: 'Roboto'; font-size: 18px; font-weight: 900; }
-    .tab-nav { display: flex; gap: 4px; height: 100%; }
+    .app-brand { display: flex; align-items: center; gap: 12px; }
+    .app-brand-icon { width: 36px; height: 36px; background: var(--primary); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 800; }
+    .app-header h1 { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.03em; }
+    .app-header h1 span { color: var(--text-muted); font-weight: 500; }
+    .tab-nav { display: flex; gap: 2px; height: 100%; align-items: center; background: var(--bg); border-radius: var(--radius); padding: 4px; }
     .tab-btn {
-      background: none; border: none; color: rgba(255,255,255,0.7);
-      font-family: 'Roboto'; font-size: 13px; font-weight: 700;
-      padding: 0 16px; cursor: pointer; border-bottom: 3px solid transparent;
-      transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+      background: none; border: none; color: var(--text-secondary);
+      font-family: 'Inter'; font-size: 13px; font-weight: 600;
+      padding: 8px 16px; cursor: pointer; border-radius: var(--radius-sm);
+      transition: var(--transition); white-space: nowrap;
     }
-    .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
-    .tab-btn.active { color: white; border-bottom-color: var(--orange); }
+    .tab-btn:hover { color: var(--text); background: var(--surface); }
+    .tab-btn.active { color: var(--primary); background: var(--surface); box-shadow: var(--shadow-sm); }
 
-    .tab-content { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+    /* ═══ TABS ═══ */
+    .tab-content { display: none; padding: 28px 32px; max-width: 1440px; margin: 0 auto; animation: fadeIn 0.2s ease; }
     .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .factuur-layout { display: grid; grid-template-columns: 400px 1fr; gap: 24px; align-items: start; }
+    /* ═══ LAYOUT ═══ */
+    .factuur-layout { display: grid; grid-template-columns: 420px 1fr; gap: 28px; align-items: start; }
     .form-panel {
-      background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 24px; display: flex; flex-direction: column; gap: 20px;
+      background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      border: 1px solid var(--border); padding: 0; overflow: hidden;
     }
-    .preview-panel { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; position: sticky; top: 76px; }
-    .preview-wrapper { width: 100%; overflow: hidden; border: 1px solid var(--border); border-radius: 4px; }
+    .form-panel-inner { padding: 24px; display: flex; flex-direction: column; gap: 0; }
+    .preview-panel { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border); padding: 16px; position: sticky; top: 80px; }
+    .preview-wrapper { width: 100%; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--border); }
     .preview-scaler { transform-origin: top left; }
 
-    .form-section { border-bottom: 1px solid var(--border-light); padding-bottom: 16px; }
+    /* ═══ FORM ═══ */
+    .form-section { padding: 20px 0; border-bottom: 1px solid var(--border); }
+    .form-section:first-child { padding-top: 0; }
     .form-section:last-child { border-bottom: none; padding-bottom: 0; }
-    .form-section h3 { font-family: 'Roboto'; font-size: 12px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-light); margin-bottom: 4px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .form-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .form-section-header h3 { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; }
+    .form-section-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: var(--primary-very-light); }
+    .form-group { margin-bottom: 12px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     input, select, textarea {
-      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
-      font-family: 'Open Sans'; font-size: 13px; color: var(--text); transition: border-color 0.2s;
+      width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter'; font-size: 13px; color: var(--text); transition: var(--transition);
+      background: var(--surface);
     }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,95,170,0.12); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+    input::placeholder, textarea::placeholder { color: var(--text-muted); }
     textarea { resize: vertical; min-height: 60px; }
+    input[type="number"] { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
 
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border: none; border-radius: 6px;
-      font-family: 'Roboto'; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-      text-transform: uppercase; letter-spacing: 0.3px;
+    /* ═══ COMBOBOX ═══ */
+    .combobox { position: relative; }
+    .combobox-input-wrap { display: flex; gap: 6px; align-items: stretch; }
+    .combobox-input {
+      flex: 1; padding: 9px 12px; padding-right: 32px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'Inter'; font-size: 13px; color: var(--text); transition: var(--transition);
+      background: var(--surface); cursor: text;
     }
+    .combobox-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+    .combobox-input::placeholder { color: var(--text-muted); }
+    .combobox-chevron {
+      position: absolute; right: 52px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--text-muted); font-size: 10px; transition: var(--transition);
+    }
+    .combobox.open .combobox-chevron { transform: translateY(-50%) rotate(180deg); }
+    .combobox-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 44px; z-index: 50;
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow-lg); max-height: 260px; overflow-y: auto; display: none;
+    }
+    .combobox.open .combobox-dropdown { display: block; }
+    .combobox-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      cursor: pointer; transition: var(--transition); border-bottom: 1px solid var(--border);
+    }
+    .combobox-item:last-child { border-bottom: none; }
+    .combobox-item:hover, .combobox-item.highlighted { background: var(--primary-very-light); }
+    .combobox-item-logo { width: 32px; height: 32px; border-radius: 6px; object-fit: contain; background: var(--bg); padding: 3px; flex-shrink: 0; }
+    .combobox-item-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-muted); }
+    .combobox-item-info { flex: 1; min-width: 0; }
+    .combobox-item-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .combobox-item-detail { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .combobox-empty { padding: 16px; text-align: center; font-size: 12px; color: var(--text-muted); }
+
+    /* ═══ BUTTONS ═══ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: none; border-radius: var(--radius-sm);
+      font-family: 'Inter'; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-light); }
-    .btn-orange { background: var(--orange); color: white; }
-    .btn-orange:hover { background: var(--orange-hover); }
+    .btn-primary:hover { background: var(--primary-light); box-shadow: var(--shadow-md); }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-accent:hover { background: var(--accent-hover); box-shadow: var(--shadow-md); }
     .btn-success { background: var(--green); color: white; }
-    .btn-success:hover { background: var(--green-hover); }
+    .btn-success:hover { background: #059669; }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--border); }
-    .btn-outline:hover { background: var(--accent); border-color: var(--primary); }
-    .btn-sm { padding: 6px 12px; font-size: 11px; }
+    .btn-danger:hover { background: #DC2626; }
+    .btn-ghost { background: transparent; color: var(--text-secondary); }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn-outline { background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-very-light); }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+    .btn-icon { padding: 9px; font-size: 16px; line-height: 1; min-width: 38px; justify-content: center; }
     .btn-block { width: 100%; justify-content: center; }
     .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-add { flex-shrink: 0; padding: 9px 14px; font-size: 18px; line-height: 1; border-radius: var(--radius-sm); }
 
+    /* ═══ SELECTED CARD ═══ */
+    .selected-card {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      background: var(--primary-very-light); border: 1.5px solid rgba(0,102,204,0.2);
+      border-radius: var(--radius); margin-top: 10px; transition: var(--transition);
+    }
+    .selected-card .sc-logo { width: 36px; height: 36px; border-radius: 8px; object-fit: contain; background: var(--surface); padding: 3px; flex-shrink: 0; }
+    .selected-card .sc-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--surface); color: var(--text-muted); }
+    .selected-card .sc-info { flex: 1; min-width: 0; }
+    .selected-card .sc-naam { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .selected-card .sc-detail { font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .selected-card .sc-clear { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 4px; border-radius: 4px; line-height: 1; }
+    .selected-card .sc-clear:hover { background: var(--surface); color: var(--danger); }
+
+    /* ═══ REGELITEMS TABLE ═══ */
     .regelitems-tabel { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .regelitems-tabel th { text-align: left; font-family: 'Roboto'; font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 4px; border-bottom: 2px solid var(--border); }
+    .regelitems-tabel th { text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 6px; border-bottom: 1.5px solid var(--border); }
     .regelitems-tabel td { padding: 4px; vertical-align: middle; }
-    .regelitems-tabel input { padding: 6px 8px; }
-    .regelitems-tabel .col-omschrijving { width: 45%; }
-    .regelitems-tabel .col-aantal { width: 15%; }
+    .regelitems-tabel input { padding: 7px 10px; font-size: 13px; }
+    .regelitems-tabel .col-omschrijving { width: 44%; }
+    .regelitems-tabel .col-aantal { width: 14%; }
     .regelitems-tabel .col-prijs { width: 20%; }
-    .regelitems-tabel .col-bedrag { width: 15%; text-align: right; font-weight: 600; padding-right: 8px; }
-    .regelitems-tabel .col-actie { width: 5%; }
-    .btn-remove-row { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px; padding: 2px 6px; border-radius: 4px; }
-    .btn-remove-row:hover { background: var(--danger-light); }
+    .regelitems-tabel .col-bedrag { width: 16%; text-align: right; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding-right: 8px; color: var(--text); }
+    .regelitems-tabel .col-actie { width: 6%; }
+    .btn-remove-row { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 4px 6px; border-radius: 4px; transition: var(--transition); }
+    .btn-remove-row:hover { background: var(--danger-light); color: var(--danger); }
 
-    .crediteuren-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    .crediteuren-header h2 { font-family: 'Roboto'; font-size: 22px; font-weight: 900; }
-    .crediteuren-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .crediteuren-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .crediteur-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; align-items: center; gap: 16px; transition: box-shadow 0.2s; border-left: 4px solid var(--primary); }
-    .crediteur-card:hover { box-shadow: var(--shadow-lg); }
-    .crediteur-card-logo { width: 56px; height: 56px; border-radius: 8px; object-fit: contain; background: var(--bg); padding: 4px; flex-shrink: 0; }
-    .crediteur-card-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-light); background: var(--accent); }
+    /* ═══ DOWNLOAD BUTTON ═══ */
+    .download-section { background: var(--primary); margin: 0 -24px -0px; padding: 18px 24px; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .download-section .btn { background: white; color: var(--primary); font-weight: 700; font-size: 14px; padding: 12px; }
+    .download-section .btn:hover { background: var(--primary-very-light); box-shadow: var(--shadow-md); }
+
+    /* ═══ CREDITEUREN TAB ═══ */
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .page-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+    .page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .crediteuren-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+    .crediteur-card {
+      background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+      padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+      transition: var(--transition); cursor: default;
+    }
+    .crediteur-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .crediteur-card-logo { width: 44px; height: 44px; border-radius: var(--radius-sm); object-fit: contain; background: var(--bg); padding: 4px; flex-shrink: 0; }
+    .crediteur-card-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-muted); }
     .crediteur-card-info { flex: 1; min-width: 0; }
-    .crediteur-card-info h4 { font-family: 'Roboto'; font-size: 15px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .crediteur-card-info p { font-size: 12px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .crediteur-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+    .crediteur-card-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .crediteur-card-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .crediteur-card-actions { display: flex; gap: 4px; flex-shrink: 0; opacity: 0; transition: var(--transition); }
+    .crediteur-card:hover .crediteur-card-actions { opacity: 1; }
+    .crediteur-card-actions .btn { padding: 6px 8px; font-size: 13px; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
     .empty-state p { font-size: 15px; margin-bottom: 16px; }
 
-    .excel-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); margin-bottom: 20px; }
-    .excel-upload-area:hover { border-color: var(--green); background: #f0fdf4; }
-    .excel-upload-area.dragover { border-color: var(--green); background: #dcfce7; }
-    .excel-upload-area p { font-size: 13px; color: var(--text-light); margin-top: 6px; }
-    .excel-upload-area .upload-icon { font-size: 32px; margin-bottom: 4px; }
-    .excel-upload-area .upload-title { font-family: 'Roboto'; font-weight: 700; font-size: 14px; color: var(--text-dark); }
-    .excel-upload-area input[type="file"] { display: none; }
+    /* ═══ UPLOAD AREAS ═══ */
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 20px; text-align: center; cursor: pointer; transition: var(--transition);
+      background: var(--bg); margin-bottom: 16px;
+    }
+    .upload-area:hover { border-color: var(--primary); background: var(--primary-very-light); }
+    .upload-area.dragover { border-color: var(--green); background: var(--green-light); }
+    .upload-area .upload-icon { font-size: 28px; margin-bottom: 4px; opacity: 0.7; }
+    .upload-area .upload-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .upload-area .upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .upload-area input[type="file"] { display: none; }
 
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,31,36,0.6); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
+    /* ═══ MODALS ═══ */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 24px; }
     .modal-overlay.active { display: flex; }
-    .modal { background: var(--white); border-radius: 12px; box-shadow: var(--shadow-lg); width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border-light); }
-    .modal-header h2 { font-family: 'Roboto'; font-size: 18px; font-weight: 900; }
-    .modal-close { background: none; border: none; font-size: 24px; color: var(--text-light); cursor: pointer; padding: 4px; line-height: 1; }
-    .modal-close:hover { color: var(--text-dark); }
+    .modal { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .modal-header h2 { font-size: 18px; font-weight: 800; }
+    .modal-close { background: var(--bg); border: none; font-size: 18px; color: var(--text-secondary); cursor: pointer; padding: 8px; line-height: 1; border-radius: var(--radius-sm); transition: var(--transition); }
+    .modal-close:hover { background: var(--danger-light); color: var(--danger); }
     .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
-    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; background: var(--bg); }
 
-    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--primary); color: white; padding: 12px 20px; border-radius: 8px; font-family: 'Roboto'; font-size: 14px; font-weight: 700; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 999; }
+    /* ═══ TOAST ═══ */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: white; padding: 12px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-xl); transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 999; }
     .toast.show { transform: translateY(0); opacity: 1; }
 
-    .factuur-a4 { width: 794px; min-height: 1123px; background: white; padding: 48px 56px; font-family: 'Open Sans', sans-serif; font-size: 13px; color: #41474D; position: relative; display: flex; flex-direction: column; }
+    /* ═══ FACTUUR A4 PREVIEW ═══ */
+    .factuur-a4 { width: 794px; min-height: 1123px; background: white; padding: 48px 56px; font-family: 'Inter', sans-serif; font-size: 13px; color: #1E293B; position: relative; display: flex; flex-direction: column; }
     .factuur-a4 * { box-sizing: border-box; }
     .fa4-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
     .fa4-header-left { max-width: 55%; }
     .fa4-header-right { text-align: right; }
     .fa4-logo { max-height: 56px; max-width: 180px; margin-bottom: 10px; display: block; }
-    .fa4-title { font-family: 'Roboto'; font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-    .fa4-badge-betaald { font-family: 'Roboto'; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px; border: 1.5px solid #86efac; }
-    .fa4-crediteur-naam { font-family: 'Roboto'; font-size: 15px; font-weight: 700; color: #1A1F24; margin-bottom: 2px; }
-    .fa4-crediteur-adres { font-size: 12px; color: #41474D; white-space: pre-line; margin-bottom: 4px; }
-    .fa4-crediteur-detail { font-size: 11px; color: #41474D; opacity: 0.7; }
-    .fa4-meta-line { font-size: 13px; margin-bottom: 3px; color: #41474D; }
-    .fa4-meta-label { color: #41474D; opacity: 0.7; }
-    .fa4-lijn { border: none; border-top: 1.5px solid var(--primary); margin: 16px 0; opacity: 0.25; }
+    .fa4-title { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+    .fa4-badge-betaald { font-size: 10px; font-weight: 700; background: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 4px; letter-spacing: 0.05em; border: 1px solid #6EE7B7; }
+    .fa4-crediteur-naam { font-size: 15px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+    .fa4-crediteur-adres { font-size: 12px; color: #475569; white-space: pre-line; margin-bottom: 4px; }
+    .fa4-crediteur-detail { font-size: 11px; color: #64748B; }
+    .fa4-meta-line { font-size: 13px; margin-bottom: 3px; color: #475569; }
+    .fa4-meta-label { color: #94A3B8; }
+    .fa4-lijn { border: none; border-top: 1.5px solid var(--primary); margin: 16px 0; opacity: 0.2; }
     .fa4-adressen { display: flex; justify-content: space-between; margin-bottom: 4px; }
     .fa4-adressen-links { max-width: 55%; }
     .fa4-adressen-rechts { text-align: right; }
-    .fa4-section-label { font-family: 'Roboto'; font-size: 11px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .fa4-section-label { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
     .fa4-adres-tekst { font-size: 13px; white-space: pre-line; line-height: 1.5; }
     .fa4-tabel { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    .fa4-tabel thead th { background: var(--primary); color: white; font-family: 'Roboto'; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px; text-align: left; }
+    .fa4-tabel thead th { background: var(--primary); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px; text-align: left; }
     .fa4-tabel thead th:last-child, .fa4-tabel thead th:nth-child(2), .fa4-tabel thead th:nth-child(3) { text-align: right; }
-    .fa4-tabel tbody td { padding: 10px 12px; border-bottom: 1px solid #F2F5F8; font-size: 13px; }
+    .fa4-tabel tbody td { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; font-size: 13px; }
     .fa4-tabel tbody td:last-child, .fa4-tabel tbody td:nth-child(2), .fa4-tabel tbody td:nth-child(3) { text-align: right; }
     .fa4-totalen { margin-top: 16px; display: flex; justify-content: flex-end; }
     .fa4-totalen-tabel { width: 280px; }
     .fa4-totalen-rij { display: flex; justify-content: space-between; padding: 5px 12px; font-size: 13px; }
-    .fa4-totalen-rij.totaal { background: var(--primary); color: white; font-family: 'Roboto'; font-weight: 700; border-radius: 4px; padding: 8px 12px; margin-top: 4px; }
-    .fa4-betaalblok { margin-top: auto; background: var(--primary-very-light); border-left: 4px solid var(--primary); border-radius: 0 6px 6px 0; padding: 16px 20px; }
-    .fa4-betaalblok h4 { font-family: 'Roboto'; font-size: 12px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .fa4-betaalblok p { font-size: 12px; color: #41474D; line-height: 1.6; }
-    .fa4-footer { margin-top: 20px; text-align: center; font-size: 10px; color: #41474D; opacity: 0.6; padding-top: 12px; border-top: 1px solid #C3CBD3; }
+    .fa4-totalen-rij.totaal { background: var(--primary); color: white; font-weight: 700; border-radius: 4px; padding: 8px 12px; margin-top: 4px; }
+    .fa4-betaalblok { margin-top: auto; background: #F0F7FF; border-left: 3px solid var(--primary); border-radius: 0 8px 8px 0; padding: 16px 20px; }
+    .fa4-betaalblok h4 { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .fa4-betaalblok p { font-size: 12px; color: #475569; line-height: 1.6; }
+    .fa4-footer { margin-top: 20px; text-align: center; font-size: 10px; color: #94A3B8; padding-top: 12px; border-top: 1px solid #E2E8F0; }
 
     #pdf-render-area { position: fixed; left: -9999px; top: 0; z-index: -1; }
 
-    .logo-upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .logo-upload-area:hover { border-color: var(--primary); background: var(--accent); }
-    .logo-upload-area img { max-height: 64px; max-width: 100%; margin-bottom: 8px; }
-    .logo-upload-area p { font-size: 12px; color: var(--text-light); }
+    /* ═══ LOGO UPLOAD IN MODAL ═══ */
+    .logo-upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: var(--transition); }
+    .logo-upload-area:hover { border-color: var(--primary); background: var(--primary-very-light); }
+    .logo-upload-area img { max-height: 56px; max-width: 100%; margin-bottom: 6px; }
+    .logo-upload-area p { font-size: 11px; color: var(--text-muted); }
     .logo-upload-area input[type="file"] { display: none; }
 
+    /* ═══ PROGRESS ═══ */
     .reeks-progress { margin-top: 16px; display: none; }
     .reeks-progress.active { display: block; }
-    .progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; background: var(--orange); border-radius: 4px; transition: width 0.3s; width: 0%; }
-    .progress-text { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+    .progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s; width: 0%; }
+    .progress-text { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-    .import-result { margin-top: 12px; padding: 12px 16px; border-radius: 6px; font-size: 13px; display: none; }
-    .import-result.success { display: block; background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-    .import-result.error { display: block; background: var(--danger-light); color: #991b1b; border: 1px solid #fca5a5; }
-
-    /* Demo-set specific */
-    .demoset-crediteur-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 8px; }
-    .demoset-crediteur-item label { margin-bottom: 0; font-size: 13px; font-weight: 600; flex: 1; }
-    .demoset-crediteur-item input[type="checkbox"] { width: auto; }
-    .info-box { background: var(--primary-very-light); border-left: 4px solid var(--primary); border-radius: 0 6px 6px 0; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: var(--text); }
-    .info-box strong { color: var(--primary); }
-
-    /* Debiteur saved indicator */
-    .saved-debiteur { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--accent); border-radius: 6px; margin-bottom: 10px; font-size: 12px; }
-    .saved-debiteur .remove-saved { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; }
-
-    /* Selector with add button */
-    .select-with-btn { display: flex; gap: 6px; align-items: stretch; }
-    .select-with-btn select { flex: 1; }
-    .select-with-btn .btn-add { flex-shrink: 0; padding: 8px 12px; font-size: 16px; line-height: 1; border-radius: 6px; }
-
-    /* Selected entity card */
-    .selected-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--accent); border: 1.5px solid var(--primary-light); border-radius: 8px; margin-top: 10px; }
-    .selected-card .sc-logo { width: 40px; height: 40px; border-radius: 6px; object-fit: contain; background: white; padding: 3px; flex-shrink: 0; }
-    .selected-card .sc-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 18px; background: white; }
-    .selected-card .sc-info { flex: 1; min-width: 0; }
-    .selected-card .sc-naam { font-family: 'Roboto'; font-size: 13px; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .selected-card .sc-detail { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .selected-card .sc-clear { background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; }
-    .selected-card .sc-clear:hover { background: white; color: var(--danger); }
-
-    /* Debiteur select dropdown */
-    .debiteur-select-area { margin-bottom: 10px; }
-    .debiteur-manual-toggle { font-size: 12px; color: var(--primary); cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
-    .debiteur-manual-toggle:hover { text-decoration: underline; }
+    /* ═══ MISC ═══ */
+    .import-result { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; display: none; }
+    .import-result.success { display: block; background: var(--green-light); color: #065F46; border: 1px solid #6EE7B7; }
+    .import-result.error { display: block; background: var(--danger-light); color: #991B1B; border: 1px solid #FCA5A5; }
+    .info-box { background: var(--primary-very-light); border-left: 3px solid var(--primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .info-box strong { color: var(--primary); font-weight: 700; }
+    .demoset-crediteur-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; transition: var(--transition); }
+    .demoset-crediteur-item:hover { border-color: var(--primary); }
+    .demoset-crediteur-item label { margin-bottom: 0; font-size: 13px; font-weight: 600; flex: 1; cursor: pointer; }
+    .demoset-crediteur-item input[type="checkbox"] { width: auto; accent-color: var(--primary); }
     .debiteur-fields { display: none; margin-top: 10px; }
     .debiteur-fields.visible { display: block; }
 
-    /* Logo gallery */
-    .logo-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 4px; }
-    .logo-gallery-item { width: 100%; aspect-ratio: 1; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 6px; background: white; transition: all 0.2s; position: relative; }
+    /* ═══ LOGO GALLERY ═══ */
+    .logo-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin-top: 8px; max-height: 180px; overflow-y: auto; padding: 2px; }
+    .logo-gallery-item { width: 100%; aspect-ratio: 1; border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 4px; background: white; transition: var(--transition); position: relative; }
     .logo-gallery-item:hover { border-color: var(--primary); box-shadow: var(--shadow); }
-    .logo-gallery-item.selected { border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange); }
+    .logo-gallery-item.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
     .logo-gallery-item img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .logo-gallery-item .logo-delete { position: absolute; top: 2px; right: 2px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; line-height: 1; cursor: pointer; display: none; align-items: center; justify-content: center; }
+    .logo-gallery-item .logo-delete { position: absolute; top: 2px; right: 2px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; line-height: 1; cursor: pointer; display: none; align-items: center; justify-content: center; }
     .logo-gallery-item:hover .logo-delete { display: flex; }
-    .logo-gallery-label { font-size: 10px; color: var(--text-light); text-align: center; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .logo-bulk-upload { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); margin-bottom: 16px; }
-    .logo-bulk-upload:hover { border-color: var(--primary); background: var(--accent); }
-    .logo-bulk-upload.dragover { border-color: var(--green); background: #dcfce7; }
-    .logo-bulk-upload p { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-    .logo-bulk-upload .upload-title { font-family: 'Roboto'; font-weight: 700; font-size: 13px; color: var(--text-dark); }
-    .logo-or-gallery { font-size: 11px; color: var(--text-light); margin: 8px 0; text-align: center; }
+    .logo-gallery-label { font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logo-or-gallery { font-size: 11px; color: var(--text-muted); margin: 6px 0; text-align: center; }
+
+    /* ═══ TOTALS BAR ═══ */
+    .totals-bar { display: flex; justify-content: flex-end; gap: 20px; padding: 12px 0; margin-top: 4px; border-top: 1.5px solid var(--border); }
+    .totals-bar-item { text-align: right; }
+    .totals-bar-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .totals-bar-value { font-size: 15px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+    .totals-bar-value.total { color: var(--primary); font-size: 17px; }
+
+    @media (max-width: 1100px) {
+      .factuur-layout { grid-template-columns: 1fr; }
+      .preview-panel { position: static; }
+      .app-header { padding: 0 16px; flex-wrap: wrap; height: auto; gap: 8px; padding: 12px 16px; }
+      .tab-content { padding: 20px 16px; }
+    }
   </style>
 </head>
 <body>
 
 <header class="app-header">
-  <h1>📄 Demo Factuur Generator</h1>
+  <div class="app-brand">
+    <div class="app-brand-icon">F</div>
+    <h1>Demo Facturen <span>Generator</span></h1>
+  </div>
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="factuur">Factuur maken</button>
     <button class="tab-btn" data-tab="crediteuren">Crediteuren</button>
@@ -268,69 +359,68 @@
 <div class="tab-content active" id="tab-factuur">
   <div class="factuur-layout">
     <div class="form-panel">
-      <div class="form-section">
-        <h3>Crediteur (afzender factuur)</h3>
-        <div class="form-group">
-          <label>Selecteer crediteur</label>
-          <div class="select-with-btn">
-            <select id="crediteur-select"><option value="">— Kies een crediteur —</option></select>
-            <button class="btn btn-primary btn-add" onclick="openCrediteurModal()" title="Nieuwe crediteur toevoegen">+</button>
-          </div>
-        </div>
-        <div id="crediteur-selected-card"></div>
-      </div>
-
-      <div class="form-section">
-        <h3>Debiteur (ontvanger factuur)</h3>
-        <div class="debiteur-select-area">
+      <div class="form-panel-inner">
+        <div class="form-section">
+          <div class="form-section-header"><div class="form-section-icon">🏢</div><h3>Crediteur (afzender)</h3></div>
           <div class="form-group">
-            <label>Selecteer debiteur</label>
-            <div class="select-with-btn">
-              <select id="debiteur-select"><option value="">— Kies een debiteur —</option></select>
-              <button class="btn btn-primary btn-add" onclick="openDebiteurModal()" title="Nieuwe debiteur toevoegen">+</button>
+            <div class="combobox" id="crediteur-combobox">
+              <div class="combobox-input-wrap">
+                <input type="text" class="combobox-input" id="crediteur-search" placeholder="Zoek of selecteer crediteur..." autocomplete="off">
+                <span class="combobox-chevron">▼</span>
+                <button class="btn btn-primary btn-add" onclick="openCrediteurModal()" title="Nieuwe crediteur">+</button>
+              </div>
+              <div class="combobox-dropdown" id="crediteur-dropdown"></div>
+            </div>
+          </div>
+          <div id="crediteur-selected-card"></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-header"><div class="form-section-icon">📋</div><h3>Debiteur (ontvanger)</h3></div>
+          <div class="form-group">
+            <div class="combobox" id="debiteur-combobox">
+              <div class="combobox-input-wrap">
+                <input type="text" class="combobox-input" id="debiteur-search" placeholder="Zoek of typ debiteurnaam..." autocomplete="off">
+                <span class="combobox-chevron">▼</span>
+                <button class="btn btn-primary btn-add" onclick="openDebiteurModal()" title="Nieuwe debiteur">+</button>
+              </div>
+              <div class="combobox-dropdown" id="debiteur-dropdown"></div>
             </div>
           </div>
           <div id="debiteur-selected-card"></div>
-        </div>
-        <div class="debiteur-fields" id="debiteur-fields">
-          <div class="form-group">
-            <label>Naam</label>
-            <input type="text" id="debiteur-naam" placeholder="Bedrijfsnaam debiteur">
-          </div>
-          <div class="form-group">
-            <label>Adres</label>
-            <textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
+          <div class="debiteur-fields" id="debiteur-fields">
+            <div class="form-group"><label>Adres</label><textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
           </div>
         </div>
-      </div>
 
-      <div class="form-section">
-        <h3>Factuurgegevens</h3>
-        <div class="form-row">
-          <div class="form-group"><label>Factuurnummer</label><div class="select-with-btn"><input type="text" id="factuurnummer"><button class="btn btn-outline btn-add" onclick="randomFactuurnr()" title="Genereer willekeurig nummer">🎲</button></div></div>
-          <div class="form-group"><label>Referentie</label><input type="text" id="referentie" placeholder="PO-0001"></div>
+        <div class="form-section">
+          <div class="form-section-header"><div class="form-section-icon">📄</div><h3>Factuurgegevens</h3></div>
+          <div class="form-row">
+            <div class="form-group"><label>Factuurnummer</label><div class="combobox-input-wrap"><input type="text" id="factuurnummer" style="font-family:'JetBrains Mono',monospace;"><button class="btn btn-outline btn-add" onclick="randomFactuurnr()" title="Willekeurig nummer">🎲</button></div></div>
+            <div class="form-group"><label>Referentie</label><input type="text" id="referentie" placeholder="PO-0001"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Factuurdatum</label><input type="date" id="factuurdatum"></div>
+            <div class="form-group"><label>Vervaldatum</label><input type="date" id="vervaldatum"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>BTW-tarief</label><select id="btw-tarief"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
+            <div class="form-group"><label>Status</label><select id="factuur-status"><option value="open">Open</option><option value="betaald">Betaald</option></select></div>
+          </div>
         </div>
-        <div class="form-row">
-          <div class="form-group"><label>Factuurdatum</label><input type="date" id="factuurdatum"></div>
-          <div class="form-group"><label>Vervaldatum</label><input type="date" id="vervaldatum"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>BTW-tarief</label><select id="btw-tarief"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
-          <div class="form-group"><label>Status</label><select id="factuur-status"><option value="open">Open</option><option value="betaald">Betaald</option></select></div>
+
+        <div class="form-section">
+          <div class="form-section-header"><div class="form-section-icon">📦</div><h3>Regelitems</h3></div>
+          <table class="regelitems-tabel">
+            <thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Prijs</th><th class="col-bedrag">Bedrag</th><th class="col-actie"></th></tr></thead>
+            <tbody id="regelitems-body"></tbody>
+          </table>
+          <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="addRegelitem()">+ Regel toevoegen</button>
+          <div class="totals-bar" id="totals-bar"></div>
         </div>
       </div>
-
-      <div class="form-section">
-        <h3>Regelitems</h3>
-        <table class="regelitems-tabel">
-          <thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Stuksprijs</th><th class="col-bedrag">Bedrag</th><th class="col-actie"></th></tr></thead>
-          <tbody id="regelitems-body"></tbody>
-        </table>
-        <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="addRegelitem()">+ Regel toevoegen</button>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn btn-orange btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
+      <div class="download-section">
+        <button class="btn btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
       </div>
     </div>
 
@@ -346,9 +436,9 @@
 
 <!-- ═══ TAB 2: CREDITEUREN ═══ -->
 <div class="tab-content" id="tab-crediteuren">
-  <div class="crediteuren-header">
+  <div class="page-header">
     <h2>Crediteuren</h2>
-    <div class="crediteuren-actions">
+    <div class="page-actions">
       <button class="btn btn-primary" onclick="openCrediteurModal()">+ Nieuwe crediteur</button>
       <button class="btn btn-success" onclick="document.getElementById('excel-file-input').click()">📊 Import Excel</button>
       <button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button>
@@ -357,14 +447,15 @@
       <input type="file" id="logo-bulk-input" accept="image/png,image/jpeg,image/svg+xml" multiple style="display:none" onchange="handleBulkLogoUpload(event)">
     </div>
   </div>
-  <div class="excel-upload-area" id="excel-drop-area" onclick="document.getElementById('excel-file-input').click()">
+  <div class="upload-area" id="excel-drop-area" onclick="document.getElementById('excel-file-input').click()">
     <div class="upload-icon">📊</div>
     <div class="upload-title">Sleep een Excel-bestand hierheen of klik om te uploaden</div>
-    <p>Verwachte kolommen: Naam, Adres, KvK, BTW, IBAN, Email, Betalingstermijn</p>
+    <div class="upload-hint">Kolommen: Naam, Adres, KvK, BTW, IBAN, Email, Betalingstermijn</div>
   </div>
-  <div class="logo-bulk-upload" id="logo-drop-area" onclick="document.getElementById('logo-bulk-input').click()">
-    <div class="upload-title">🖼️ Sleep logo's hierheen of klik om meerdere te uploaden</div>
-    <p>PNG, JPG of SVG. Bestandsnaam wordt automatisch gematched aan crediteur.</p>
+  <div class="upload-area" id="logo-drop-area" onclick="document.getElementById('logo-bulk-input').click()">
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-title">Sleep logo's hierheen of klik om meerdere te uploaden</div>
+    <div class="upload-hint">PNG, JPG of SVG — bestandsnaam wordt automatisch gematched aan crediteur</div>
   </div>
   <div id="logo-gallery-overview" style="margin-bottom:20px;"></div>
   <div class="import-result" id="import-result"></div>
@@ -373,73 +464,68 @@
 
 <!-- ═══ TAB 3: DEMO-SET ═══ -->
 <div class="tab-content" id="tab-demoset">
-  <h2 style="font-family:'Roboto';font-weight:900;margin-bottom:16px;">🚀 Genereer Demo-set</h2>
+  <div class="page-header"><h2>Genereer Demo-set</h2></div>
   <div class="info-box">
-    <strong>Eén klik = complete inkoopstroom.</strong> Selecteer crediteuren, stel een periode in, en genereer automatisch een realistische set facturen als ZIP. Ideaal voor het demonstreren van Scan & Herken.
+    <strong>Eén klik = complete inkoopstroom.</strong> Selecteer crediteuren, stel een periode in, en genereer een realistische set facturen als ZIP. Ideaal voor Scan &amp; Herken demos.
   </div>
-
   <div class="form-panel" style="max-width:700px;">
-    <div class="form-section">
-      <h3>Debiteur (ontvanger)</h3>
-      <div id="demoset-debiteur-info"></div>
-      <div class="form-row">
-        <div class="form-group"><label>Naam</label><input type="text" id="demoset-debiteur-naam"></div>
-        <div class="form-group"><label>Adres</label><input type="text" id="demoset-debiteur-adres"></div>
+    <div class="form-panel-inner">
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">📋</div><h3>Debiteur (ontvanger)</h3></div>
+        <div class="form-row">
+          <div class="form-group"><label>Naam</label><input type="text" id="demoset-debiteur-naam"></div>
+          <div class="form-group"><label>Adres</label><input type="text" id="demoset-debiteur-adres"></div>
+        </div>
       </div>
-    </div>
-
-    <div class="form-section">
-      <h3>Periode</h3>
-      <div class="form-row-3">
-        <div class="form-group"><label>Van maand</label><input type="month" id="demoset-van"></div>
-        <div class="form-group"><label>Tot maand</label><input type="month" id="demoset-tot"></div>
-        <div class="form-group"><label>Start factuurnr</label><input type="text" id="demoset-startnr"></div>
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">📅</div><h3>Periode</h3></div>
+        <div class="form-row-3">
+          <div class="form-group"><label>Van maand</label><input type="month" id="demoset-van"></div>
+          <div class="form-group"><label>Tot maand</label><input type="month" id="demoset-tot"></div>
+          <div class="form-group"><label>Start factuurnr</label><input type="text" id="demoset-startnr"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>BTW-tarief</label><select id="demoset-btw"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
+          <div class="form-group"><label>Bedragvariatie</label><select id="demoset-variatie"><option value="0">Geen (vast bedrag)</option><option value="0.05">±5%</option><option value="0.10">±10%</option><option value="0.15">±15%</option></select></div>
+        </div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>BTW-tarief</label><select id="demoset-btw"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div>
-        <div class="form-group"><label>Bedragvariatie</label><select id="demoset-variatie"><option value="0">Geen (vast bedrag)</option><option value="0.05">±5%</option><option value="0.10">±10%</option><option value="0.15">±15%</option></select></div>
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">🏢</div><h3>Crediteuren (selecteer)</h3></div>
+        <div id="demoset-crediteuren-lijst"></div>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Elke crediteur genereert facturen voor elke maand in de periode.</p>
       </div>
+      <div class="reeks-progress" id="demoset-progress">
+        <div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div>
+        <p class="progress-text" id="demoset-progress-text"></p>
+      </div>
+      <button class="btn btn-accent btn-block" id="btn-demoset-genereer" onclick="generateDemoSet()" style="padding:14px;">🚀 Genereer Demo-set (ZIP)</button>
     </div>
-
-    <div class="form-section">
-      <h3>Crediteuren (selecteer welke)</h3>
-      <div id="demoset-crediteuren-lijst"></div>
-      <p style="font-size:12px;color:var(--text-light);margin-top:8px;">Elke geselecteerde crediteur genereert facturen voor elke maand in de periode. Standaard regelitems van de crediteur worden gebruikt.</p>
-    </div>
-
-    <div class="reeks-progress" id="demoset-progress">
-      <div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div>
-      <p class="progress-text" id="demoset-progress-text"></p>
-    </div>
-
-    <button class="btn btn-orange btn-block" id="btn-demoset-genereer" onclick="generateDemoSet()">🚀 Genereer Demo-set (ZIP)</button>
   </div>
 </div>
 
 <!-- ═══ TAB 4: INSTELLINGEN ═══ -->
 <div class="tab-content" id="tab-instellingen">
-  <h2 style="font-family:'Roboto';font-weight:900;margin-bottom:16px;">⚙️ Instellingen</h2>
-
+  <div class="page-header"><h2>Instellingen</h2></div>
   <div class="form-panel" style="max-width:600px;">
-    <div class="form-section">
-      <h3>Opgeslagen debiteuren</h3>
-      <p id="inst-debiteur-info" style="font-size:13px;margin-bottom:8px;"></p>
-    </div>
-
-    <div class="form-section">
-      <h3>Exporteer / Importeer alles</h3>
-      <p style="font-size:13px;margin-bottom:12px;">Exporteer al je crediteuren, logo's en instellingen als één JSON-bestand. Handig voor een backup of om op een andere computer te laden.</p>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="exportAlles()">⬇ Exporteer JSON</button>
-        <button class="btn btn-outline" onclick="document.getElementById('import-json-input').click()">⬆ Importeer JSON</button>
-        <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importAlles(event)">
+    <div class="form-panel-inner">
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">📋</div><h3>Opgeslagen debiteuren</h3></div>
+        <p id="inst-debiteur-info" style="font-size:13px;color:var(--text-secondary);"></p>
       </div>
-    </div>
-
-    <div class="form-section">
-      <h3>Alles wissen</h3>
-      <p style="font-size:13px;margin-bottom:12px;color:var(--danger);">Verwijdert alle crediteuren, debiteur en instellingen uit deze browser.</p>
-      <button class="btn btn-danger btn-sm" onclick="confirmWisAlles()">🗑 Alles wissen</button>
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">💾</div><h3>Exporteer / Importeer</h3></div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Alles als JSON-bestand. Handig voor backup of om op een andere computer te laden.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="exportAlles()">⬇ Exporteer JSON</button>
+          <button class="btn btn-outline" onclick="document.getElementById('import-json-input').click()">⬆ Importeer JSON</button>
+          <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importAlles(event)">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">⚠️</div><h3>Alles wissen</h3></div>
+        <p style="font-size:13px;color:var(--danger);margin-bottom:12px;">Verwijdert alle crediteuren, debiteuren en instellingen.</p>
+        <button class="btn btn-danger btn-sm" onclick="confirmWisAlles()">🗑 Alles wissen</button>
+      </div>
     </div>
   </div>
 </div>
@@ -447,7 +533,7 @@
 <!-- ═══ MODAL: CREDITEUR ═══ -->
 <div class="modal-overlay" id="modal-crediteur">
   <div class="modal" style="max-width:700px;">
-    <div class="modal-header"><h2 id="modal-crediteur-titel">Nieuwe crediteur</h2><button class="modal-close" onclick="sluitCrediteurModal()">&times;</button></div>
+    <div class="modal-header"><h2 id="modal-crediteur-titel">Nieuwe crediteur</h2><button class="modal-close" onclick="sluitCrediteurModal()">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="crediteur-id">
       <div class="form-row" style="margin-bottom:16px;">
@@ -455,8 +541,8 @@
           <div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="cred-naam" placeholder="Bedrijfsnaam B.V."></div>
           <div class="form-group"><label>Adres</label><textarea id="cred-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
         </div>
-        <div style="flex:0 0 160px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:4px;">Logo</label>
+        <div style="flex:0 0 150px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;">Logo</label>
           <div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()">
             <img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om te uploaden</p>
             <input type="file" id="cred-logo-input" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)">
@@ -474,31 +560,31 @@
         <div class="form-group"><label>E-mailadres</label><input type="text" id="cred-email" placeholder="info@bedrijf.nl"></div>
       </div>
       <div class="form-group"><label>Betalingstermijn (dagen)</label><input type="number" id="cred-termijn" value="30" min="0" max="365" style="width:120px;"></div>
-      <h3 style="font-family:'Roboto';font-size:12px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:0.8px;margin:20px 0 12px;">Standaard regelitems</h3>
-      <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Stuksprijs</th><th class="col-actie"></th></tr></thead><tbody id="cred-regelitems-body"></tbody></table>
-      <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="addCredRegelitem()">+ Regel toevoegen</button>
+      <div class="form-section-header" style="margin-top:20px;"><div class="form-section-icon">📦</div><h3>Standaard regelitems</h3></div>
+      <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Prijs</th><th class="col-actie"></th></tr></thead><tbody id="cred-regelitems-body"></tbody></table>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="addCredRegelitem()">+ Regel toevoegen</button>
     </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitCrediteurModal()">Annuleren</button><button class="btn btn-orange" onclick="saveCrediteur()">Opslaan</button></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitCrediteurModal()">Annuleren</button><button class="btn btn-primary" onclick="saveCrediteur()">Opslaan</button></div>
   </div>
 </div>
 
 <!-- ═══ MODAL: DEBITEUR ═══ -->
 <div class="modal-overlay" id="modal-debiteur">
   <div class="modal" style="max-width:500px;">
-    <div class="modal-header"><h2 id="modal-debiteur-titel">Nieuwe debiteur</h2><button class="modal-close" onclick="sluitDebiteurModal()">&times;</button></div>
+    <div class="modal-header"><h2 id="modal-debiteur-titel">Nieuwe debiteur</h2><button class="modal-close" onclick="sluitDebiteurModal()">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="debiteur-edit-id">
       <div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="deb-naam" placeholder="Bedrijfsnaam B.V."></div>
       <div class="form-group"><label>Adres</label><textarea id="deb-adres" rows="3" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitDebiteurModal()">Annuleren</button><button class="btn btn-orange" onclick="saveDebiteurModal()">Opslaan</button></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitDebiteurModal()">Annuleren</button><button class="btn btn-primary" onclick="saveDebiteurModal()">Opslaan</button></div>
   </div>
 </div>
 
 <!-- ═══ CONFIRM MODAL ═══ -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;">
-    <div class="modal-header"><h2>Bevestigen</h2><button class="modal-close" onclick="sluitConfirmModal()">&times;</button></div>
+    <div class="modal-header"><h2>Bevestigen</h2><button class="modal-close" onclick="sluitConfirmModal()">✕</button></div>
     <div class="modal-body"><p id="confirm-message"></p></div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="sluitConfirmModal()">Annuleren</button><button class="btn btn-danger" id="btn-confirm-ok">Verwijderen</button></div>
   </div>
@@ -512,10 +598,11 @@
 const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 const LS_CRED = 'df_crediteuren', LS_NR = 'df_factuurnummer', LS_DEB = 'df_debiteur', LS_DEBS = 'df_debiteuren';
 let crediteuren = [], debiteuren = [], currentLogoBase64 = '';
+let selectedCrediteurId = '', selectedDebiteurId = '';
 
 /* ═══════════ UTILS ═══════════ */
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-const formatBedrag = n => '€ ' + new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const formatBedrag = n => '\u20AC ' + new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 const formatDatum = ds => { if(!ds)return''; const d=new Date(ds+'T00:00:00'); return d.getDate()+' '+MAANDEN[d.getMonth()]+' '+d.getFullYear(); };
 const addDagen = (ds,d) => { const x=new Date(ds+'T00:00:00'); x.setDate(x.getDate()+d); return x.toISOString().split('T')[0]; };
 const todayStr = () => new Date().toISOString().split('T')[0];
@@ -541,7 +628,6 @@ function autoMatchLogos(){
 }
 function saveCred(){localStorage.setItem(LS_CRED,JSON.stringify(crediteuren));}
 function loadDebs(){try{debiteuren=JSON.parse(localStorage.getItem(LS_DEBS))||[];} catch{debiteuren=[];}
-  // Migrate old single debiteur
   if(!debiteuren.length){try{const old=JSON.parse(localStorage.getItem(LS_DEB));if(old&&old.naam){debiteuren.push({id:genId(),naam:old.naam,adres:old.adres||''});saveDebs();}}catch{}}
 }
 function saveDebs(){localStorage.setItem(LS_DEBS,JSON.stringify(debiteuren));}
@@ -560,135 +646,145 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click'
   if(btn.dataset.tab==='instellingen')updateInstellingen();
 });});
 
-/* ═══════════ DEBITEUR BEHEER ═══════════ */
-function renderDebOpties(){
-  const s=document.getElementById('debiteur-select');if(!s)return;
-  const v=s.value;
-  s.innerHTML='<option value="">— Kies een debiteur —</option>'+debiteuren.map(d=>`<option value="${d.id}">${escapeHtml(d.naam)}</option>`).join('');
-  s.value=v;
-}
-function openDebiteurModal(id){
-  const modal=document.getElementById('modal-debiteur');
-  if(id){const d=debiteuren.find(x=>x.id===id);if(!d)return;
-    document.getElementById('modal-debiteur-titel').textContent='Debiteur bewerken';
-    document.getElementById('debiteur-edit-id').value=d.id;
-    document.getElementById('deb-naam').value=d.naam||'';
-    document.getElementById('deb-adres').value=d.adres||'';
-  }else{
-    document.getElementById('modal-debiteur-titel').textContent='Nieuwe debiteur';
-    document.getElementById('debiteur-edit-id').value='';
-    document.getElementById('deb-naam').value='';
-    document.getElementById('deb-adres').value='';
+/* ═══════════ COMBOBOX ═══════════ */
+function initCombobox(inputId, dropdownId, comboboxId, getItems, onSelect, onFreetext) {
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  const combobox = document.getElementById(comboboxId);
+  let highlightIdx = -1, items = [];
+
+  function render(filter) {
+    items = getItems(filter || '');
+    highlightIdx = -1;
+    if (!items.length) {
+      dropdown.innerHTML = filter ? '<div class="combobox-empty">Geen resultaten voor "' + escapeHtml(filter) + '"</div>' : '<div class="combobox-empty">Geen items beschikbaar</div>';
+    } else {
+      dropdown.innerHTML = items.map((it, i) => '<div class="combobox-item" data-idx="' + i + '">' + (it.logo ? '<img class="combobox-item-logo" src="' + it.logo + '">' : '<div class="combobox-item-logo placeholder">\uD83C\uDFE2</div>') + '<div class="combobox-item-info"><div class="combobox-item-name">' + escapeHtml(it.naam) + '</div><div class="combobox-item-detail">' + escapeHtml(it.detail || '') + '</div></div></div>').join('');
+    }
   }
+  function open() { combobox.classList.add('open'); render(input.value); }
+  function close() { combobox.classList.remove('open'); highlightIdx = -1; }
+
+  input.addEventListener('focus', open);
+  input.addEventListener('input', () => { open(); if (onFreetext) onFreetext(input.value); });
+  input.addEventListener('keydown', e => {
+    if (!combobox.classList.contains('open')) { if (e.key === 'ArrowDown' || e.key === 'Enter') open(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); highlightIdx = Math.min(highlightIdx + 1, items.length - 1); updateHL(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); highlightIdx = Math.max(highlightIdx - 1, 0); updateHL(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (highlightIdx >= 0 && items[highlightIdx]) { selectItem(highlightIdx); } else { close(); } }
+    else if (e.key === 'Escape') { close(); input.blur(); }
+  });
+  dropdown.addEventListener('click', e => { const item = e.target.closest('.combobox-item'); if (item) selectItem(parseInt(item.dataset.idx)); });
+  function selectItem(idx) { const it = items[idx]; if (!it) return; input.value = it.naam; close(); onSelect(it); }
+  function updateHL() { dropdown.querySelectorAll('.combobox-item').forEach((el, i) => { el.classList.toggle('highlighted', i === highlightIdx); if (i === highlightIdx) el.scrollIntoView({block: 'nearest'}); }); }
+  document.addEventListener('click', e => { if (!combobox.contains(e.target)) close(); });
+  return { close, setInput: v => { input.value = v; }, clear: () => { input.value = ''; } };
+}
+
+/* ═══════════ CREDITEUR COMBOBOX ═══════════ */
+let crediteurCombo, debiteurCombo;
+function setupCrediteurCombo() {
+  crediteurCombo = initCombobox('crediteur-search', 'crediteur-dropdown', 'crediteur-combobox',
+    filter => crediteuren.filter(c => !filter || c.naam.toLowerCase().includes(filter.toLowerCase())).map(c => ({...c, detail: c.email || c.kvk || ''})),
+    item => { selectedCrediteurId = item.id; renderCrediteurCard(); applyCredData(item); updatePreview(); }
+  );
+}
+function renderCrediteurCard() {
+  const card = document.getElementById('crediteur-selected-card');
+  const c = crediteuren.find(x => x.id === selectedCrediteurId);
+  if (!c) { card.innerHTML = ''; return; }
+  card.innerHTML = '<div class="selected-card">' + (c.logo ? '<img class="sc-logo" src="' + c.logo + '">' : '<div class="sc-logo placeholder">\uD83C\uDFE2</div>') + '<div class="sc-info"><div class="sc-naam">' + escapeHtml(c.naam) + '</div><div class="sc-detail">' + escapeHtml(c.email || c.kvk || '') + '</div></div><button class="sc-clear" onclick="clearCrediteurSelection()" title="Deselecteren">\u00D7</button></div>';
+}
+function clearCrediteurSelection() { selectedCrediteurId = ''; crediteurCombo.clear(); document.getElementById('crediteur-selected-card').innerHTML = ''; updatePreview(); }
+function applyCredData(c) {
+  const d = document.getElementById('factuurdatum').value;
+  if (d && c.betalingstermijn) document.getElementById('vervaldatum').value = addDagen(d, c.betalingstermijn);
+  const items = (c.regelitems || []).map(r => ({...r}));
+  if (!items.length) items.push({omschrijving: '', aantal: 1, stuksprijs: 0});
+  renderRegelitems(items);
+}
+
+/* ═══════════ DEBITEUR COMBOBOX ═══════════ */
+function setupDebiteurCombo() {
+  debiteurCombo = initCombobox('debiteur-search', 'debiteur-dropdown', 'debiteur-combobox',
+    filter => debiteuren.filter(d => !filter || d.naam.toLowerCase().includes(filter.toLowerCase())).map(d => ({...d, logo: null, detail: d.adres ? d.adres.split('\n')[0] : ''})),
+    item => { selectedDebiteurId = item.id; renderDebiteurCard(); updatePreview(); },
+    freetext => { selectedDebiteurId = ''; document.getElementById('debiteur-selected-card').innerHTML = ''; document.getElementById('debiteur-fields').classList.toggle('visible', !!freetext.trim()); updatePreview(); }
+  );
+}
+function renderDebiteurCard() {
+  const card = document.getElementById('debiteur-selected-card');
+  const d = debiteuren.find(x => x.id === selectedDebiteurId);
+  if (!d) { card.innerHTML = ''; document.getElementById('debiteur-fields').classList.remove('visible'); return; }
+  document.getElementById('debiteur-adres').value = d.adres || '';
+  document.getElementById('debiteur-fields').classList.remove('visible');
+  card.innerHTML = '<div class="selected-card"><div class="sc-logo placeholder">\uD83C\uDFDB\uFE0F</div><div class="sc-info"><div class="sc-naam">' + escapeHtml(d.naam) + '</div><div class="sc-detail">' + escapeHtml(d.adres ? d.adres.split('\n')[0] : 'Geen adres') + '</div></div><button class="sc-clear" onclick="clearDebiteurSelection()" title="Deselecteren">\u00D7</button></div>';
+}
+function clearDebiteurSelection() { selectedDebiteurId = ''; debiteurCombo.clear(); document.getElementById('debiteur-selected-card').innerHTML = ''; document.getElementById('debiteur-adres').value = ''; document.getElementById('debiteur-fields').classList.remove('visible'); updatePreview(); }
+
+/* ═══════════ DEBITEUR BEHEER ═══════════ */
+function openDebiteurModal(id) {
+  const modal = document.getElementById('modal-debiteur');
+  if (id) { const d = debiteuren.find(x => x.id === id); if (!d) return; document.getElementById('modal-debiteur-titel').textContent = 'Debiteur bewerken'; document.getElementById('debiteur-edit-id').value = d.id; document.getElementById('deb-naam').value = d.naam || ''; document.getElementById('deb-adres').value = d.adres || ''; }
+  else { document.getElementById('modal-debiteur-titel').textContent = 'Nieuwe debiteur'; document.getElementById('debiteur-edit-id').value = ''; document.getElementById('deb-naam').value = document.getElementById('debiteur-search').value || ''; document.getElementById('deb-adres').value = ''; }
   modal.classList.add('active');
 }
-function sluitDebiteurModal(){document.getElementById('modal-debiteur').classList.remove('active');}
-function saveDebiteurModal(){
-  const naam=document.getElementById('deb-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
-  const id=document.getElementById('debiteur-edit-id').value;
-  const d={id:id||genId(),naam,adres:document.getElementById('deb-adres').value.trim()};
-  if(id){const idx=debiteuren.findIndex(x=>x.id===id);if(idx>=0)debiteuren[idx]=d;}else{debiteuren.push(d);}
-  saveDebs();renderDebOpties();sluitDebiteurModal();showToast('Debiteur opgeslagen');
-  // Auto-select the new/edited debiteur
-  document.getElementById('debiteur-select').value=d.id;
-  selectDebiteur();
+function sluitDebiteurModal() { document.getElementById('modal-debiteur').classList.remove('active'); }
+function saveDebiteurModal() {
+  const naam = document.getElementById('deb-naam').value.trim(); if (!naam) { showToast('Vul een naam in'); return; }
+  const id = document.getElementById('debiteur-edit-id').value;
+  const d = {id: id || genId(), naam, adres: document.getElementById('deb-adres').value.trim()};
+  if (id) { const idx = debiteuren.findIndex(x => x.id === id); if (idx >= 0) debiteuren[idx] = d; } else { debiteuren.push(d); }
+  saveDebs(); sluitDebiteurModal(); showToast('Debiteur opgeslagen');
+  selectedDebiteurId = d.id; debiteurCombo.setInput(d.naam); renderDebiteurCard(); updatePreview();
 }
-function selectDebiteur(){
-  const id=document.getElementById('debiteur-select').value;
-  const card=document.getElementById('debiteur-selected-card');
-  if(!id){card.innerHTML='';document.getElementById('debiteur-naam').value='';document.getElementById('debiteur-adres').value='';updatePreview();return;}
-  const d=debiteuren.find(x=>x.id===id);if(!d){card.innerHTML='';return;}
-  document.getElementById('debiteur-naam').value=d.naam;
-  document.getElementById('debiteur-adres').value=d.adres||'';
-  card.innerHTML=`<div class="selected-card"><div class="sc-logo placeholder">🏛️</div><div class="sc-info"><div class="sc-naam">${escapeHtml(d.naam)}</div><div class="sc-detail">${escapeHtml(d.adres?d.adres.split('\n')[0]:'Geen adres')}</div></div><button class="sc-clear" onclick="document.getElementById('debiteur-select').value='';selectDebiteur();" title="Deselecteren">×</button></div>`;
-  updatePreview();
-}
-document.getElementById('debiteur-select').addEventListener('change',selectDebiteur);
-
-function saveDebiteur(){
-  const n=document.getElementById('debiteur-naam').value.trim();
-  const a=document.getElementById('debiteur-adres').value.trim();
-  if(!n){showToast('Vul eerst een debiteur naam in');return;}
-  // Save as new debiteur in list if not exists
-  const existing=debiteuren.find(d=>d.naam.toLowerCase()===n.toLowerCase());
-  if(!existing){debiteuren.push({id:genId(),naam:n,adres:a});saveDebs();renderDebOpties();}
-  saveDebiteurData({naam:n,adres:a});
-  showToast('Debiteur opgeslagen');
-}
-function clearDebiteur(){localStorage.removeItem(LS_DEB);showToast('Debiteur gewist');updateInstellingen();}
-function renderSavedDebiteur(){}
-function prefillDebiteur(){
-  const d=loadDebiteur();if(!d)return;
-  document.getElementById('debiteur-naam').value=d.naam||'';
-  document.getElementById('debiteur-adres').value=d.adres||'';
-  // Select matching debiteur in dropdown
-  const match=debiteuren.find(x=>x.naam.toLowerCase()===(d.naam||'').toLowerCase());
-  if(match){document.getElementById('debiteur-select').value=match.id;selectDebiteur();}
-}
-
-/* ═══════════ CREDITEUR SELECTIE MET CARD ═══════════ */
-function selectCrediteur(){
-  const id=document.getElementById('crediteur-select').value;
-  const card=document.getElementById('crediteur-selected-card');
-  if(!id){card.innerHTML='';updatePreview();return;}
-  const c=crediteuren.find(x=>x.id===id);if(!c){card.innerHTML='';return;}
-  // Show selected card
-  card.innerHTML=`<div class="selected-card">${c.logo?`<img class="sc-logo" src="${c.logo}">`:'<div class="sc-logo placeholder">🏢</div>'}<div class="sc-info"><div class="sc-naam">${escapeHtml(c.naam)}</div><div class="sc-detail">${escapeHtml(c.email||c.kvk||c.adres?c.adres.split('\n')[0]:'')}</div></div><button class="sc-clear" onclick="document.getElementById('crediteur-select').value='';selectCrediteur();" title="Deselecteren">×</button></div>`;
-  // Fill vervaldatum
-  const d=document.getElementById('factuurdatum').value;
-  if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);
-  // Fill regelitems
-  const items=(c.regelitems||[]).map(r=>({...r}));
-  if(!items.length)items.push({omschrijving:'',aantal:1,stuksprijs:0});
-  renderRegelitems(items);updatePreview();
+function prefillDebiteur() {
+  const d = loadDebiteur(); if (!d) return;
+  const match = debiteuren.find(x => x.naam.toLowerCase() === (d.naam || '').toLowerCase());
+  if (match) { selectedDebiteurId = match.id; debiteurCombo.setInput(match.naam); renderDebiteurCard(); }
 }
 
 /* ═══════════ EXCEL IMPORT ═══════════ */
-const dropArea=document.getElementById('excel-drop-area');
-['dragenter','dragover'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.add('dragover');});});
-['dragleave','drop'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.remove('dragover');});});
-dropArea.addEventListener('drop',e=>{if(e.dataTransfer.files[0])processExcel(e.dataTransfer.files[0]);});
-function handleExcelUpload(e){if(e.target.files[0])processExcel(e.target.files[0]);e.target.value='';}
-
-function processExcel(file){
-  const res=document.getElementById('import-result');res.className='import-result';
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
-      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-      if(!rows.length){res.className='import-result error';res.textContent='Geen data gevonden.';return;}
-      const map=buildColMap(Object.keys(rows[0]));let n=0;
-      rows.forEach(r=>{
-        const naam=String(r[map.naam]||'').trim();if(!naam)return;
-        const existing=crediteuren.find(c=>c.naam.toLowerCase()===naam.toLowerCase());
-        const d={id:existing?existing.id:genId(),naam,adres:String(r[map.adres]||'').trim(),kvk:String(r[map.kvk]||'').trim(),btw:String(r[map.btw]||'').trim(),iban:String(r[map.iban]||'').trim(),email:String(r[map.email]||'').trim(),betalingstermijn:parseInt(r[map.termijn])||30,logo:existing?existing.logo:'',regelitems:existing?existing.regelitems:[{omschrijving:'',aantal:1,stuksprijs:0}]};
-        if(existing){crediteuren[crediteuren.findIndex(c=>c.id===existing.id)]=d;}else{crediteuren.push(d);}n++;
+const dropArea = document.getElementById('excel-drop-area');
+['dragenter','dragover'].forEach(e => { dropArea.addEventListener(e, ev => { ev.preventDefault(); dropArea.classList.add('dragover'); }); });
+['dragleave','drop'].forEach(e => { dropArea.addEventListener(e, ev => { ev.preventDefault(); dropArea.classList.remove('dragover'); }); });
+dropArea.addEventListener('drop', e => { if (e.dataTransfer.files[0]) processExcel(e.dataTransfer.files[0]); });
+function handleExcelUpload(e) { if (e.target.files[0]) processExcel(e.target.files[0]); e.target.value = ''; }
+function processExcel(file) {
+  const res = document.getElementById('import-result'); res.className = 'import-result';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval: ''});
+      if (!rows.length) { res.className = 'import-result error'; res.textContent = 'Geen data gevonden.'; return; }
+      const map = buildColMap(Object.keys(rows[0])); let n = 0;
+      rows.forEach(r => {
+        const naam = String(r[map.naam] || '').trim(); if (!naam) return;
+        const existing = crediteuren.find(c => c.naam.toLowerCase() === naam.toLowerCase());
+        const d = {id: existing ? existing.id : genId(), naam, adres: String(r[map.adres] || '').trim(), kvk: String(r[map.kvk] || '').trim(), btw: String(r[map.btw] || '').trim(), iban: String(r[map.iban] || '').trim(), email: String(r[map.email] || '').trim(), betalingstermijn: parseInt(r[map.termijn]) || 30, logo: existing ? existing.logo : '', regelitems: existing ? existing.regelitems : [{omschrijving: '', aantal: 1, stuksprijs: 0}]};
+        if (existing) { crediteuren[crediteuren.findIndex(c => c.id === existing.id)] = d; } else { crediteuren.push(d); } n++;
       });
-      saveCred();renderCredLijst();renderCredOpties();
-      res.className='import-result success';res.textContent=`✓ ${n} crediteur(en) geïmporteerd. Logo's apart uploaden via ✏️.`;
-      showToast(`${n} crediteuren geïmporteerd`);
-    }catch(err){res.className='import-result error';res.textContent='Fout: '+err.message;}
-  };reader.readAsArrayBuffer(file);
+      saveCred(); renderCredLijst(); res.className = 'import-result success'; res.textContent = '\u2713 ' + n + ' crediteur(en) ge\u00EFmporteerd.'; showToast(n + ' crediteuren ge\u00EFmporteerd');
+    } catch(err) { res.className = 'import-result error'; res.textContent = 'Fout: ' + err.message; }
+  }; reader.readAsArrayBuffer(file);
 }
-function buildColMap(h){const l=h.map(x=>x.toLowerCase().trim());return{naam:fc(h,l,['naam','name','bedrijfsnaam','bedrijf','crediteur','leverancier']),adres:fc(h,l,['adres','address','straat']),kvk:fc(h,l,['kvk','kvknummer','kvk-nummer']),btw:fc(h,l,['btw','btwnummer','btw-nummer','vat']),iban:fc(h,l,['iban','bankrekening','rekeningnummer','bank']),email:fc(h,l,['email','e-mail','emailadres','mail']),termijn:fc(h,l,['termijn','betalingstermijn','betaaltermijn','dagen'])};}
-function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h[i];}for(const t of terms){let i=l.findIndex(x=>x.includes(t));if(i>=0)return h[i];}return'__';}
+function buildColMap(h) { const l = h.map(x => x.toLowerCase().trim()); return {naam: fc(h, l, ['naam','name','bedrijfsnaam','bedrijf','crediteur','leverancier']), adres: fc(h, l, ['adres','address','straat']), kvk: fc(h, l, ['kvk','kvknummer','kvk-nummer']), btw: fc(h, l, ['btw','btwnummer','btw-nummer','vat']), iban: fc(h, l, ['iban','bankrekening','rekeningnummer','bank']), email: fc(h, l, ['email','e-mail','emailadres','mail']), termijn: fc(h, l, ['termijn','betalingstermijn','betaaltermijn','dagen'])}; }
+function fc(h, l, terms) { for (const t of terms) { let i = l.indexOf(t); if (i >= 0) return h[i]; } for (const t of terms) { let i = l.findIndex(x => x.includes(t)); if (i >= 0) return h[i]; } return '__'; }
 
 /* ═══════════ VOORBEELD CREDITEUREN ═══════════ */
-function randomFactuurnr(){
-  const prefixes=['FV','INV','F','RK','FAC'];
-  const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];
-  const nr=String(Math.floor(Math.random()*900000)+100000);
-  const val=prefix+'-'+new Date().getFullYear()+'-'+nr;
-  document.getElementById('factuurnummer').value=val;
-  saveNr(val);updatePreview();
+function randomFactuurnr() {
+  const prefixes = ['FV','INV','F','RK','FAC'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const nr = String(Math.floor(Math.random() * 900000) + 100000);
+  const val = prefix + '-' + new Date().getFullYear() + '-' + nr;
+  document.getElementById('factuurnummer').value = val; saveNr(val); updatePreview();
 }
-
-function loadVoorbeeldCrediteuren(){
-  const voorbeelden=[
+function loadVoorbeeldCrediteuren() {
+  const voorbeelden = [
     {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Laptop Acer TravelMate P4',aantal:3,stuksprijs:899},{omschrijving:'Monitor Acer B247Y 24"',aantal:5,stuksprijs:219}]},
     {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS Online licentie',aantal:25,stuksprijs:45},{omschrijving:'Consultancy uren',aantal:8,stuksprijs:175}]},
-    {naam:'Alsach Musik GmbH',adres:'Industriestraße 12\n77694 Kehl, Duitsland',kvk:'',btw:'DE287456123',iban:'DE89 3704 0044 0532 0130 00',email:'invoices@alsach-musik.de',betalingstermijn:30,regelitems:[{omschrijving:'Audio equipment conference room',aantal:1,stuksprijs:2450},{omschrijving:'Installatiekosten',aantal:1,stuksprijs:350}]},
+    {naam:'Alsach Musik GmbH',adres:'Industriestra\u00DFe 12\n77694 Kehl, Duitsland',kvk:'',btw:'DE287456123',iban:'DE89 3704 0044 0532 0130 00',email:'invoices@alsach-musik.de',betalingstermijn:30,regelitems:[{omschrijving:'Audio equipment conference room',aantal:1,stuksprijs:2450},{omschrijving:'Installatiekosten',aantal:1,stuksprijs:350}]},
     {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'Aanslag vennootschapsbelasting',aantal:1,stuksprijs:12500}]},
     {naam:'Bidfood B.V.',adres:'Marconiweg 2\n4131 PD Vianen',kvk:'30025786',btw:'NL001248462B01',iban:'NL62 ABNA 0457 2345 67',email:'klantenservice@bidfood.nl',betalingstermijn:14,regelitems:[{omschrijving:'Koffie en thee supplies',aantal:1,stuksprijs:189.50},{omschrijving:'Vergaderbroodjes assortiment',aantal:4,stuksprijs:67.50},{omschrijving:'Fruit mand kantoor',aantal:4,stuksprijs:32}]},
     {naam:'Centraal Bureau voor de Statistiek',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@cbs.nl',betalingstermijn:30,regelitems:[{omschrijving:'Datalevering marktonderzoek',aantal:1,stuksprijs:1750}]},
@@ -703,7 +799,7 @@ function loadVoorbeeldCrediteuren(){
     {naam:'Mollie B.V.',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'30204462',btw:'NL815024002B01',iban:'NL45 ABNA 0000 1234 56',email:'invoices@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Transactiekosten betaalverkeer',aantal:1,stuksprijs:487.30},{omschrijving:'Payment terminal huur',aantal:2,stuksprijs:25}]},
     {naam:'OfficeWorks',adres:'Kanaalweg 18\n3526 KL Utrecht',kvk:'56234891',btw:'NL853456789B01',iban:'NL12 INGB 0678 9012 34',email:'info@officeworks.nl',betalingstermijn:30,regelitems:[{omschrijving:'Printpapier A4 (10 dozen)',aantal:10,stuksprijs:42},{omschrijving:'Inktcartridges assortiment',aantal:1,stuksprijs:289},{omschrijving:'Kantoorartikelen kwartaal',aantal:1,stuksprijs:156}]},
     {naam:'Primera Strijp',adres:'Strijpsestraat 72\n5616 GR Eindhoven',kvk:'17456789',btw:'NL824567890B01',iban:'NL34 RABO 0234 5678 90',email:'strijp@primera.nl',betalingstermijn:14,regelitems:[{omschrijving:'Postzegels en verzendkosten',aantal:1,stuksprijs:87.50},{omschrijving:'Cadeaukaarten relaties',aantal:5,stuksprijs:50}]},
-    {naam:'RESTAURANT LA DÉLICE',adres:'Markt 23\n5611 EB Eindhoven',kvk:'67891234',btw:'NL867891234B01',iban:'NL56 ABNA 0567 8901 23',email:'info@ladelice.nl',betalingstermijn:14,regelitems:[{omschrijving:'Zakendiner 8 personen',aantal:1,stuksprijs:576},{omschrijving:'Catering vergadering',aantal:2,stuksprijs:245}]},
+    {naam:'RESTAURANT LA D\u00C9LICE',adres:'Markt 23\n5611 EB Eindhoven',kvk:'67891234',btw:'NL867891234B01',iban:'NL56 ABNA 0567 8901 23',email:'info@ladelice.nl',betalingstermijn:14,regelitems:[{omschrijving:'Zakendiner 8 personen',aantal:1,stuksprijs:576},{omschrijving:'Catering vergadering',aantal:2,stuksprijs:245}]},
     {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Samsung Galaxy S24 Ultra',aantal:5,stuksprijs:1349},{omschrijving:'Samsung 65" Business Display',aantal:2,stuksprijs:1899}]},
     {naam:'Securitas Beveiliging B.V.',adres:'Databankweg 26\n3821 AL Amersfoort',kvk:'30070025',btw:'NL801234567B01',iban:'NL23 RABO 0145 6789 01',email:'facturatie@securitas.nl',betalingstermijn:30,regelitems:[{omschrijving:'Bewakingsdiensten maand',aantal:1,stuksprijs:3450},{omschrijving:'Alarmopvolging',aantal:1,stuksprijs:195}]},
     {naam:'Stichting Mollie Payments',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'34170985',btw:'NL822345678B01',iban:'NL55 ABNA 0001 2345 67',email:'stichting@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Donatie verwerkingskosten',aantal:1,stuksprijs:125}]},
@@ -711,348 +807,191 @@ function loadVoorbeeldCrediteuren(){
     {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte maand',aantal:1,stuksprijs:4850},{omschrijving:'Servicekosten maand',aantal:1,stuksprijs:650}]},
     {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering kwartaal',aantal:1,stuksprijs:385}]}
   ];
-  // Logo matching map: key in DEMO_LOGOS -> partial crediteur name match
-  const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
-  let added=0,updated=0;
-  voorbeelden.forEach(v=>{
-    // Find matching logo
-    let logo='';
-    if(typeof DEMO_LOGOS!=='undefined'){
-      for(const[key,match] of Object.entries(logoMap)){
-        if(v.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){logo=DEMO_LOGOS[key];break;}
-      }
-    }
-    const existing=crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase());
-    if(existing){
-      if(!existing.logo&&logo){existing.logo=logo;updated++;}
-      return;
-    }
-    crediteuren.push({...v,id:genId(),logo});added++;
+  const logoMap = {acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
+  let added = 0, updated = 0;
+  voorbeelden.forEach(v => {
+    let logo = '';
+    if (typeof DEMO_LOGOS !== 'undefined') { for (const [key, match] of Object.entries(logoMap)) { if (v.naam.toLowerCase().includes(match) && DEMO_LOGOS[key]) { logo = DEMO_LOGOS[key]; break; } } }
+    const existing = crediteuren.find(c => c.naam.toLowerCase() === v.naam.toLowerCase());
+    if (existing) { if (!existing.logo && logo) { existing.logo = logo; updated++; } return; }
+    crediteuren.push({...v, id: genId(), logo}); added++;
   });
-  // Also try to match logos for any crediteur without one
-  if(typeof DEMO_LOGOS!=='undefined'){
-    crediteuren.forEach(c=>{
-      if(c.logo)return;
-      for(const[key,match] of Object.entries(logoMap)){
-        if(c.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){c.logo=DEMO_LOGOS[key];updated++;break;}
-      }
-    });
-  }
-  if(added||updated){saveCred();renderCredLijst();renderCredOpties();showToast(`${added?added+' crediteuren toegevoegd':''}${added&&updated?', ':''}${updated?updated+' logo\'s bijgewerkt':''}`);}
-  else{showToast('Voorbeeldcrediteuren bestaan al');}
+  if (typeof DEMO_LOGOS !== 'undefined') { crediteuren.forEach(c => { if (c.logo) return; for (const [key, match] of Object.entries(logoMap)) { if (c.naam.toLowerCase().includes(match) && DEMO_LOGOS[key]) { c.logo = DEMO_LOGOS[key]; updated++; break; } } }); }
+  if (added || updated) { saveCred(); renderCredLijst(); showToast((added ? added + ' crediteuren toegevoegd' : '') + (added && updated ? ', ' : '') + (updated ? updated + " logo's bijgewerkt" : '')); }
+  else { showToast('Voorbeeldcrediteuren bestaan al'); }
 }
 
 /* ═══════════ CREDITEUREN BEHEER ═══════════ */
-function renderCredLijst(){
-  const g=document.getElementById('crediteuren-grid');
-  if(!crediteuren.length){g.innerHTML='<div class="empty-state"><p>Nog geen crediteuren.</p><button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button></div>';return;}
-  g.innerHTML=crediteuren.map(c=>`<div class="crediteur-card">${c.logo?`<img class="crediteur-card-logo" src="${c.logo}">`:'<div class="crediteur-card-logo placeholder">🏢</div>'}<div class="crediteur-card-info"><h4>${escapeHtml(c.naam)}</h4><p>${escapeHtml(c.email||c.kvk||'—')}</p></div><div class="crediteur-card-actions"><button class="btn btn-outline btn-sm" onclick="openCrediteurModal('${c.id}')">✏️</button><button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="confirmDel('${c.id}')">🗑</button></div></div>`).join('');
+function renderCredLijst() {
+  const g = document.getElementById('crediteuren-grid');
+  if (!crediteuren.length) { g.innerHTML = '<div class="empty-state"><p>Nog geen crediteuren.</p><button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">\uD83C\uDFE2 Demo-data laden</button></div>'; return; }
+  g.innerHTML = crediteuren.map(c => '<div class="crediteur-card">' + (c.logo ? '<img class="crediteur-card-logo" src="' + c.logo + '">' : '<div class="crediteur-card-logo placeholder">\uD83C\uDFE2</div>') + '<div class="crediteur-card-info"><h4>' + escapeHtml(c.naam) + '</h4><p>' + escapeHtml(c.email || c.kvk || '\u2014') + '</p></div><div class="crediteur-card-actions"><button class="btn btn-ghost btn-sm" onclick="openCrediteurModal(\'' + c.id + '\')">\u270F\uFE0F</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="confirmDel(\'' + c.id + '\')">\uD83D\uDDD1</button></div></div>').join('');
 }
-function renderCredOpties(){
-  const s=document.getElementById('crediteur-select');if(!s)return;
-  const v=s.value;
-  s.innerHTML='<option value="">— Kies een crediteur —</option>'+crediteuren.map(c=>`<option value="${c.id}">${escapeHtml(c.naam)}</option>`).join('');
-  s.value=v;
+function openCrediteurModal(id) {
+  const modal = document.getElementById('modal-crediteur'); currentLogoBase64 = '';
+  if (id) { const c = crediteuren.find(x => x.id === id); if (!c) return; document.getElementById('modal-crediteur-titel').textContent = 'Crediteur bewerken'; document.getElementById('crediteur-id').value = c.id; document.getElementById('cred-naam').value = c.naam || ''; document.getElementById('cred-adres').value = c.adres || ''; document.getElementById('cred-kvk').value = c.kvk || ''; document.getElementById('cred-btw').value = c.btw || ''; document.getElementById('cred-iban').value = c.iban || ''; document.getElementById('cred-email').value = c.email || ''; document.getElementById('cred-termijn').value = c.betalingstermijn || 30; currentLogoBase64 = c.logo || ''; if (c.logo) { document.getElementById('cred-logo-preview').src = c.logo; document.getElementById('cred-logo-preview').style.display = 'block'; document.getElementById('cred-logo-text').style.display = 'none'; } else { document.getElementById('cred-logo-preview').style.display = 'none'; document.getElementById('cred-logo-text').style.display = 'block'; } renderCredRegels(c.regelitems || []); }
+  else { document.getElementById('modal-crediteur-titel').textContent = 'Nieuwe crediteur'; document.getElementById('crediteur-id').value = ''; ['cred-naam','cred-adres','cred-kvk','cred-btw','cred-iban','cred-email'].forEach(i => document.getElementById(i).value = ''); document.getElementById('cred-termijn').value = 30; document.getElementById('cred-logo-preview').style.display = 'none'; document.getElementById('cred-logo-text').style.display = 'block'; renderCredRegels([{omschrijving: '', aantal: 1, stuksprijs: 0}]); }
+  modal.classList.add('active'); renderCredLogoGallery();
 }
-function openCrediteurModal(id){
-  const modal=document.getElementById('modal-crediteur');currentLogoBase64='';
-  if(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;
-    document.getElementById('modal-crediteur-titel').textContent='Crediteur bewerken';
-    document.getElementById('crediteur-id').value=c.id;
-    document.getElementById('cred-naam').value=c.naam||'';document.getElementById('cred-adres').value=c.adres||'';
-    document.getElementById('cred-kvk').value=c.kvk||'';document.getElementById('cred-btw').value=c.btw||'';
-    document.getElementById('cred-iban').value=c.iban||'';document.getElementById('cred-email').value=c.email||'';
-    document.getElementById('cred-termijn').value=c.betalingstermijn||30;currentLogoBase64=c.logo||'';
-    if(c.logo){document.getElementById('cred-logo-preview').src=c.logo;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';}
-    else{document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';}
-    renderCredRegels(c.regelitems||[]);
-  }else{
-    document.getElementById('modal-crediteur-titel').textContent='Nieuwe crediteur';
-    document.getElementById('crediteur-id').value='';
-    ['cred-naam','cred-adres','cred-kvk','cred-btw','cred-iban','cred-email'].forEach(i=>document.getElementById(i).value='');
-    document.getElementById('cred-termijn').value=30;
-    document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';
-    renderCredRegels([{omschrijving:'',aantal:1,stuksprijs:0}]);
-  }
-  modal.classList.add('active');
-  renderCredLogoGallery();
-}
-function sluitCrediteurModal(){document.getElementById('modal-crediteur').classList.remove('active');}
-function handleLogoUpload(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){showToast('Max 2 MB');return;}const r=new FileReader();r.onload=ev=>{currentLogoBase64=ev.target.result;document.getElementById('cred-logo-preview').src=ev.target.result;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';addToGallery(f.name,ev.target.result);};r.readAsDataURL(f);}
+function sluitCrediteurModal() { document.getElementById('modal-crediteur').classList.remove('active'); }
+function handleLogoUpload(e) { const f = e.target.files[0]; if (!f) return; if (f.size > 2*1024*1024) { showToast('Max 2 MB'); return; } const r = new FileReader(); r.onload = ev => { currentLogoBase64 = ev.target.result; document.getElementById('cred-logo-preview').src = ev.target.result; document.getElementById('cred-logo-preview').style.display = 'block'; document.getElementById('cred-logo-text').style.display = 'none'; addToGallery(f.name, ev.target.result); }; r.readAsDataURL(f); }
 
 /* ═══════════ LOGO GALERIJ ═══════════ */
 const LS_LOGOS = 'df_logo_gallery';
-function loadLogoGallery(){try{return JSON.parse(localStorage.getItem(LS_LOGOS))||[];}catch{return[];}}
-function saveLogoGallery(g){localStorage.setItem(LS_LOGOS,JSON.stringify(g));}
-function addToGallery(name,data){
-  const gallery=loadLogoGallery();
-  const cleanName=name.replace(/\.(png|jpg|jpeg|svg)$/i,'').toLowerCase();
-  if(gallery.find(g=>g.name===cleanName))return; // already exists
-  gallery.push({name:cleanName,data});
-  saveLogoGallery(gallery);
+function loadLogoGallery() { try { return JSON.parse(localStorage.getItem(LS_LOGOS)) || []; } catch { return []; } }
+function saveLogoGallery(g) { localStorage.setItem(LS_LOGOS, JSON.stringify(g)); }
+function addToGallery(name, data) { const gallery = loadLogoGallery(); const cleanName = name.replace(/\.(png|jpg|jpeg|svg)$/i, '').toLowerCase(); if (gallery.find(g => g.name === cleanName)) return; gallery.push({name: cleanName, data}); saveLogoGallery(gallery); }
+function handleBulkLogoUpload(e) {
+  const files = Array.from(e.target.files); if (!files.length) return; e.target.value = '';
+  let added = 0, matched = 0; const gallery = loadLogoGallery(); let remaining = files.length;
+  files.forEach(f => { if (f.size > 2*1024*1024) return remaining--; const reader = new FileReader(); reader.onload = ev => { const cleanName = f.name.replace(/\.(png|jpg|jpeg|svg)$/i, '').toLowerCase(); if (!gallery.find(g => g.name === cleanName)) { gallery.push({name: cleanName, data: ev.target.result}); added++; } const match = crediteuren.find(c => c.naam.toLowerCase().includes(cleanName) || cleanName.includes(c.naam.toLowerCase().split(' ')[0])); if (match && !match.logo) { match.logo = ev.target.result; matched++; } remaining--; if (remaining <= 0) { saveLogoGallery(gallery); if (matched) saveCred(); renderCredLijst(); renderLogoGalleryOverview(); showToast(added + " logo's toegevoegd" + (matched ? ' (' + matched + ' gekoppeld)' : '')); } }; reader.readAsDataURL(f); });
 }
-function handleBulkLogoUpload(e){
-  const files=Array.from(e.target.files);if(!files.length)return;e.target.value='';
-  let added=0,matched=0;
-  const gallery=loadLogoGallery();
-  let remaining=files.length;
-  files.forEach(f=>{
-    if(f.size>2*1024*1024)return remaining--;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      const cleanName=f.name.replace(/\.(png|jpg|jpeg|svg)$/i,'').toLowerCase();
-      if(!gallery.find(g=>g.name===cleanName)){gallery.push({name:cleanName,data:ev.target.result});added++;}
-      // Try auto-match to crediteur
-      const match=crediteuren.find(c=>c.naam.toLowerCase().includes(cleanName)||cleanName.includes(c.naam.toLowerCase().split(' ')[0]));
-      if(match&&!match.logo){match.logo=ev.target.result;matched++;}
-      remaining--;
-      if(remaining<=0){
-        saveLogoGallery(gallery);if(matched)saveCred();
-        renderCredLijst();renderLogoGalleryOverview();
-        showToast(`${added} logo's toegevoegd${matched?' ('+matched+' automatisch gekoppeld)':''}`);
-      }
-    };reader.readAsDataURL(f);
-  });
+function renderLogoGalleryOverview() {
+  const el = document.getElementById('logo-gallery-overview'); const gallery = loadLogoGallery();
+  if (!gallery.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="margin-bottom:8px;"><span style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">Logo galerij (' + gallery.length + ')</span></div><div class="logo-gallery">' + gallery.map((g, i) => '<div><div class="logo-gallery-item" title="' + escapeHtml(g.name) + '"><img src="' + g.data + '"><button class="logo-delete" onclick="event.stopPropagation();deleteGalleryLogo(' + i + ')">\u00D7</button></div><div class="logo-gallery-label">' + escapeHtml(g.name) + '</div></div>').join('') + '</div>';
 }
-function renderLogoGalleryOverview(){
-  const el=document.getElementById('logo-gallery-overview');
-  const gallery=loadLogoGallery();
-  if(!gallery.length){el.innerHTML='';return;}
-  el.innerHTML=`<h3 style="font-family:'Roboto';font-size:12px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Logo galerij (${gallery.length})</h3><div class="logo-gallery">${gallery.map((g,i)=>`<div><div class="logo-gallery-item" title="${escapeHtml(g.name)}"><img src="${g.data}"><button class="logo-delete" onclick="event.stopPropagation();deleteGalleryLogo(${i})">×</button></div><div class="logo-gallery-label">${escapeHtml(g.name)}</div></div>`).join('')}</div>`;
+function deleteGalleryLogo(idx) { const gallery = loadLogoGallery(); gallery.splice(idx, 1); saveLogoGallery(gallery); renderLogoGalleryOverview(); }
+function renderCredLogoGallery() {
+  const el = document.getElementById('cred-logo-gallery'); const gallery = loadLogoGallery();
+  if (!gallery.length) { el.innerHTML = '<p style="font-size:11px;color:var(--text-muted);">Nog geen logo\'s</p>'; return; }
+  el.innerHTML = gallery.map((g, i) => '<div class="logo-gallery-item' + (currentLogoBase64 === g.data ? ' selected' : '') + '" onclick="selectGalleryLogo(' + i + ')" title="' + escapeHtml(g.name) + '"><img src="' + g.data + '"></div>').join('');
 }
-function deleteGalleryLogo(idx){
-  const gallery=loadLogoGallery();gallery.splice(idx,1);saveLogoGallery(gallery);renderLogoGalleryOverview();
-}
-function renderCredLogoGallery(){
-  const el=document.getElementById('cred-logo-gallery');
-  const gallery=loadLogoGallery();
-  if(!gallery.length){el.innerHTML='<p style="font-size:11px;color:var(--text-light);">Nog geen logo\'s in galerij</p>';return;}
-  el.innerHTML=gallery.map((g,i)=>`<div class="logo-gallery-item${currentLogoBase64===g.data?' selected':''}" onclick="selectGalleryLogo(${i})" title="${escapeHtml(g.name)}"><img src="${g.data}"></div>`).join('');
-}
-function selectGalleryLogo(idx){
-  const gallery=loadLogoGallery();const g=gallery[idx];if(!g)return;
-  currentLogoBase64=g.data;
-  document.getElementById('cred-logo-preview').src=g.data;
-  document.getElementById('cred-logo-preview').style.display='block';
-  document.getElementById('cred-logo-text').style.display='none';
-  renderCredLogoGallery();
-}
+function selectGalleryLogo(idx) { const gallery = loadLogoGallery(); const g = gallery[idx]; if (!g) return; currentLogoBase64 = g.data; document.getElementById('cred-logo-preview').src = g.data; document.getElementById('cred-logo-preview').style.display = 'block'; document.getElementById('cred-logo-text').style.display = 'none'; renderCredLogoGallery(); }
 
-// Logo drop area
-const logoDropArea=document.getElementById('logo-drop-area');
-['dragenter','dragover'].forEach(e=>{logoDropArea.addEventListener(e,ev=>{ev.preventDefault();logoDropArea.classList.add('dragover');});});
-['dragleave','drop'].forEach(e=>{logoDropArea.addEventListener(e,ev=>{ev.preventDefault();logoDropArea.classList.remove('dragover');});});
-logoDropArea.addEventListener('drop',e=>{
-  const files=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
-  if(files.length){const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));document.getElementById('logo-bulk-input').files=dt.files;handleBulkLogoUpload({target:document.getElementById('logo-bulk-input')});}
-});
+const logoDropArea = document.getElementById('logo-drop-area');
+['dragenter','dragover'].forEach(e => { logoDropArea.addEventListener(e, ev => { ev.preventDefault(); logoDropArea.classList.add('dragover'); }); });
+['dragleave','drop'].forEach(e => { logoDropArea.addEventListener(e, ev => { ev.preventDefault(); logoDropArea.classList.remove('dragover'); }); });
+logoDropArea.addEventListener('drop', e => { const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')); if (files.length) { const dt = new DataTransfer(); files.forEach(f => dt.items.add(f)); document.getElementById('logo-bulk-input').files = dt.files; handleBulkLogoUpload({target: document.getElementById('logo-bulk-input')}); } });
 
-function renderCredRegels(items){document.getElementById('cred-regelitems-body').innerHTML=items.map((it,i)=>`<tr><td><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving"></td><td><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal"></td><td><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs"></td><td><button class="btn-remove-row" onclick="rmCredRegel(${i})">×</button></td></tr>`).join('');}
-function getCredRegels(){return Array.from(document.querySelectorAll('#cred-regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
-function addCredRegelitem(){const i=getCredRegels();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderCredRegels(i);}
-function rmCredRegel(idx){const i=getCredRegels();i.splice(idx,1);renderCredRegels(i);}
-function saveCrediteur(){
-  const naam=document.getElementById('cred-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
-  const id=document.getElementById('crediteur-id').value;
-  const d={id:id||genId(),naam,adres:document.getElementById('cred-adres').value.trim(),kvk:document.getElementById('cred-kvk').value.trim(),btw:document.getElementById('cred-btw').value.trim(),iban:document.getElementById('cred-iban').value.trim(),email:document.getElementById('cred-email').value.trim(),betalingstermijn:parseInt(document.getElementById('cred-termijn').value)||30,logo:currentLogoBase64,regelitems:getCredRegels()};
-  if(id){const idx=crediteuren.findIndex(c=>c.id===id);if(idx>=0)crediteuren[idx]=d;}else{crediteuren.push(d);}
-  saveCred();renderCredLijst();renderCredOpties();sluitCrediteurModal();showToast('Crediteur opgeslagen');
-  // Auto-select if just created
-  if(!id){document.getElementById('crediteur-select').value=d.id;selectCrediteur();}
+function renderCredRegels(items) { document.getElementById('cred-regelitems-body').innerHTML = items.map((it, i) => '<tr><td><input type="text" value="' + escapeHtml(it.omschrijving) + '" data-field="omschrijving"></td><td><input type="number" value="' + it.aantal + '" min="0" step="1" data-field="aantal"></td><td><input type="number" value="' + it.stuksprijs + '" min="0" step="0.01" data-field="stuksprijs"></td><td><button class="btn-remove-row" onclick="rmCredRegel(' + i + ')">\u00D7</button></td></tr>').join(''); }
+function getCredRegels() { return Array.from(document.querySelectorAll('#cred-regelitems-body tr')).map(r => ({omschrijving: r.querySelector('[data-field="omschrijving"]').value, aantal: parseFloat(r.querySelector('[data-field="aantal"]').value) || 0, stuksprijs: parseFloat(r.querySelector('[data-field="stuksprijs"]').value) || 0})); }
+function addCredRegelitem() { const i = getCredRegels(); i.push({omschrijving: '', aantal: 1, stuksprijs: 0}); renderCredRegels(i); }
+function rmCredRegel(idx) { const i = getCredRegels(); i.splice(idx, 1); renderCredRegels(i); }
+function saveCrediteur() {
+  const naam = document.getElementById('cred-naam').value.trim(); if (!naam) { showToast('Vul een naam in'); return; }
+  const id = document.getElementById('crediteur-id').value;
+  const d = {id: id || genId(), naam, adres: document.getElementById('cred-adres').value.trim(), kvk: document.getElementById('cred-kvk').value.trim(), btw: document.getElementById('cred-btw').value.trim(), iban: document.getElementById('cred-iban').value.trim(), email: document.getElementById('cred-email').value.trim(), betalingstermijn: parseInt(document.getElementById('cred-termijn').value) || 30, logo: currentLogoBase64, regelitems: getCredRegels()};
+  if (id) { const idx = crediteuren.findIndex(c => c.id === id); if (idx >= 0) crediteuren[idx] = d; } else { crediteuren.push(d); }
+  saveCred(); renderCredLijst(); sluitCrediteurModal(); showToast('Crediteur opgeslagen');
+  if (!id) { selectedCrediteurId = d.id; crediteurCombo.setInput(d.naam); renderCrediteurCard(); applyCredData(d); updatePreview(); }
 }
-function confirmDel(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;document.getElementById('confirm-message').textContent=`"${c.naam}" verwijderen?`;document.getElementById('btn-confirm-ok').onclick=()=>{crediteuren=crediteuren.filter(x=>x.id!==id);saveCred();renderCredLijst();renderCredOpties();sluitConfirmModal();showToast('Verwijderd');};document.getElementById('modal-confirm').classList.add('active');}
-function sluitConfirmModal(){document.getElementById('modal-confirm').classList.remove('active');}
+function confirmDel(id) { const c = crediteuren.find(x => x.id === id); if (!c) return; document.getElementById('confirm-message').textContent = '"' + c.naam + '" verwijderen?'; document.getElementById('btn-confirm-ok').onclick = () => { crediteuren = crediteuren.filter(x => x.id !== id); saveCred(); renderCredLijst(); if (selectedCrediteurId === id) clearCrediteurSelection(); sluitConfirmModal(); showToast('Verwijderd'); }; document.getElementById('modal-confirm').classList.add('active'); }
+function sluitConfirmModal() { document.getElementById('modal-confirm').classList.remove('active'); }
 
 /* ═══════════ FACTUUR FORMULIER ═══════════ */
-function renderRegelitems(items){document.getElementById('regelitems-body').innerHTML=items.map((it,i)=>`<tr><td class="col-omschrijving"><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving" oninput="updatePreview()"></td><td class="col-aantal"><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal" oninput="updRegel(this);updatePreview()"></td><td class="col-prijs"><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs" oninput="updRegel(this);updatePreview()"></td><td class="col-bedrag">${formatBedrag(it.aantal*it.stuksprijs)}</td><td class="col-actie"><button class="btn-remove-row" onclick="rmRegel(${i})">×</button></td></tr>`).join('');}
-function getRegelitems(){return Array.from(document.querySelectorAll('#regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
-function addRegelitem(){const i=getRegelitems();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
-function rmRegel(idx){const i=getRegelitems();i.splice(idx,1);if(!i.length)i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
-function updRegel(el){const r=el.closest('tr');const a=parseFloat(r.querySelector('[data-field="aantal"]').value)||0;const p=parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0;r.querySelector('.col-bedrag').textContent=formatBedrag(a*p);}
+function renderRegelitems(items) {
+  document.getElementById('regelitems-body').innerHTML = items.map((it, i) => '<tr><td class="col-omschrijving"><input type="text" value="' + escapeHtml(it.omschrijving) + '" data-field="omschrijving" oninput="updatePreview()"></td><td class="col-aantal"><input type="number" value="' + it.aantal + '" min="0" step="1" data-field="aantal" oninput="updRegel(this);updatePreview()"></td><td class="col-prijs"><input type="number" value="' + it.stuksprijs + '" min="0" step="0.01" data-field="stuksprijs" oninput="updRegel(this);updatePreview()"></td><td class="col-bedrag">' + formatBedrag(it.aantal * it.stuksprijs) + '</td><td class="col-actie"><button class="btn-remove-row" onclick="rmRegel(' + i + ')">\u00D7</button></td></tr>').join('');
+  updateTotalsBar();
+}
+function getRegelitems() { return Array.from(document.querySelectorAll('#regelitems-body tr')).map(r => ({omschrijving: r.querySelector('[data-field="omschrijving"]').value, aantal: parseFloat(r.querySelector('[data-field="aantal"]').value) || 0, stuksprijs: parseFloat(r.querySelector('[data-field="stuksprijs"]').value) || 0})); }
+function addRegelitem() { const i = getRegelitems(); i.push({omschrijving: '', aantal: 1, stuksprijs: 0}); renderRegelitems(i); updatePreview(); }
+function rmRegel(idx) { const i = getRegelitems(); i.splice(idx, 1); if (!i.length) i.push({omschrijving: '', aantal: 1, stuksprijs: 0}); renderRegelitems(i); updatePreview(); }
+function updRegel(el) { const r = el.closest('tr'); const a = parseFloat(r.querySelector('[data-field="aantal"]').value) || 0; const p = parseFloat(r.querySelector('[data-field="stuksprijs"]').value) || 0; r.querySelector('.col-bedrag').textContent = formatBedrag(a * p); updateTotalsBar(); }
+function updateTotalsBar() {
+  const items = getRegelitems(); const btwPct = parseFloat(document.getElementById('btw-tarief').value) || 0;
+  let sub = 0; items.forEach(r => { sub += (r.aantal || 0) * (r.stuksprijs || 0); });
+  const btw = sub * btwPct, tot = sub + btw;
+  document.getElementById('totals-bar').innerHTML = '<div class="totals-bar-item"><div class="totals-bar-label">Subtotaal</div><div class="totals-bar-value">' + formatBedrag(sub) + '</div></div><div class="totals-bar-item"><div class="totals-bar-label">BTW</div><div class="totals-bar-value">' + formatBedrag(btw) + '</div></div><div class="totals-bar-item"><div class="totals-bar-label">Totaal</div><div class="totals-bar-value total">' + formatBedrag(tot) + '</div></div>';
+}
+function getDebiteurNaam() { if (selectedDebiteurId) { const d = debiteuren.find(x => x.id === selectedDebiteurId); return d ? d.naam : ''; } return document.getElementById('debiteur-search').value.trim(); }
+function getDebiteurAdres() { if (selectedDebiteurId) { const d = debiteuren.find(x => x.id === selectedDebiteurId); return d ? d.adres : ''; } return document.getElementById('debiteur-adres').value.trim(); }
+function getFactuurData() { return { crediteur: crediteuren.find(c => c.id === selectedCrediteurId) || {}, debiteurNaam: getDebiteurNaam(), debiteurAdres: getDebiteurAdres(), factuurnummer: document.getElementById('factuurnummer').value, referentie: document.getElementById('referentie').value, factuurdatum: document.getElementById('factuurdatum').value, vervaldatum: document.getElementById('vervaldatum').value, btwTarief: parseFloat(document.getElementById('btw-tarief').value), status: document.getElementById('factuur-status').value, regelitems: getRegelitems() }; }
 
-function getFactuurData(){const cId=document.getElementById('crediteur-select').value;return{crediteur:crediteuren.find(c=>c.id===cId)||{},debiteurNaam:document.getElementById('debiteur-naam').value,debiteurAdres:document.getElementById('debiteur-adres').value,factuurnummer:document.getElementById('factuurnummer').value,referentie:document.getElementById('referentie').value,factuurdatum:document.getElementById('factuurdatum').value,vervaldatum:document.getElementById('vervaldatum').value,btwTarief:parseFloat(document.getElementById('btw-tarief').value),status:document.getElementById('factuur-status').value,regelitems:getRegelitems()};}
-
-document.getElementById('factuurdatum').addEventListener('change',function(){const c=crediteuren.find(x=>x.id===document.getElementById('crediteur-select').value);if(c&&this.value)document.getElementById('vervaldatum').value=addDagen(this.value,c.betalingstermijn||30);updatePreview();});
-['debiteur-naam','debiteur-adres','factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',updatePreview);el.addEventListener('change',updatePreview);}});
-document.getElementById('crediteur-select').addEventListener('change',selectCrediteur);
+document.getElementById('factuurdatum').addEventListener('change', function() { const c = crediteuren.find(x => x.id === selectedCrediteurId); if (c && this.value) document.getElementById('vervaldatum').value = addDagen(this.value, c.betalingstermijn || 30); updatePreview(); });
+['factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status','debiteur-adres'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('input', updatePreview); el.addEventListener('change', updatePreview); } });
 
 /* ═══════════ FACTUUR RENDER ═══════════ */
-function renderFactuurHTML(data){
-  const c=data.crediteur||{},items=data.regelitems||[],btwPct=data.btwTarief||0;
-  let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});sub=Math.round(sub*100)/100;
-  const btw=Math.round(sub*btwPct*100)/100,tot=Math.round((sub+btw)*100)/100;
-  const btwL=btwPct===0.21?'21%':btwPct===0.09?'9%':'0%';
-  const badge=data.status==='betaald'?'<span class="fa4-badge-betaald">BETAALD</span>':'';
-  const det=[c.kvk?'KvK: '+escapeHtml(c.kvk):'',c.btw?'BTW: '+escapeHtml(c.btw):'',c.email?escapeHtml(c.email):''].filter(Boolean).join(' | ');
-  return `<div class="fa4-header"><div class="fa4-header-left">${c.logo?`<img class="fa4-logo" src="${c.logo}">`:''}<div class="fa4-crediteur-naam">${escapeHtml(c.naam)||'Crediteur'}</div><div class="fa4-crediteur-adres">${escapeHtml(c.adres)||''}</div>${det?`<div class="fa4-crediteur-detail">${det}</div>`:''}</div><div class="fa4-header-right"><div class="fa4-title">FACTUUR ${badge}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ${escapeHtml(data.factuurnummer)||'—'}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ${formatDatum(data.factuurdatum)||'—'}</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ${formatDatum(data.vervaldatum)||'—'}</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">${escapeHtml(data.debiteurNaam)||'Debiteur'}\n${escapeHtml(data.debiteurAdres)||''}\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">${data.referentie?'Referentie: '+escapeHtml(data.referentie):''}</div><div class="fa4-meta-line">Betalingstermijn: ${c.betalingstermijn||30} dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>${items.map(r=>{const b=(r.aantal||0)*(r.stuksprijs||0);return`<tr><td>${escapeHtml(r.omschrijving)||'—'}</td><td style="text-align:right">${r.aantal||0}</td><td style="text-align:right">${formatBedrag(r.stuksprijs||0)}</td><td style="text-align:right">${formatBedrag(b)}</td></tr>`;}).join('')}</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>${formatBedrag(sub)}</span></div><div class="fa4-totalen-rij"><span>BTW ${btwL}</span><span>${formatBedrag(btw)}</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>${formatBedrag(tot)}</span></div></div></div><div class="fa4-betaalblok" style="margin-top:40px;"><h4>Betaalinstructies</h4><p>${c.iban?'IBAN: <strong>'+escapeHtml(c.iban)+'</strong>':''}${c.naam?'<br>t.n.v. '+escapeHtml(c.naam):''}${data.factuurnummer?'<br>o.v.v. factuurnummer <strong>'+escapeHtml(data.factuurnummer)+'</strong>':''}</p></div><div class="fa4-footer">${[c.naam,c.kvk?'KvK: '+c.kvk:'',c.btw?'BTW: '+c.btw:'',c.email].filter(Boolean).join(' | ')}</div>`;
+function renderFactuurHTML(data) {
+  const c = data.crediteur || {}, items = data.regelitems || [], btwPct = data.btwTarief || 0;
+  let sub = 0; items.forEach(r => { sub += (r.aantal || 0) * (r.stuksprijs || 0); }); sub = Math.round(sub * 100) / 100;
+  const btw = Math.round(sub * btwPct * 100) / 100, tot = Math.round((sub + btw) * 100) / 100;
+  const btwL = btwPct === 0.21 ? '21%' : btwPct === 0.09 ? '9%' : '0%';
+  const badge = data.status === 'betaald' ? '<span class="fa4-badge-betaald">BETAALD</span>' : '';
+  const det = [c.kvk ? 'KvK: ' + escapeHtml(c.kvk) : '', c.btw ? 'BTW: ' + escapeHtml(c.btw) : '', c.email ? escapeHtml(c.email) : ''].filter(Boolean).join(' | ');
+  return '<div class="fa4-header"><div class="fa4-header-left">' + (c.logo ? '<img class="fa4-logo" src="' + c.logo + '">' : '') + '<div class="fa4-crediteur-naam">' + (escapeHtml(c.naam) || 'Crediteur') + '</div><div class="fa4-crediteur-adres">' + (escapeHtml(c.adres) || '') + '</div>' + (det ? '<div class="fa4-crediteur-detail">' + det + '</div>' : '') + '</div><div class="fa4-header-right"><div class="fa4-title">FACTUUR ' + badge + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ' + (escapeHtml(data.factuurnummer) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ' + (formatDatum(data.factuurdatum) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ' + (formatDatum(data.vervaldatum) || '\u2014') + '</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">' + (escapeHtml(data.debiteurNaam) || 'Debiteur') + '\n' + (escapeHtml(data.debiteurAdres) || '') + '\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">' + (data.referentie ? 'Referentie: ' + escapeHtml(data.referentie) : '') + '</div><div class="fa4-meta-line">Betalingstermijn: ' + (c.betalingstermijn || 30) + ' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>' + items.map(r => { const b = (r.aantal || 0) * (r.stuksprijs || 0); return '<tr><td>' + (escapeHtml(r.omschrijving) || '\u2014') + '</td><td style="text-align:right">' + (r.aantal || 0) + '</td><td style="text-align:right">' + formatBedrag(r.stuksprijs || 0) + '</td><td style="text-align:right">' + formatBedrag(b) + '</td></tr>'; }).join('') + '</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>' + formatBedrag(sub) + '</span></div><div class="fa4-totalen-rij"><span>BTW ' + btwL + '</span><span>' + formatBedrag(btw) + '</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>' + formatBedrag(tot) + '</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>' + formatBedrag(tot) + '</strong> over te maken op rekeningnummer <strong>' + (escapeHtml(c.iban) || 'NL00 BANK 0000 0000 00') + '</strong> t.n.v. <strong>' + (escapeHtml(c.naam) || 'Crediteur') + '</strong> onder vermelding van factuurnummer <strong>' + (escapeHtml(data.factuurnummer) || '\u2014') + '</strong>.</p></div><div class="fa4-footer">' + (escapeHtml(c.naam) || '') + (c.kvk ? ' | KvK: ' + escapeHtml(c.kvk) : '') + (c.btw ? ' | BTW: ' + escapeHtml(c.btw) : '') + '</div>';
 }
 
 /* ═══════════ PREVIEW ═══════════ */
-function updatePreview(){document.getElementById('factuur-preview').innerHTML=renderFactuurHTML(getFactuurData());scalePreview();}
-function scalePreview(){const w=document.querySelector('.preview-wrapper'),s=document.getElementById('preview-scaler'),a=document.getElementById('factuur-preview');if(!w||!a)return;const sc=w.clientWidth/794;s.style.transform=`scale(${sc})`;s.style.width='794px';w.style.height=(a.offsetHeight*sc)+'px';}
-window.addEventListener('resize',scalePreview);
+function updatePreview() { document.getElementById('factuur-preview').innerHTML = renderFactuurHTML(getFactuurData()); scalePreview(); updateTotalsBar(); }
+function scalePreview() { const w = document.querySelector('.preview-wrapper'), s = document.getElementById('preview-scaler'), a = document.getElementById('factuur-preview'); if (!w || !a) return; const sc = w.clientWidth / 794; s.style.transform = 'scale(' + sc + ')'; s.style.width = '794px'; w.style.height = (a.offsetHeight * sc) + 'px'; }
+window.addEventListener('resize', scalePreview);
 
 /* ═══════════ PDF ═══════════ */
-async function genPDF(data){
-  const ra=document.getElementById('pdf-factuur');ra.innerHTML=renderFactuurHTML(data);
-  const c=document.getElementById('pdf-render-area');c.style.left='0';c.style.opacity='0';c.style.pointerEvents='none';
-  await Promise.all(Array.from(ra.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=r;img.onerror=r;})));
-  const canvas=await html2canvas(ra,{scale:2,useCORS:true,backgroundColor:'#fff',width:794,windowWidth:794});
-  c.style.left='-9999px';c.style.opacity='';c.style.pointerEvents='';
-  const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
-  const imgData=canvas.toDataURL('image/png');const aspect=canvas.height/canvas.width;const h=210*aspect;
-  if(h<=297)pdf.addImage(imgData,'PNG',0,0,210,h);else pdf.addImage(imgData,'PNG',0,0,297/aspect,297);
+async function genPDF(data) {
+  const ra = document.getElementById('pdf-factuur'); ra.innerHTML = renderFactuurHTML(data);
+  const c = document.getElementById('pdf-render-area'); c.style.left = '0'; c.style.opacity = '0'; c.style.pointerEvents = 'none';
+  await Promise.all(Array.from(ra.querySelectorAll('img')).map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })));
+  const canvas = await html2canvas(ra, {scale: 2, useCORS: true, backgroundColor: '#fff', width: 794, windowWidth: 794});
+  c.style.left = '-9999px'; c.style.opacity = ''; c.style.pointerEvents = '';
+  const {jsPDF} = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgData = canvas.toDataURL('image/png'); const aspect = canvas.height / canvas.width; const h = 210 * aspect;
+  if (h <= 297) pdf.addImage(imgData, 'PNG', 0, 0, 210, h); else pdf.addImage(imgData, 'PNG', 0, 0, 297 / aspect, 297);
   return pdf;
 }
-async function downloadPDF(){
-  const data=getFactuurData();if(!data.factuurnummer){showToast('Vul factuurnummer in');return;}if(!data.crediteur.id){showToast('Selecteer crediteur');return;}
-  const pdf=await genPDF(data);pdf.save('Factuur-'+data.factuurnummer+'.pdf');
-  const next=incrementNr(data.factuurnummer);saveNr(next);document.getElementById('factuurnummer').value=next;
-  showToast('PDF gedownload');updatePreview();
+async function downloadPDF() {
+  const data = getFactuurData(); if (!data.factuurnummer) { showToast('Vul factuurnummer in'); return; } if (!data.crediteur.id) { showToast('Selecteer een crediteur'); return; }
+  const pdf = await genPDF(data); pdf.save('Factuur-' + data.factuurnummer + '.pdf');
+  const next = incrementNr(data.factuurnummer); saveNr(next); document.getElementById('factuurnummer').value = next;
+  showToast('PDF gedownload'); updatePreview();
 }
 
 /* ═══════════ DEMO-SET TAB ═══════════ */
-function initDemoSetTab(){
-  // Use first debiteur from list or manual
-  const d=debiteuren.length?debiteuren[0]:loadDebiteur();
-  document.getElementById('demoset-debiteur-naam').value=d?d.naam:'';
-  document.getElementById('demoset-debiteur-adres').value=d?d.adres:'';
-  document.getElementById('demoset-van').value=curMonth();
-  const now=new Date();now.setMonth(now.getMonth()+11);
-  document.getElementById('demoset-tot').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('demoset-startnr').value=loadNr();
-  const el=document.getElementById('demoset-crediteuren-lijst');
-  if(!crediteuren.length){el.innerHTML='<p style="font-size:13px;color:var(--text-light);">Geen crediteuren beschikbaar. Voeg eerst crediteuren toe.</p>';return;}
-  el.innerHTML=crediteuren.map(c=>`<div class="demoset-crediteur-item"><input type="checkbox" id="ds-${c.id}" value="${c.id}" checked><label for="ds-${c.id}">${escapeHtml(c.naam)}</label><span style="font-size:11px;color:var(--text-light);">${c.regelitems&&c.regelitems[0]?escapeHtml(c.regelitems[0].omschrijving):''}</span></div>`).join('');
+function initDemoSetTab() {
+  const d = debiteuren.length ? debiteuren[0] : loadDebiteur();
+  document.getElementById('demoset-debiteur-naam').value = d ? d.naam : '';
+  document.getElementById('demoset-debiteur-adres').value = d ? d.adres : '';
+  document.getElementById('demoset-van').value = curMonth();
+  const now = new Date(); now.setMonth(now.getMonth() + 11);
+  document.getElementById('demoset-tot').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('demoset-startnr').value = loadNr();
+  const el = document.getElementById('demoset-crediteuren-lijst');
+  if (!crediteuren.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">Geen crediteuren. Voeg eerst crediteuren toe.</p>'; return; }
+  el.innerHTML = crediteuren.map(c => '<div class="demoset-crediteur-item"><input type="checkbox" id="ds-' + c.id + '" value="' + c.id + '" checked><label for="ds-' + c.id + '">' + escapeHtml(c.naam) + '</label><span style="font-size:11px;color:var(--text-muted);">' + (c.regelitems && c.regelitems[0] ? escapeHtml(c.regelitems[0].omschrijving) : '') + '</span></div>').join('');
 }
-
-async function generateDemoSet(){
-  const debiteurNaam=document.getElementById('demoset-debiteur-naam').value;
-  const debiteurAdres=document.getElementById('demoset-debiteur-adres').value;
-  const vanStr=document.getElementById('demoset-van').value;
-  const totStr=document.getElementById('demoset-tot').value;
-  let nr=document.getElementById('demoset-startnr').value;
-  const btwTarief=parseFloat(document.getElementById('demoset-btw').value);
-  const variatie=parseFloat(document.getElementById('demoset-variatie').value);
-
-  if(!vanStr||!totStr){showToast('Vul van en tot maand in');return;}
-  if(!nr){showToast('Vul startnummer in');return;}
-
-  const selected=Array.from(document.querySelectorAll('#demoset-crediteuren-lijst input:checked')).map(el=>el.value);
-  if(!selected.length){showToast('Selecteer minimaal één crediteur');return;}
-
-  const [vanJ,vanM]=vanStr.split('-').map(Number);
-  const [totJ,totM]=totStr.split('-').map(Number);
-  const totalMonths=((totJ-vanJ)*12)+(totM-vanM)+1;
-  if(totalMonths<1||totalMonths>120){showToast('Ongeldige periode');return;}
-
-  const totalFacturen=selected.length*totalMonths;
-  const progress=document.getElementById('demoset-progress');
-  const fill=document.getElementById('demoset-progress-fill');
-  const txt=document.getElementById('demoset-progress-text');
-  const btn=document.getElementById('btn-demoset-genereer');
-
-  progress.classList.add('active');btn.disabled=true;fill.style.width='0%';
-
-  const zip=new JSZip();let count=0;
-
-  for(const credId of selected){
-    const cred=crediteuren.find(c=>c.id===credId);if(!cred)continue;
-
-    for(let i=0;i<totalMonths;i++){
-      const mIdx=(vanM-1+i)%12;
-      const jaar=vanJ+Math.floor((vanM-1+i)/12);
-      const maand=MAANDEN[mIdx];
-      const datum=`${jaar}-${String(mIdx+1).padStart(2,'0')}-01`;
-
-      const regelitems=(cred.regelitems||[]).map(r=>({
-        omschrijving:r.omschrijving?`${r.omschrijving} — ${maand} ${jaar}`:`${maand} ${jaar}`,
-        aantal:r.aantal||1,
-        stuksprijs:varyAmount(r.stuksprijs||0,variatie)
-      }));
-
-      const data={crediteur:cred,debiteurNaam,debiteurAdres,factuurnummer:nr,referentie:'',factuurdatum:datum,vervaldatum:addDagen(datum,cred.betalingstermijn||30),btwTarief,status:'open',regelitems};
-
-      count++;
-      const pct=Math.round((count/totalFacturen)*100);
-      fill.style.width=pct+'%';
-      txt.textContent=`${count}/${totalFacturen} — ${escapeHtml(cred.naam)} (${maand} ${jaar})`;
-
-      const pdf=await genPDF(data);
-      const blob=pdf.output('arraybuffer');
-      zip.file(`${cred.naam.replace(/[^a-zA-Z0-9 ]/g,'')}/Factuur-${nr}.pdf`,blob);
-
-      nr=incrementNr(nr);
-      await new Promise(r=>setTimeout(r,100));
+async function generateDemoSet() {
+  const debiteurNaam = document.getElementById('demoset-debiteur-naam').value, debiteurAdres = document.getElementById('demoset-debiteur-adres').value;
+  const vanStr = document.getElementById('demoset-van').value, totStr = document.getElementById('demoset-tot').value;
+  let nr = document.getElementById('demoset-startnr').value;
+  const btwTarief = parseFloat(document.getElementById('demoset-btw').value), variatie = parseFloat(document.getElementById('demoset-variatie').value);
+  if (!vanStr || !totStr) { showToast('Vul van en tot maand in'); return; } if (!nr) { showToast('Vul startnummer in'); return; }
+  const selected = Array.from(document.querySelectorAll('#demoset-crediteuren-lijst input:checked')).map(el => el.value);
+  if (!selected.length) { showToast('Selecteer minimaal \u00E9\u00E9n crediteur'); return; }
+  const [vanJ, vanM] = vanStr.split('-').map(Number), [totJ, totM] = totStr.split('-').map(Number);
+  const totalMonths = ((totJ - vanJ) * 12) + (totM - vanM) + 1;
+  if (totalMonths < 1 || totalMonths > 120) { showToast('Ongeldige periode'); return; }
+  const totalFacturen = selected.length * totalMonths;
+  const progress = document.getElementById('demoset-progress'), fill = document.getElementById('demoset-progress-fill'), txt = document.getElementById('demoset-progress-text'), btn = document.getElementById('btn-demoset-genereer');
+  progress.classList.add('active'); btn.disabled = true; fill.style.width = '0%';
+  const zip = new JSZip(); let count = 0;
+  for (const credId of selected) { const cred = crediteuren.find(c => c.id === credId); if (!cred) continue;
+    for (let i = 0; i < totalMonths; i++) { const mIdx = (vanM - 1 + i) % 12; const jaar = vanJ + Math.floor((vanM - 1 + i) / 12); const maand = MAANDEN[mIdx]; const datum = jaar + '-' + String(mIdx + 1).padStart(2, '0') + '-01';
+      const regelitems = (cred.regelitems || []).map(r => ({omschrijving: r.omschrijving ? r.omschrijving + ' \u2014 ' + maand + ' ' + jaar : maand + ' ' + jaar, aantal: r.aantal || 1, stuksprijs: varyAmount(r.stuksprijs || 0, variatie)}));
+      const data = {crediteur: cred, debiteurNaam, debiteurAdres, factuurnummer: nr, referentie: '', factuurdatum: datum, vervaldatum: addDagen(datum, cred.betalingstermijn || 30), btwTarief, status: 'open', regelitems};
+      count++; fill.style.width = Math.round((count / totalFacturen) * 100) + '%'; txt.textContent = count + '/' + totalFacturen + ' \u2014 ' + cred.naam + ' (' + maand + ' ' + jaar + ')';
+      const pdf = await genPDF(data); zip.file(cred.naam.replace(/[^a-zA-Z0-9 ]/g, '') + '/Factuur-' + nr + '.pdf', pdf.output('arraybuffer'));
+      nr = incrementNr(nr); await new Promise(r => setTimeout(r, 80));
     }
   }
-
-  saveNr(nr);document.getElementById('factuurnummer').value=nr;
-
-  txt.textContent=`ZIP genereren...`;
-  const content=await zip.generateAsync({type:'blob'});
-  const url=URL.createObjectURL(content);
-  const a=document.createElement('a');a.href=url;a.download=`Demo-facturen-${vanStr}-tot-${totStr}.zip`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-
-  txt.textContent=`✓ Klaar! ${totalFacturen} facturen in ZIP gedownload.`;
-  btn.disabled=false;
-  showToast(`${totalFacturen} facturen als ZIP gedownload`);
+  saveNr(nr); document.getElementById('factuurnummer').value = nr; txt.textContent = 'ZIP genereren...';
+  const content = await zip.generateAsync({type: 'blob'}); const url = URL.createObjectURL(content);
+  const a = document.createElement('a'); a.href = url; a.download = 'Demo-facturen-' + vanStr + '-tot-' + totStr + '.zip'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  txt.textContent = '\u2713 ' + totalFacturen + ' facturen gedownload.'; btn.disabled = false; showToast(totalFacturen + ' facturen als ZIP gedownload');
 }
 
 /* ═══════════ INSTELLINGEN ═══════════ */
-function updateInstellingen(){
-  const info=document.getElementById('inst-debiteur-info');
-  if(debiteuren.length){info.textContent=`${debiteuren.length} debiteur(en) opgeslagen: ${debiteuren.map(d=>d.naam).join(', ')}`;}
-  else{info.textContent='Geen debiteuren opgeslagen.';}
-}
-
-function exportAlles(){
-  const data={crediteuren,debiteuren,factuurnummer:loadNr(),logoGallery:loadLogoGallery()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='demo-facturen-backup.json';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  showToast('Backup geëxporteerd');
-}
-
-function importAlles(event){
-  const file=event.target.files[0];if(!file)return;event.target.value='';
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const data=JSON.parse(e.target.result);
-      if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();renderCredOpties();}
-      if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();renderDebOpties();}
-      else if(data.debiteur){debiteuren=[{id:genId(),naam:data.debiteur.naam,adres:data.debiteur.adres}];saveDebs();renderDebOpties();}
-      if(data.logoGallery){saveLogoGallery(data.logoGallery);renderLogoGalleryOverview();}
-      if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}
-      showToast('Backup geïmporteerd');updateInstellingen();
-    }catch(err){showToast('Ongeldig JSON-bestand');}
-  };reader.readAsText(file);
-}
-
-function confirmWisAlles(){
-  document.getElementById('confirm-message').textContent='ALLES wissen? Dit verwijdert alle crediteuren, debiteuren en instellingen.';
-  document.getElementById('btn-confirm-ok').onclick=()=>{
-    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);localStorage.removeItem(LS_DEBS);localStorage.removeItem(LS_LOGOS);
-    crediteuren=[];debiteuren=[];renderCredLijst();renderCredOpties();renderDebOpties();renderLogoGalleryOverview();
-    document.getElementById('factuurnummer').value=loadNr();
-    document.getElementById('crediteur-selected-card').innerHTML='';
-    document.getElementById('debiteur-selected-card').innerHTML='';
-    sluitConfirmModal();showToast('Alles gewist');updateInstellingen();
-  };
-  document.getElementById('modal-confirm').classList.add('active');
-}
+function updateInstellingen() { const info = document.getElementById('inst-debiteur-info'); if (debiteuren.length) { info.textContent = debiteuren.length + ' debiteur(en): ' + debiteuren.map(d => d.naam).join(', '); } else { info.textContent = 'Geen debiteuren opgeslagen.'; } }
+function exportAlles() { const data = {crediteuren, debiteuren, factuurnummer: loadNr(), logoGallery: loadLogoGallery()}; const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'demo-facturen-backup.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Backup ge\u00EBxporteerd'); }
+function importAlles(event) { const file = event.target.files[0]; if (!file) return; event.target.value = ''; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (data.crediteuren) { crediteuren = data.crediteuren; saveCred(); renderCredLijst(); } if (data.debiteuren) { debiteuren = data.debiteuren; saveDebs(); } else if (data.debiteur) { debiteuren = [{id: genId(), naam: data.debiteur.naam, adres: data.debiteur.adres}]; saveDebs(); } if (data.logoGallery) { saveLogoGallery(data.logoGallery); renderLogoGalleryOverview(); } if (data.factuurnummer) { saveNr(data.factuurnummer); document.getElementById('factuurnummer').value = data.factuurnummer; } showToast('Backup ge\u00EFmporteerd'); updateInstellingen(); } catch(err) { showToast('Ongeldig JSON-bestand'); } }; reader.readAsText(file); }
+function confirmWisAlles() { document.getElementById('confirm-message').textContent = 'ALLES wissen? Dit verwijdert alle data.'; document.getElementById('btn-confirm-ok').onclick = () => { localStorage.removeItem(LS_CRED); localStorage.removeItem(LS_NR); localStorage.removeItem(LS_DEB); localStorage.removeItem(LS_DEBS); localStorage.removeItem(LS_LOGOS); crediteuren = []; debiteuren = []; selectedCrediteurId = ''; selectedDebiteurId = ''; renderCredLijst(); renderLogoGalleryOverview(); document.getElementById('factuurnummer').value = loadNr(); document.getElementById('crediteur-selected-card').innerHTML = ''; document.getElementById('debiteur-selected-card').innerHTML = ''; crediteurCombo.clear(); debiteurCombo.clear(); sluitConfirmModal(); showToast('Alles gewist'); updateInstellingen(); }; document.getElementById('modal-confirm').classList.add('active'); }
 
 /* ═══════════ INIT ═══════════ */
-function init(){
-  loadCred();loadDebs();renderCredLijst();renderCredOpties();renderDebOpties();renderLogoGalleryOverview();
-  document.getElementById('factuurnummer').value=loadNr();
-  document.getElementById('factuurdatum').value=todayStr();
-  prefillDebiteur();
-  renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);
-  updatePreview();
+function init() {
+  loadCred(); loadDebs(); setupCrediteurCombo(); setupDebiteurCombo();
+  renderCredLijst(); renderLogoGalleryOverview();
+  document.getElementById('factuurnummer').value = loadNr();
+  document.getElementById('factuurdatum').value = todayStr();
+  prefillDebiteur(); renderRegelitems([{omschrijving: '', aantal: 1, stuksprijs: 0}]); updatePreview();
 }
 init();
 </script>
