@@ -526,7 +526,19 @@ function incrementNr(nr){const m=nr.match(/^(.*?)(\d+)$/);if(m)return m[1]+Strin
 function varyAmount(base,pct){if(!pct)return base;const factor=1+(Math.random()*2-1)*pct;return Math.round(base*factor*100)/100;}
 
 /* ═══════════ STORAGE ═══════════ */
-function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(LS_CRED))||[];}catch{crediteuren=[];}}
+function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(LS_CRED))||[];}catch{crediteuren=[];}autoMatchLogos();}
+function autoMatchLogos(){
+  if(typeof DEMO_LOGOS==='undefined'||!crediteuren.length)return;
+  const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
+  let changed=false;
+  crediteuren.forEach(c=>{
+    if(c.logo)return;
+    for(const[key,match] of Object.entries(logoMap)){
+      if(c.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){c.logo=DEMO_LOGOS[key];changed=true;break;}
+    }
+  });
+  if(changed)saveCred();
+}
 function saveCred(){localStorage.setItem(LS_CRED,JSON.stringify(crediteuren));}
 function loadDebs(){try{debiteuren=JSON.parse(localStorage.getItem(LS_DEBS))||[];} catch{debiteuren=[];}
   // Migrate old single debiteur
