@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="logo-data.js"></script>
   <style>
     :root {
       --primary: #005FAA;
@@ -698,10 +699,19 @@ function loadVoorbeeldCrediteuren(){
     {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte maand',aantal:1,stuksprijs:4850},{omschrijving:'Servicekosten maand',aantal:1,stuksprijs:650}]},
     {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering kwartaal',aantal:1,stuksprijs:385}]}
   ];
+  // Logo matching map: key in DEMO_LOGOS -> partial crediteur name match
+  const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie b.v',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
   let added=0;
   voorbeelden.forEach(v=>{
     if(crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase()))return;
-    crediteuren.push({...v,id:genId(),logo:''});added++;
+    // Find matching logo
+    let logo='';
+    if(typeof DEMO_LOGOS!=='undefined'){
+      for(const[key,match] of Object.entries(logoMap)){
+        if(v.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){logo=DEMO_LOGOS[key];break;}
+      }
+    }
+    crediteuren.push({...v,id:genId(),logo});added++;
   });
   if(added){saveCred();renderCredLijst();renderCredOpties();showToast(`${added} voorbeeldcrediteuren toegevoegd`);}
   else{showToast('Voorbeeldcrediteuren bestaan al');}
