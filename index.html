@@ -233,6 +233,22 @@
     .debiteur-manual-toggle:hover { text-decoration: underline; }
     .debiteur-fields { display: none; margin-top: 10px; }
     .debiteur-fields.visible { display: block; }
+
+    /* Logo gallery */
+    .logo-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 4px; }
+    .logo-gallery-item { width: 100%; aspect-ratio: 1; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 6px; background: white; transition: all 0.2s; position: relative; }
+    .logo-gallery-item:hover { border-color: var(--primary); box-shadow: var(--shadow); }
+    .logo-gallery-item.selected { border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange); }
+    .logo-gallery-item img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .logo-gallery-item .logo-delete { position: absolute; top: 2px; right: 2px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; line-height: 1; cursor: pointer; display: none; align-items: center; justify-content: center; }
+    .logo-gallery-item:hover .logo-delete { display: flex; }
+    .logo-gallery-label { font-size: 10px; color: var(--text-light); text-align: center; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logo-bulk-upload { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); margin-bottom: 16px; }
+    .logo-bulk-upload:hover { border-color: var(--primary); background: var(--accent); }
+    .logo-bulk-upload.dragover { border-color: var(--green); background: #dcfce7; }
+    .logo-bulk-upload p { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+    .logo-bulk-upload .upload-title { font-family: 'Roboto'; font-weight: 700; font-size: 13px; color: var(--text-dark); }
+    .logo-or-gallery { font-size: 11px; color: var(--text-light); margin: 8px 0; text-align: center; }
   </style>
 </head>
 <body>
@@ -335,7 +351,9 @@
       <button class="btn btn-primary" onclick="openCrediteurModal()">+ Nieuwe crediteur</button>
       <button class="btn btn-success" onclick="document.getElementById('excel-file-input').click()">📊 Import Excel</button>
       <button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button>
+      <button class="btn btn-outline" onclick="document.getElementById('logo-bulk-input').click()">🖼️ Logo's uploaden</button>
       <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelUpload(event)">
+      <input type="file" id="logo-bulk-input" accept="image/png,image/jpeg,image/svg+xml" multiple style="display:none" onchange="handleBulkLogoUpload(event)">
     </div>
   </div>
   <div class="excel-upload-area" id="excel-drop-area" onclick="document.getElementById('excel-file-input').click()">
@@ -343,6 +361,11 @@
     <div class="upload-title">Sleep een Excel-bestand hierheen of klik om te uploaden</div>
     <p>Verwachte kolommen: Naam, Adres, KvK, BTW, IBAN, Email, Betalingstermijn</p>
   </div>
+  <div class="logo-bulk-upload" id="logo-drop-area" onclick="document.getElementById('logo-bulk-input').click()">
+    <div class="upload-title">🖼️ Sleep logo's hierheen of klik om meerdere te uploaden</div>
+    <p>PNG, JPG of SVG. Bestandsnaam wordt automatisch gematched aan crediteur.</p>
+  </div>
+  <div id="logo-gallery-overview" style="margin-bottom:20px;"></div>
   <div class="import-result" id="import-result"></div>
   <div class="crediteuren-grid" id="crediteuren-grid"></div>
 </div>
@@ -434,9 +457,11 @@
         <div style="flex:0 0 160px;">
           <label style="display:block;font-size:12px;font-weight:600;color:var(--text-light);margin-bottom:4px;">Logo</label>
           <div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()">
-            <img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om logo te uploaden</p>
-            <input type="file" id="cred-logo-input" accept="image/png,image/jpeg" onchange="handleLogoUpload(event)">
+            <img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om te uploaden</p>
+            <input type="file" id="cred-logo-input" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)">
           </div>
+          <div class="logo-or-gallery">— of kies uit galerij —</div>
+          <div class="logo-gallery" id="cred-logo-gallery"></div>
         </div>
       </div>
       <div class="form-row">
@@ -715,9 +740,78 @@ function openCrediteurModal(id){
     renderCredRegels([{omschrijving:'',aantal:1,stuksprijs:0}]);
   }
   modal.classList.add('active');
+  renderCredLogoGallery();
 }
 function sluitCrediteurModal(){document.getElementById('modal-crediteur').classList.remove('active');}
-function handleLogoUpload(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){showToast('Max 2 MB');return;}const r=new FileReader();r.onload=ev=>{currentLogoBase64=ev.target.result;document.getElementById('cred-logo-preview').src=ev.target.result;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';};r.readAsDataURL(f);}
+function handleLogoUpload(e){const f=e.target.files[0];if(!f)return;if(f.size>2*1024*1024){showToast('Max 2 MB');return;}const r=new FileReader();r.onload=ev=>{currentLogoBase64=ev.target.result;document.getElementById('cred-logo-preview').src=ev.target.result;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';addToGallery(f.name,ev.target.result);};r.readAsDataURL(f);}
+
+/* ═══════════ LOGO GALERIJ ═══════════ */
+const LS_LOGOS = 'df_logo_gallery';
+function loadLogoGallery(){try{return JSON.parse(localStorage.getItem(LS_LOGOS))||[];}catch{return[];}}
+function saveLogoGallery(g){localStorage.setItem(LS_LOGOS,JSON.stringify(g));}
+function addToGallery(name,data){
+  const gallery=loadLogoGallery();
+  const cleanName=name.replace(/\.(png|jpg|jpeg|svg)$/i,'').toLowerCase();
+  if(gallery.find(g=>g.name===cleanName))return; // already exists
+  gallery.push({name:cleanName,data});
+  saveLogoGallery(gallery);
+}
+function handleBulkLogoUpload(e){
+  const files=Array.from(e.target.files);if(!files.length)return;e.target.value='';
+  let added=0,matched=0;
+  const gallery=loadLogoGallery();
+  let remaining=files.length;
+  files.forEach(f=>{
+    if(f.size>2*1024*1024)return remaining--;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const cleanName=f.name.replace(/\.(png|jpg|jpeg|svg)$/i,'').toLowerCase();
+      if(!gallery.find(g=>g.name===cleanName)){gallery.push({name:cleanName,data:ev.target.result});added++;}
+      // Try auto-match to crediteur
+      const match=crediteuren.find(c=>c.naam.toLowerCase().includes(cleanName)||cleanName.includes(c.naam.toLowerCase().split(' ')[0]));
+      if(match&&!match.logo){match.logo=ev.target.result;matched++;}
+      remaining--;
+      if(remaining<=0){
+        saveLogoGallery(gallery);if(matched)saveCred();
+        renderCredLijst();renderLogoGalleryOverview();
+        showToast(`${added} logo's toegevoegd${matched?' ('+matched+' automatisch gekoppeld)':''}`);
+      }
+    };reader.readAsDataURL(f);
+  });
+}
+function renderLogoGalleryOverview(){
+  const el=document.getElementById('logo-gallery-overview');
+  const gallery=loadLogoGallery();
+  if(!gallery.length){el.innerHTML='';return;}
+  el.innerHTML=`<h3 style="font-family:'Roboto';font-size:12px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Logo galerij (${gallery.length})</h3><div class="logo-gallery">${gallery.map((g,i)=>`<div><div class="logo-gallery-item" title="${escapeHtml(g.name)}"><img src="${g.data}"><button class="logo-delete" onclick="event.stopPropagation();deleteGalleryLogo(${i})">×</button></div><div class="logo-gallery-label">${escapeHtml(g.name)}</div></div>`).join('')}</div>`;
+}
+function deleteGalleryLogo(idx){
+  const gallery=loadLogoGallery();gallery.splice(idx,1);saveLogoGallery(gallery);renderLogoGalleryOverview();
+}
+function renderCredLogoGallery(){
+  const el=document.getElementById('cred-logo-gallery');
+  const gallery=loadLogoGallery();
+  if(!gallery.length){el.innerHTML='<p style="font-size:11px;color:var(--text-light);">Nog geen logo\'s in galerij</p>';return;}
+  el.innerHTML=gallery.map((g,i)=>`<div class="logo-gallery-item${currentLogoBase64===g.data?' selected':''}" onclick="selectGalleryLogo(${i})" title="${escapeHtml(g.name)}"><img src="${g.data}"></div>`).join('');
+}
+function selectGalleryLogo(idx){
+  const gallery=loadLogoGallery();const g=gallery[idx];if(!g)return;
+  currentLogoBase64=g.data;
+  document.getElementById('cred-logo-preview').src=g.data;
+  document.getElementById('cred-logo-preview').style.display='block';
+  document.getElementById('cred-logo-text').style.display='none';
+  renderCredLogoGallery();
+}
+
+// Logo drop area
+const logoDropArea=document.getElementById('logo-drop-area');
+['dragenter','dragover'].forEach(e=>{logoDropArea.addEventListener(e,ev=>{ev.preventDefault();logoDropArea.classList.add('dragover');});});
+['dragleave','drop'].forEach(e=>{logoDropArea.addEventListener(e,ev=>{ev.preventDefault();logoDropArea.classList.remove('dragover');});});
+logoDropArea.addEventListener('drop',e=>{
+  const files=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+  if(files.length){const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));document.getElementById('logo-bulk-input').files=dt.files;handleBulkLogoUpload({target:document.getElementById('logo-bulk-input')});}
+});
+
 function renderCredRegels(items){document.getElementById('cred-regelitems-body').innerHTML=items.map((it,i)=>`<tr><td><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving"></td><td><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal"></td><td><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs"></td><td><button class="btn-remove-row" onclick="rmCredRegel(${i})">×</button></td></tr>`).join('');}
 function getCredRegels(){return Array.from(document.querySelectorAll('#cred-regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
 function addCredRegelitem(){const i=getCredRegels();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderCredRegels(i);}
@@ -879,7 +973,7 @@ function updateInstellingen(){
 }
 
 function exportAlles(){
-  const data={crediteuren,debiteuren,factuurnummer:loadNr()};
+  const data={crediteuren,debiteuren,factuurnummer:loadNr(),logoGallery:loadLogoGallery()};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='demo-facturen-backup.json';
@@ -896,6 +990,7 @@ function importAlles(event){
       if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();renderCredOpties();}
       if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();renderDebOpties();}
       else if(data.debiteur){debiteuren=[{id:genId(),naam:data.debiteur.naam,adres:data.debiteur.adres}];saveDebs();renderDebOpties();}
+      if(data.logoGallery){saveLogoGallery(data.logoGallery);renderLogoGalleryOverview();}
       if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}
       showToast('Backup geïmporteerd');updateInstellingen();
     }catch(err){showToast('Ongeldig JSON-bestand');}
@@ -905,8 +1000,8 @@ function importAlles(event){
 function confirmWisAlles(){
   document.getElementById('confirm-message').textContent='ALLES wissen? Dit verwijdert alle crediteuren, debiteuren en instellingen.';
   document.getElementById('btn-confirm-ok').onclick=()=>{
-    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);localStorage.removeItem(LS_DEBS);
-    crediteuren=[];debiteuren=[];renderCredLijst();renderCredOpties();renderDebOpties();
+    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);localStorage.removeItem(LS_DEBS);localStorage.removeItem(LS_LOGOS);
+    crediteuren=[];debiteuren=[];renderCredLijst();renderCredOpties();renderDebOpties();renderLogoGalleryOverview();
     document.getElementById('factuurnummer').value=loadNr();
     document.getElementById('crediteur-selected-card').innerHTML='';
     document.getElementById('debiteur-selected-card').innerHTML='';
@@ -917,7 +1012,7 @@ function confirmWisAlles(){
 
 /* ═══════════ INIT ═══════════ */
 function init(){
-  loadCred();loadDebs();renderCredLijst();renderCredOpties();renderDebOpties();
+  loadCred();loadDebs();renderCredLijst();renderCredOpties();renderDebOpties();renderLogoGalleryOverview();
   document.getElementById('factuurnummer').value=loadNr();
   document.getElementById('factuurdatum').value=todayStr();
   prefillDebiteur();
