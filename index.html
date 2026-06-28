@@ -290,7 +290,7 @@
       <div class="form-section">
         <h3>Factuurgegevens</h3>
         <div class="form-row">
-          <div class="form-group"><label>Factuurnummer</label><input type="text" id="factuurnummer"></div>
+          <div class="form-group"><label>Factuurnummer</label><div class="select-with-btn"><input type="text" id="factuurnummer"><button class="btn btn-outline btn-add" onclick="randomFactuurnr()" title="Genereer willekeurig nummer">🎲</button></div></div>
           <div class="form-group"><label>Referentie</label><input type="text" id="referentie" placeholder="PO-0001"></div>
         </div>
         <div class="form-row">
@@ -637,13 +637,41 @@ function buildColMap(h){const l=h.map(x=>x.toLowerCase().trim());return{naam:fc(
 function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h[i];}for(const t of terms){let i=l.findIndex(x=>x.includes(t));if(i>=0)return h[i];}return'__';}
 
 /* ═══════════ VOORBEELD CREDITEUREN ═══════════ */
+function randomFactuurnr(){
+  const prefixes=['FV','INV','F','RK','FAC'];
+  const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];
+  const nr=String(Math.floor(Math.random()*900000)+100000);
+  const val=prefix+'-'+new Date().getFullYear()+'-'+nr;
+  document.getElementById('factuurnummer').value=val;
+  saveNr(val);updatePreview();
+}
+
 function loadVoorbeeldCrediteuren(){
   const voorbeelden=[
-    {naam:'Schoonmaakbedrijf De Blinker B.V.',adres:'Industrieweg 42\n3542 AD Utrecht',kvk:'56781234',btw:'NL856781234B01',iban:'NL91 ABNA 0417 1643 00',email:'info@deblinker.nl',betalingstermijn:30,regelitems:[{omschrijving:'Schoonmaakdiensten kantoor',aantal:1,stuksprijs:875}]},
-    {naam:'Koffieleverancier Barista B.V.',adres:'Koffielaan 7\n1012 AB Amsterdam',kvk:'34567890',btw:'NL834567890B01',iban:'NL20 INGB 0001 2345 67',email:'orders@barista.nl',betalingstermijn:14,regelitems:[{omschrijving:'Koffiebonen & supplies',aantal:1,stuksprijs:245.50}]},
-    {naam:'ICT Solutions Nederland',adres:'Databoulevard 15\n5611 KE Eindhoven',kvk:'78901234',btw:'NL878901234B01',iban:'NL44 RABO 0123 4567 89',email:'facturatie@ictsolutions.nl',betalingstermijn:30,regelitems:[{omschrijving:'Managed IT services',aantal:1,stuksprijs:1850},{omschrijving:'Licenties Microsoft 365',aantal:25,stuksprijs:12.50}]},
-    {naam:'Kantoormeubelen Van Dijk',adres:'Meubelstraat 88\n2511 CK Den Haag',kvk:'45678901',btw:'NL845678901B01',iban:'NL55 ABNA 0987 6543 21',email:'verkoop@vandijkmeubelen.nl',betalingstermijn:60,regelitems:[{omschrijving:'Ergonomische bureaustoel',aantal:2,stuksprijs:449},{omschrijving:'Zit-sta bureau',aantal:1,stuksprijs:789}]},
-    {naam:'Lease Plan Nederland N.V.',adres:'Postbus 1085\n1300 BB Almere',kvk:'12345678',btw:'NL812345678B01',iban:'NL33 INGB 0000 0012 34',email:'facturen@leaseplan.nl',betalingstermijn:14,regelitems:[{omschrijving:'Operationele autolease',aantal:1,stuksprijs:695}]}
+    {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Laptop Acer TravelMate P4',aantal:3,stuksprijs:899},{omschrijving:'Monitor Acer B247Y 24"',aantal:5,stuksprijs:219}]},
+    {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS Online licentie',aantal:25,stuksprijs:45},{omschrijving:'Consultancy uren',aantal:8,stuksprijs:175}]},
+    {naam:'Alsach Musik GmbH',adres:'Industriestraße 12\n77694 Kehl, Duitsland',kvk:'',btw:'DE287456123',iban:'DE89 3704 0044 0532 0130 00',email:'invoices@alsach-musik.de',betalingstermijn:30,regelitems:[{omschrijving:'Audio equipment conference room',aantal:1,stuksprijs:2450},{omschrijving:'Installatiekosten',aantal:1,stuksprijs:350}]},
+    {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'Aanslag vennootschapsbelasting',aantal:1,stuksprijs:12500}]},
+    {naam:'Bidfood B.V.',adres:'Marconiweg 2\n4131 PD Vianen',kvk:'30025786',btw:'NL001248462B01',iban:'NL62 ABNA 0457 2345 67',email:'klantenservice@bidfood.nl',betalingstermijn:14,regelitems:[{omschrijving:'Koffie en thee supplies',aantal:1,stuksprijs:189.50},{omschrijving:'Vergaderbroodjes assortiment',aantal:4,stuksprijs:67.50},{omschrijving:'Fruit mand kantoor',aantal:4,stuksprijs:32}]},
+    {naam:'Centraal Bureau voor de Statistiek',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@cbs.nl',betalingstermijn:30,regelitems:[{omschrijving:'Datalevering marktonderzoek',aantal:1,stuksprijs:1750}]},
+    {naam:'Crossroad Media',adres:'Koningin Julianaplein 10\n2595 AA Den Haag',kvk:'62345891',btw:'NL854678123B01',iban:'NL29 RABO 0312 4567 89',email:'billing@crossroadmedia.nl',betalingstermijn:14,regelitems:[{omschrijving:'Online advertentiecampagne',aantal:1,stuksprijs:2200},{omschrijving:'Social media management',aantal:1,stuksprijs:850}]},
+    {naam:'Dell Computer B.V.',adres:'Transformatorweg 38-72\n1014 AK Amsterdam',kvk:'34128796',btw:'NL812345678B01',iban:'NL90 ABNA 0512 3456 78',email:'invoices@dell.com',betalingstermijn:30,regelitems:[{omschrijving:'Dell OptiPlex 7090 desktop',aantal:10,stuksprijs:1149},{omschrijving:'Dell UltraSharp U2722D monitor',aantal:10,stuksprijs:489},{omschrijving:'Docking station WD19S',aantal:10,stuksprijs:219}]},
+    {naam:'ENECO Energie Services B.V.',adres:'Marten Meesweg 5\n3068 AV Rotterdam',kvk:'24352857',btw:'NL808912345B01',iban:'NL22 INGB 0000 1234 56',email:'facturen@eneco.nl',betalingstermijn:14,regelitems:[{omschrijving:'Elektriciteit maandtermijn',aantal:1,stuksprijs:1450},{omschrijving:'Gas maandtermijn',aantal:1,stuksprijs:680}]},
+    {naam:'EnYoi Holding B.V.',adres:'Stationsplein 45\n3013 AK Rotterdam',kvk:'71234567',btw:'NL862345678B01',iban:'NL45 RABO 0198 7654 32',email:'administratie@enyoi.nl',betalingstermijn:30,regelitems:[{omschrijving:'Detachering software developer',aantal:160,stuksprijs:95}]},
+    {naam:'EnYoi ICT Services B.V.',adres:'Stationsplein 45\n3013 AK Rotterdam',kvk:'71234568',btw:'NL862345679B01',iban:'NL46 RABO 0198 7654 33',email:'facturatie@enyoi-ict.nl',betalingstermijn:30,regelitems:[{omschrijving:'Managed hosting pakket',aantal:1,stuksprijs:1250},{omschrijving:'Support & onderhoud SLA',aantal:1,stuksprijs:750}]},
+    {naam:'ICT Groothandel Midden-Nederland',adres:'Ravenswade 54\n3439 LD Nieuwegein',kvk:'30234567',btw:'NL820345678B01',iban:'NL67 ABNA 0456 7890 12',email:'orders@ictgroothandel.nl',betalingstermijn:14,regelitems:[{omschrijving:'Cat6 UTP kabel 305m',aantal:2,stuksprijs:189},{omschrijving:'HP Tonercartridge 26X',aantal:10,stuksprijs:89},{omschrijving:'USB-C hub 7-in-1',aantal:20,stuksprijs:45}]},
+    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Glasvezel Internet 1Gbit',aantal:1,stuksprijs:189},{omschrijving:'Mobiele abonnementen',aantal:15,stuksprijs:35},{omschrijving:'Vast bellen onbeperkt',aantal:1,stuksprijs:49}]},
+    {naam:'Manutan B.V.',adres:'Zonnebaan 34\n3542 EG Utrecht',kvk:'30145678',btw:'NL818234567B01',iban:'NL88 RABO 0345 6789 01',email:'facturatie@manutan.nl',betalingstermijn:30,regelitems:[{omschrijving:'Magazijnstellingen set',aantal:2,stuksprijs:895},{omschrijving:'Orderpick karren',aantal:3,stuksprijs:349}]},
+    {naam:'Mollie B.V.',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'30204462',btw:'NL815024002B01',iban:'NL45 ABNA 0000 1234 56',email:'invoices@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Transactiekosten betaalverkeer',aantal:1,stuksprijs:487.30},{omschrijving:'Payment terminal huur',aantal:2,stuksprijs:25}]},
+    {naam:'OfficeWorks',adres:'Kanaalweg 18\n3526 KL Utrecht',kvk:'56234891',btw:'NL853456789B01',iban:'NL12 INGB 0678 9012 34',email:'info@officeworks.nl',betalingstermijn:30,regelitems:[{omschrijving:'Printpapier A4 (10 dozen)',aantal:10,stuksprijs:42},{omschrijving:'Inktcartridges assortiment',aantal:1,stuksprijs:289},{omschrijving:'Kantoorartikelen kwartaal',aantal:1,stuksprijs:156}]},
+    {naam:'Primera Strijp',adres:'Strijpsestraat 72\n5616 GR Eindhoven',kvk:'17456789',btw:'NL824567890B01',iban:'NL34 RABO 0234 5678 90',email:'strijp@primera.nl',betalingstermijn:14,regelitems:[{omschrijving:'Postzegels en verzendkosten',aantal:1,stuksprijs:87.50},{omschrijving:'Cadeaukaarten relaties',aantal:5,stuksprijs:50}]},
+    {naam:'RESTAURANT LA DÉLICE',adres:'Markt 23\n5611 EB Eindhoven',kvk:'67891234',btw:'NL867891234B01',iban:'NL56 ABNA 0567 8901 23',email:'info@ladelice.nl',betalingstermijn:14,regelitems:[{omschrijving:'Zakendiner 8 personen',aantal:1,stuksprijs:576},{omschrijving:'Catering vergadering',aantal:2,stuksprijs:245}]},
+    {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Samsung Galaxy S24 Ultra',aantal:5,stuksprijs:1349},{omschrijving:'Samsung 65" Business Display',aantal:2,stuksprijs:1899}]},
+    {naam:'Securitas Beveiliging B.V.',adres:'Databankweg 26\n3821 AL Amersfoort',kvk:'30070025',btw:'NL801234567B01',iban:'NL23 RABO 0145 6789 01',email:'facturatie@securitas.nl',betalingstermijn:30,regelitems:[{omschrijving:'Bewakingsdiensten maand',aantal:1,stuksprijs:3450},{omschrijving:'Alarmopvolging',aantal:1,stuksprijs:195}]},
+    {naam:'Stichting Mollie Payments',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'34170985',btw:'NL822345678B01',iban:'NL55 ABNA 0001 2345 67',email:'stichting@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Donatie verwerkingskosten',aantal:1,stuksprijs:125}]},
+    {naam:'Tankstation Heuthorst B.V.',adres:'Europaweg 4\n5700 AC Helmond',kvk:'17890123',btw:'NL817890123B01',iban:'NL78 INGB 0234 5678 90',email:'administratie@heuthorst.nl',betalingstermijn:14,regelitems:[{omschrijving:'Brandstof Euro95 (wagenpark)',aantal:1,stuksprijs:1245},{omschrijving:'AdBlue vulling',aantal:1,stuksprijs:67}]},
+    {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte maand',aantal:1,stuksprijs:4850},{omschrijving:'Servicekosten maand',aantal:1,stuksprijs:650}]},
+    {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering kwartaal',aantal:1,stuksprijs:385}]}
   ];
   let added=0;
   voorbeelden.forEach(v=>{
