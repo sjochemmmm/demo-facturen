@@ -700,10 +700,9 @@ function loadVoorbeeldCrediteuren(){
     {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering kwartaal',aantal:1,stuksprijs:385}]}
   ];
   // Logo matching map: key in DEMO_LOGOS -> partial crediteur name match
-  const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie b.v',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
-  let added=0;
+  const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
+  let added=0,updated=0;
   voorbeelden.forEach(v=>{
-    if(crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase()))return;
     // Find matching logo
     let logo='';
     if(typeof DEMO_LOGOS!=='undefined'){
@@ -711,9 +710,23 @@ function loadVoorbeeldCrediteuren(){
         if(v.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){logo=DEMO_LOGOS[key];break;}
       }
     }
+    const existing=crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase());
+    if(existing){
+      if(!existing.logo&&logo){existing.logo=logo;updated++;}
+      return;
+    }
     crediteuren.push({...v,id:genId(),logo});added++;
   });
-  if(added){saveCred();renderCredLijst();renderCredOpties();showToast(`${added} voorbeeldcrediteuren toegevoegd`);}
+  // Also try to match logos for any crediteur without one
+  if(typeof DEMO_LOGOS!=='undefined'){
+    crediteuren.forEach(c=>{
+      if(c.logo)return;
+      for(const[key,match] of Object.entries(logoMap)){
+        if(c.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){c.logo=DEMO_LOGOS[key];updated++;break;}
+      }
+    });
+  }
+  if(added||updated){saveCred();renderCredLijst();renderCredOpties();showToast(`${added?added+' crediteuren toegevoegd':''}${added&&updated?', ':''}${updated?updated+' logo\'s bijgewerkt':''}`);}
   else{showToast('Voorbeeldcrediteuren bestaan al');}
 }
 
