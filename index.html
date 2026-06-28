@@ -211,6 +211,28 @@
     /* Debiteur saved indicator */
     .saved-debiteur { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--accent); border-radius: 6px; margin-bottom: 10px; font-size: 12px; }
     .saved-debiteur .remove-saved { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; }
+
+    /* Selector with add button */
+    .select-with-btn { display: flex; gap: 6px; align-items: stretch; }
+    .select-with-btn select { flex: 1; }
+    .select-with-btn .btn-add { flex-shrink: 0; padding: 8px 12px; font-size: 16px; line-height: 1; border-radius: 6px; }
+
+    /* Selected entity card */
+    .selected-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--accent); border: 1.5px solid var(--primary-light); border-radius: 8px; margin-top: 10px; }
+    .selected-card .sc-logo { width: 40px; height: 40px; border-radius: 6px; object-fit: contain; background: white; padding: 3px; flex-shrink: 0; }
+    .selected-card .sc-logo.placeholder { display: flex; align-items: center; justify-content: center; font-size: 18px; background: white; }
+    .selected-card .sc-info { flex: 1; min-width: 0; }
+    .selected-card .sc-naam { font-family: 'Roboto'; font-size: 13px; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .selected-card .sc-detail { font-size: 11px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .selected-card .sc-clear { background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; }
+    .selected-card .sc-clear:hover { background: white; color: var(--danger); }
+
+    /* Debiteur select dropdown */
+    .debiteur-select-area { margin-bottom: 10px; }
+    .debiteur-manual-toggle { font-size: 12px; color: var(--primary); cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
+    .debiteur-manual-toggle:hover { text-decoration: underline; }
+    .debiteur-fields { display: none; margin-top: 10px; }
+    .debiteur-fields.visible { display: block; }
   </style>
 </head>
 <body>
@@ -230,25 +252,39 @@
   <div class="factuur-layout">
     <div class="form-panel">
       <div class="form-section">
-        <h3>Crediteur</h3>
+        <h3>Crediteur (afzender factuur)</h3>
         <div class="form-group">
           <label>Selecteer crediteur</label>
-          <select id="crediteur-select"><option value="">— Kies een crediteur —</option></select>
+          <div class="select-with-btn">
+            <select id="crediteur-select"><option value="">— Kies een crediteur —</option></select>
+            <button class="btn btn-primary btn-add" onclick="openCrediteurModal()" title="Nieuwe crediteur toevoegen">+</button>
+          </div>
         </div>
+        <div id="crediteur-selected-card"></div>
       </div>
 
       <div class="form-section">
-        <h3>Debiteur</h3>
-        <div id="saved-debiteur-indicator"></div>
-        <div class="form-group">
-          <label>Naam</label>
-          <input type="text" id="debiteur-naam" placeholder="Bedrijfsnaam debiteur">
+        <h3>Debiteur (ontvanger factuur)</h3>
+        <div class="debiteur-select-area">
+          <div class="form-group">
+            <label>Selecteer debiteur</label>
+            <div class="select-with-btn">
+              <select id="debiteur-select"><option value="">— Kies een debiteur —</option></select>
+              <button class="btn btn-primary btn-add" onclick="openDebiteurModal()" title="Nieuwe debiteur toevoegen">+</button>
+            </div>
+          </div>
+          <div id="debiteur-selected-card"></div>
         </div>
-        <div class="form-group">
-          <label>Adres</label>
-          <textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
+        <div class="debiteur-fields" id="debiteur-fields">
+          <div class="form-group">
+            <label>Naam</label>
+            <input type="text" id="debiteur-naam" placeholder="Bedrijfsnaam debiteur">
+          </div>
+          <div class="form-group">
+            <label>Adres</label>
+            <textarea id="debiteur-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea>
+          </div>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="saveDebiteur()">💾 Debiteur onthouden</button>
       </div>
 
       <div class="form-section">
@@ -362,9 +398,8 @@
 
   <div class="form-panel" style="max-width:600px;">
     <div class="form-section">
-      <h3>Opgeslagen debiteur</h3>
+      <h3>Opgeslagen debiteuren</h3>
       <p id="inst-debiteur-info" style="font-size:13px;margin-bottom:8px;"></p>
-      <button class="btn btn-outline btn-sm" onclick="clearDebiteur()">Debiteur wissen</button>
     </div>
 
     <div class="form-section">
@@ -421,6 +456,19 @@
   </div>
 </div>
 
+<!-- ═══ MODAL: DEBITEUR ═══ -->
+<div class="modal-overlay" id="modal-debiteur">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header"><h2 id="modal-debiteur-titel">Nieuwe debiteur</h2><button class="modal-close" onclick="sluitDebiteurModal()">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="debiteur-edit-id">
+      <div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="deb-naam" placeholder="Bedrijfsnaam B.V."></div>
+      <div class="form-group"><label>Adres</label><textarea id="deb-adres" rows="3" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="sluitDebiteurModal()">Annuleren</button><button class="btn btn-orange" onclick="saveDebiteurModal()">Opslaan</button></div>
+  </div>
+</div>
+
 <!-- ═══ CONFIRM MODAL ═══ -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;">
@@ -436,8 +484,8 @@
 <script>
 /* ═══════════ STATE ═══════════ */
 const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-const LS_CRED = 'df_crediteuren', LS_NR = 'df_factuurnummer', LS_DEB = 'df_debiteur';
-let crediteuren = [], currentLogoBase64 = '';
+const LS_CRED = 'df_crediteuren', LS_NR = 'df_factuurnummer', LS_DEB = 'df_debiteur', LS_DEBS = 'df_debiteuren';
+let crediteuren = [], debiteuren = [], currentLogoBase64 = '';
 
 /* ═══════════ UTILS ═══════════ */
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
@@ -454,6 +502,11 @@ function varyAmount(base,pct){if(!pct)return base;const factor=1+(Math.random()*
 /* ═══════════ STORAGE ═══════════ */
 function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(LS_CRED))||[];}catch{crediteuren=[];}}
 function saveCred(){localStorage.setItem(LS_CRED,JSON.stringify(crediteuren));}
+function loadDebs(){try{debiteuren=JSON.parse(localStorage.getItem(LS_DEBS))||[];} catch{debiteuren=[];}
+  // Migrate old single debiteur
+  if(!debiteuren.length){try{const old=JSON.parse(localStorage.getItem(LS_DEB));if(old&&old.naam){debiteuren.push({id:genId(),naam:old.naam,adres:old.adres||''});saveDebs();}}catch{}}
+}
+function saveDebs(){localStorage.setItem(LS_DEBS,JSON.stringify(debiteuren));}
 function loadNr(){return localStorage.getItem(LS_NR)||(new Date().getFullYear()+'001');}
 function saveNr(n){localStorage.setItem(LS_NR,n);}
 function loadDebiteur(){try{return JSON.parse(localStorage.getItem(LS_DEB))||null;}catch{return null;}}
@@ -469,26 +522,87 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click'
   if(btn.dataset.tab==='instellingen')updateInstellingen();
 });});
 
-/* ═══════════ DEBITEUR OPSLAAN ═══════════ */
+/* ═══════════ DEBITEUR BEHEER ═══════════ */
+function renderDebOpties(){
+  const s=document.getElementById('debiteur-select');if(!s)return;
+  const v=s.value;
+  s.innerHTML='<option value="">— Kies een debiteur —</option>'+debiteuren.map(d=>`<option value="${d.id}">${escapeHtml(d.naam)}</option>`).join('');
+  s.value=v;
+}
+function openDebiteurModal(id){
+  const modal=document.getElementById('modal-debiteur');
+  if(id){const d=debiteuren.find(x=>x.id===id);if(!d)return;
+    document.getElementById('modal-debiteur-titel').textContent='Debiteur bewerken';
+    document.getElementById('debiteur-edit-id').value=d.id;
+    document.getElementById('deb-naam').value=d.naam||'';
+    document.getElementById('deb-adres').value=d.adres||'';
+  }else{
+    document.getElementById('modal-debiteur-titel').textContent='Nieuwe debiteur';
+    document.getElementById('debiteur-edit-id').value='';
+    document.getElementById('deb-naam').value='';
+    document.getElementById('deb-adres').value='';
+  }
+  modal.classList.add('active');
+}
+function sluitDebiteurModal(){document.getElementById('modal-debiteur').classList.remove('active');}
+function saveDebiteurModal(){
+  const naam=document.getElementById('deb-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
+  const id=document.getElementById('debiteur-edit-id').value;
+  const d={id:id||genId(),naam,adres:document.getElementById('deb-adres').value.trim()};
+  if(id){const idx=debiteuren.findIndex(x=>x.id===id);if(idx>=0)debiteuren[idx]=d;}else{debiteuren.push(d);}
+  saveDebs();renderDebOpties();sluitDebiteurModal();showToast('Debiteur opgeslagen');
+  // Auto-select the new/edited debiteur
+  document.getElementById('debiteur-select').value=d.id;
+  selectDebiteur();
+}
+function selectDebiteur(){
+  const id=document.getElementById('debiteur-select').value;
+  const card=document.getElementById('debiteur-selected-card');
+  if(!id){card.innerHTML='';document.getElementById('debiteur-naam').value='';document.getElementById('debiteur-adres').value='';updatePreview();return;}
+  const d=debiteuren.find(x=>x.id===id);if(!d){card.innerHTML='';return;}
+  document.getElementById('debiteur-naam').value=d.naam;
+  document.getElementById('debiteur-adres').value=d.adres||'';
+  card.innerHTML=`<div class="selected-card"><div class="sc-logo placeholder">🏛️</div><div class="sc-info"><div class="sc-naam">${escapeHtml(d.naam)}</div><div class="sc-detail">${escapeHtml(d.adres?d.adres.split('\n')[0]:'Geen adres')}</div></div><button class="sc-clear" onclick="document.getElementById('debiteur-select').value='';selectDebiteur();" title="Deselecteren">×</button></div>`;
+  updatePreview();
+}
+document.getElementById('debiteur-select').addEventListener('change',selectDebiteur);
+
 function saveDebiteur(){
   const n=document.getElementById('debiteur-naam').value.trim();
   const a=document.getElementById('debiteur-adres').value.trim();
   if(!n){showToast('Vul eerst een debiteur naam in');return;}
+  // Save as new debiteur in list if not exists
+  const existing=debiteuren.find(d=>d.naam.toLowerCase()===n.toLowerCase());
+  if(!existing){debiteuren.push({id:genId(),naam:n,adres:a});saveDebs();renderDebOpties();}
   saveDebiteurData({naam:n,adres:a});
   showToast('Debiteur opgeslagen');
-  renderSavedDebiteur();
 }
-function clearDebiteur(){localStorage.removeItem(LS_DEB);showToast('Debiteur gewist');renderSavedDebiteur();updateInstellingen();}
-function renderSavedDebiteur(){
-  const el=document.getElementById('saved-debiteur-indicator');
-  const d=loadDebiteur();
-  if(d){el.innerHTML=`<div class="saved-debiteur">💾 <strong>${escapeHtml(d.naam)}</strong> — ${escapeHtml(d.adres||'geen adres')} <button class="remove-saved" onclick="clearDebiteur()">×</button></div>`;}
-  else{el.innerHTML='';}
-}
+function clearDebiteur(){localStorage.removeItem(LS_DEB);showToast('Debiteur gewist');updateInstellingen();}
+function renderSavedDebiteur(){}
 function prefillDebiteur(){
   const d=loadDebiteur();if(!d)return;
   document.getElementById('debiteur-naam').value=d.naam||'';
   document.getElementById('debiteur-adres').value=d.adres||'';
+  // Select matching debiteur in dropdown
+  const match=debiteuren.find(x=>x.naam.toLowerCase()===(d.naam||'').toLowerCase());
+  if(match){document.getElementById('debiteur-select').value=match.id;selectDebiteur();}
+}
+
+/* ═══════════ CREDITEUR SELECTIE MET CARD ═══════════ */
+function selectCrediteur(){
+  const id=document.getElementById('crediteur-select').value;
+  const card=document.getElementById('crediteur-selected-card');
+  if(!id){card.innerHTML='';updatePreview();return;}
+  const c=crediteuren.find(x=>x.id===id);if(!c){card.innerHTML='';return;}
+  // Show selected card
+  card.innerHTML=`<div class="selected-card">${c.logo?`<img class="sc-logo" src="${c.logo}">`:'<div class="sc-logo placeholder">🏢</div>'}<div class="sc-info"><div class="sc-naam">${escapeHtml(c.naam)}</div><div class="sc-detail">${escapeHtml(c.email||c.kvk||c.adres?c.adres.split('\n')[0]:'')}</div></div><button class="sc-clear" onclick="document.getElementById('crediteur-select').value='';selectCrediteur();" title="Deselecteren">×</button></div>`;
+  // Fill vervaldatum
+  const d=document.getElementById('factuurdatum').value;
+  if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);
+  // Fill regelitems
+  const items=(c.regelitems||[]).map(r=>({...r}));
+  if(!items.length)items.push({omschrijving:'',aantal:1,stuksprijs:0});
+  renderRegelitems(items);updatePreview();
 }
 
 /* ═══════════ EXCEL IMPORT ═══════════ */
@@ -547,11 +661,10 @@ function renderCredLijst(){
   g.innerHTML=crediteuren.map(c=>`<div class="crediteur-card">${c.logo?`<img class="crediteur-card-logo" src="${c.logo}">`:'<div class="crediteur-card-logo placeholder">🏢</div>'}<div class="crediteur-card-info"><h4>${escapeHtml(c.naam)}</h4><p>${escapeHtml(c.email||c.kvk||'—')}</p></div><div class="crediteur-card-actions"><button class="btn btn-outline btn-sm" onclick="openCrediteurModal('${c.id}')">✏️</button><button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="confirmDel('${c.id}')">🗑</button></div></div>`).join('');
 }
 function renderCredOpties(){
-  [document.getElementById('crediteur-select'),document.getElementById('reeks-crediteur')].forEach(s=>{
-    if(!s)return;const v=s.value;
-    s.innerHTML='<option value="">— Kies een crediteur —</option>'+crediteuren.map(c=>`<option value="${c.id}">${escapeHtml(c.naam)}</option>`).join('');
-    s.value=v;
-  });
+  const s=document.getElementById('crediteur-select');if(!s)return;
+  const v=s.value;
+  s.innerHTML='<option value="">— Kies een crediteur —</option>'+crediteuren.map(c=>`<option value="${c.id}">${escapeHtml(c.naam)}</option>`).join('');
+  s.value=v;
 }
 function openCrediteurModal(id){
   const modal=document.getElementById('modal-crediteur');currentLogoBase64='';
@@ -587,20 +700,13 @@ function saveCrediteur(){
   const d={id:id||genId(),naam,adres:document.getElementById('cred-adres').value.trim(),kvk:document.getElementById('cred-kvk').value.trim(),btw:document.getElementById('cred-btw').value.trim(),iban:document.getElementById('cred-iban').value.trim(),email:document.getElementById('cred-email').value.trim(),betalingstermijn:parseInt(document.getElementById('cred-termijn').value)||30,logo:currentLogoBase64,regelitems:getCredRegels()};
   if(id){const idx=crediteuren.findIndex(c=>c.id===id);if(idx>=0)crediteuren[idx]=d;}else{crediteuren.push(d);}
   saveCred();renderCredLijst();renderCredOpties();sluitCrediteurModal();showToast('Crediteur opgeslagen');
+  // Auto-select if just created
+  if(!id){document.getElementById('crediteur-select').value=d.id;selectCrediteur();}
 }
 function confirmDel(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;document.getElementById('confirm-message').textContent=`"${c.naam}" verwijderen?`;document.getElementById('btn-confirm-ok').onclick=()=>{crediteuren=crediteuren.filter(x=>x.id!==id);saveCred();renderCredLijst();renderCredOpties();sluitConfirmModal();showToast('Verwijderd');};document.getElementById('modal-confirm').classList.add('active');}
 function sluitConfirmModal(){document.getElementById('modal-confirm').classList.remove('active');}
 
 /* ═══════════ FACTUUR FORMULIER ═══════════ */
-function selectCrediteur(){
-  const id=document.getElementById('crediteur-select').value;if(!id)return;
-  const c=crediteuren.find(x=>x.id===id);if(!c)return;
-  const d=document.getElementById('factuurdatum').value;
-  if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);
-  const items=(c.regelitems||[]).map(r=>({...r}));
-  if(!items.length)items.push({omschrijving:'',aantal:1,stuksprijs:0});
-  renderRegelitems(items);updatePreview();
-}
 function renderRegelitems(items){document.getElementById('regelitems-body').innerHTML=items.map((it,i)=>`<tr><td class="col-omschrijving"><input type="text" value="${escapeHtml(it.omschrijving)}" data-field="omschrijving" oninput="updatePreview()"></td><td class="col-aantal"><input type="number" value="${it.aantal}" min="0" step="1" data-field="aantal" oninput="updRegel(this);updatePreview()"></td><td class="col-prijs"><input type="number" value="${it.stuksprijs}" min="0" step="0.01" data-field="stuksprijs" oninput="updRegel(this);updatePreview()"></td><td class="col-bedrag">${formatBedrag(it.aantal*it.stuksprijs)}</td><td class="col-actie"><button class="btn-remove-row" onclick="rmRegel(${i})">×</button></td></tr>`).join('');}
 function getRegelitems(){return Array.from(document.querySelectorAll('#regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
 function addRegelitem(){const i=getRegelitems();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
@@ -610,7 +716,7 @@ function updRegel(el){const r=el.closest('tr');const a=parseFloat(r.querySelecto
 function getFactuurData(){const cId=document.getElementById('crediteur-select').value;return{crediteur:crediteuren.find(c=>c.id===cId)||{},debiteurNaam:document.getElementById('debiteur-naam').value,debiteurAdres:document.getElementById('debiteur-adres').value,factuurnummer:document.getElementById('factuurnummer').value,referentie:document.getElementById('referentie').value,factuurdatum:document.getElementById('factuurdatum').value,vervaldatum:document.getElementById('vervaldatum').value,btwTarief:parseFloat(document.getElementById('btw-tarief').value),status:document.getElementById('factuur-status').value,regelitems:getRegelitems()};}
 
 document.getElementById('factuurdatum').addEventListener('change',function(){const c=crediteuren.find(x=>x.id===document.getElementById('crediteur-select').value);if(c&&this.value)document.getElementById('vervaldatum').value=addDagen(this.value,c.betalingstermijn||30);updatePreview();});
-['crediteur-select','debiteur-naam','debiteur-adres','factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',updatePreview);el.addEventListener('change',updatePreview);});
+['debiteur-naam','debiteur-adres','factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',updatePreview);el.addEventListener('change',updatePreview);}});
 document.getElementById('crediteur-select').addEventListener('change',selectCrediteur);
 
 /* ═══════════ FACTUUR RENDER ═══════════ */
@@ -650,15 +756,14 @@ async function downloadPDF(){
 
 /* ═══════════ DEMO-SET TAB ═══════════ */
 function initDemoSetTab(){
-  const d=loadDebiteur();
+  // Use first debiteur from list or manual
+  const d=debiteuren.length?debiteuren[0]:loadDebiteur();
   document.getElementById('demoset-debiteur-naam').value=d?d.naam:'';
   document.getElementById('demoset-debiteur-adres').value=d?d.adres:'';
   document.getElementById('demoset-van').value=curMonth();
-  // default "tot" = 11 maanden later
   const now=new Date();now.setMonth(now.getMonth()+11);
   document.getElementById('demoset-tot').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   document.getElementById('demoset-startnr').value=loadNr();
-  // Render crediteur checkboxes
   const el=document.getElementById('demoset-crediteuren-lijst');
   if(!crediteuren.length){el.innerHTML='<p style="font-size:13px;color:var(--text-light);">Geen crediteuren beschikbaar. Voeg eerst crediteuren toe.</p>';return;}
   el.innerHTML=crediteuren.map(c=>`<div class="demoset-crediteur-item"><input type="checkbox" id="ds-${c.id}" value="${c.id}" checked><label for="ds-${c.id}">${escapeHtml(c.naam)}</label><span style="font-size:11px;color:var(--text-light);">${c.regelitems&&c.regelitems[0]?escapeHtml(c.regelitems[0].omschrijving):''}</span></div>`).join('');
@@ -679,7 +784,6 @@ async function generateDemoSet(){
   const selected=Array.from(document.querySelectorAll('#demoset-crediteuren-lijst input:checked')).map(el=>el.value);
   if(!selected.length){showToast('Selecteer minimaal één crediteur');return;}
 
-  // Calculate months
   const [vanJ,vanM]=vanStr.split('-').map(Number);
   const [totJ,totM]=totStr.split('-').map(Number);
   const totalMonths=((totJ-vanJ)*12)+(totM-vanM)+1;
@@ -741,12 +845,13 @@ async function generateDemoSet(){
 
 /* ═══════════ INSTELLINGEN ═══════════ */
 function updateInstellingen(){
-  const d=loadDebiteur();
-  document.getElementById('inst-debiteur-info').textContent=d?`Opgeslagen: ${d.naam} — ${d.adres||'(geen adres)'}`:'Geen debiteur opgeslagen.';
+  const info=document.getElementById('inst-debiteur-info');
+  if(debiteuren.length){info.textContent=`${debiteuren.length} debiteur(en) opgeslagen: ${debiteuren.map(d=>d.naam).join(', ')}`;}
+  else{info.textContent='Geen debiteuren opgeslagen.';}
 }
 
 function exportAlles(){
-  const data={crediteuren,debiteur:loadDebiteur(),factuurnummer:loadNr()};
+  const data={crediteuren,debiteuren,factuurnummer:loadNr()};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='demo-facturen-backup.json';
@@ -761,7 +866,8 @@ function importAlles(event){
     try{
       const data=JSON.parse(e.target.result);
       if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();renderCredOpties();}
-      if(data.debiteur){saveDebiteurData(data.debiteur);prefillDebiteur();renderSavedDebiteur();}
+      if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();renderDebOpties();}
+      else if(data.debiteur){debiteuren=[{id:genId(),naam:data.debiteur.naam,adres:data.debiteur.adres}];saveDebs();renderDebOpties();}
       if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}
       showToast('Backup geïmporteerd');updateInstellingen();
     }catch(err){showToast('Ongeldig JSON-bestand');}
@@ -769,11 +875,13 @@ function importAlles(event){
 }
 
 function confirmWisAlles(){
-  document.getElementById('confirm-message').textContent='ALLES wissen? Dit verwijdert alle crediteuren, debiteur en instellingen.';
+  document.getElementById('confirm-message').textContent='ALLES wissen? Dit verwijdert alle crediteuren, debiteuren en instellingen.';
   document.getElementById('btn-confirm-ok').onclick=()=>{
-    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);
-    crediteuren=[];renderCredLijst();renderCredOpties();renderSavedDebiteur();
+    localStorage.removeItem(LS_CRED);localStorage.removeItem(LS_NR);localStorage.removeItem(LS_DEB);localStorage.removeItem(LS_DEBS);
+    crediteuren=[];debiteuren=[];renderCredLijst();renderCredOpties();renderDebOpties();
     document.getElementById('factuurnummer').value=loadNr();
+    document.getElementById('crediteur-selected-card').innerHTML='';
+    document.getElementById('debiteur-selected-card').innerHTML='';
     sluitConfirmModal();showToast('Alles gewist');updateInstellingen();
   };
   document.getElementById('modal-confirm').classList.add('active');
@@ -781,10 +889,10 @@ function confirmWisAlles(){
 
 /* ═══════════ INIT ═══════════ */
 function init(){
-  loadCred();renderCredLijst();renderCredOpties();
+  loadCred();loadDebs();renderCredLijst();renderCredOpties();renderDebOpties();
   document.getElementById('factuurnummer').value=loadNr();
   document.getElementById('factuurdatum').value=todayStr();
-  prefillDebiteur();renderSavedDebiteur();
+  prefillDebiteur();
   renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);
   updatePreview();
 }
