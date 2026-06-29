@@ -996,6 +996,14 @@ function setFactuurType(type) {
   } else {
     document.getElementById('crediteur-section-title').textContent = 'Uw bedrijf (afzender)';
     document.getElementById('debiteur-section-title').textContent = 'Klant (ontvanger)';
+    // Auto-select EnYoi ICT Services B.V. als verkoper
+    const enyoi = crediteuren.find(c => c.naam.toLowerCase().includes('enyoi ict services'));
+    if (enyoi) {
+      selectedCrediteurId = enyoi.id;
+      crediteurCombo.setInput(enyoi.naam);
+      renderCrediteurCard();
+      applyCredData(enyoi);
+    }
   }
   updatePreview();
 }
