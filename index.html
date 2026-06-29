@@ -210,6 +210,23 @@
     .artikel-chip .chip-price { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
     .artikel-chip .chip-icon { font-size: 13px; }
 
+    /* ═══ TYPE TOGGLE ═══ */
+    .type-toggle { display: flex; background: var(--bg); border-radius: var(--radius); padding: 3px; gap: 2px; margin-bottom: 16px; }
+    .type-toggle-btn {
+      flex: 1; padding: 10px 16px; border: none; background: none;
+      font-family: 'Inter'; font-size: 13px; font-weight: 600; color: var(--text-secondary);
+      cursor: pointer; border-radius: var(--radius-sm); transition: var(--transition); text-align: center;
+    }
+    .type-toggle-btn:hover { color: var(--text); }
+    .type-toggle-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
+    .type-toggle-btn .toggle-icon { margin-right: 6px; }
+
+    /* ═══ BANKMUTATIE ═══ */
+    .download-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .download-option { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.9); }
+    .download-option input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+    .download-option label { cursor: pointer; font-weight: 500; }
+
     /* ═══ DOWNLOAD BUTTON ═══ */
     .download-section { background: var(--primary); margin: 0 -24px -0px; padding: 18px 24px; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
     .download-section .btn { background: white; color: var(--primary); font-weight: 700; font-size: 14px; padding: 12px; }
@@ -375,8 +392,16 @@
   <div class="factuur-layout">
     <div class="form-panel">
       <div class="form-panel-inner">
+        <div class="type-toggle">
+          <button class="type-toggle-btn active" data-type="inkoop" onclick="setFactuurType('inkoop')">
+            <span class="toggle-icon">📥</span>Inkoopfactuur
+          </button>
+          <button class="type-toggle-btn" data-type="verkoop" onclick="setFactuurType('verkoop')">
+            <span class="toggle-icon">📤</span>Verkoopfactuur
+          </button>
+        </div>
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">🏢</div><h3>Crediteur (afzender)</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">🏢</div><h3 id="crediteur-section-title">Crediteur (afzender)</h3></div>
           <div class="form-group">
             <div class="combobox" id="crediteur-combobox">
               <div class="combobox-input-wrap">
@@ -391,7 +416,7 @@
         </div>
 
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">📋</div><h3>Debiteur (ontvanger)</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">📋</div><h3 id="debiteur-section-title">Debiteur (ontvanger)</h3></div>
           <div class="form-group">
             <div class="combobox" id="debiteur-combobox">
               <div class="combobox-input-wrap">
@@ -441,6 +466,12 @@
         </div>
       </div>
       <div class="download-section">
+        <div class="download-options">
+          <div class="download-option">
+            <input type="checkbox" id="gen-bankmutatie" checked>
+            <label for="gen-bankmutatie">🏦 Genereer ook bankmutatie (MT940)</label>
+          </div>
+        </div>
         <button class="btn btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
       </div>
     </div>
@@ -514,6 +545,17 @@
         <div class="form-section-header"><div class="form-section-icon">🏢</div><h3>Crediteuren (selecteer)</h3></div>
         <div id="demoset-crediteuren-lijst"></div>
         <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Elke crediteur genereert facturen voor elke maand in de periode.</p>
+      </div>
+      <div class="form-section">
+        <div class="form-section-header"><div class="form-section-icon">⚙️</div><h3>Opties</h3></div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="demoset-bankmutatie" checked style="width:auto;accent-color:var(--primary);">
+          <label for="demoset-bankmutatie" style="margin-bottom:0;font-size:13px;cursor:pointer;">🏦 Bankmutaties (MT940) meegenereren in ZIP</label>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="demoset-verkoop" style="width:auto;accent-color:var(--primary);">
+          <label for="demoset-verkoop" style="margin-bottom:0;font-size:13px;cursor:pointer;">📤 Genereer als verkoopfacturen (i.p.v. inkoop)</label>
+        </div>
       </div>
       <div class="reeks-progress" id="demoset-progress">
         <div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div>
@@ -620,6 +662,7 @@ const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augus
 const LS_CRED = 'df_crediteuren', LS_NR = 'df_factuurnummer', LS_DEB = 'df_debiteur', LS_DEBS = 'df_debiteuren';
 let crediteuren = [], debiteuren = [], currentLogoBase64 = '';
 let selectedCrediteurId = '', selectedDebiteurId = '';
+let factuurType = 'inkoop'; // 'inkoop' of 'verkoop'
 
 /* ═══════════ UTILS ═══════════ */
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
@@ -941,7 +984,21 @@ function updateTotalsBar() {
 }
 function getDebiteurNaam() { if (selectedDebiteurId) { const d = debiteuren.find(x => x.id === selectedDebiteurId); return d ? d.naam : ''; } return document.getElementById('debiteur-search').value.trim(); }
 function getDebiteurAdres() { if (selectedDebiteurId) { const d = debiteuren.find(x => x.id === selectedDebiteurId); return d ? d.adres : ''; } return document.getElementById('debiteur-adres').value.trim(); }
-function getFactuurData() { return { crediteur: crediteuren.find(c => c.id === selectedCrediteurId) || {}, debiteurNaam: getDebiteurNaam(), debiteurAdres: getDebiteurAdres(), factuurnummer: document.getElementById('factuurnummer').value, referentie: document.getElementById('referentie').value, factuurdatum: document.getElementById('factuurdatum').value, vervaldatum: document.getElementById('vervaldatum').value, btwTarief: parseFloat(document.getElementById('btw-tarief').value), status: document.getElementById('factuur-status').value, regelitems: getRegelitems() }; }
+function getFactuurData() { return { crediteur: crediteuren.find(c => c.id === selectedCrediteurId) || {}, debiteurNaam: getDebiteurNaam(), debiteurAdres: getDebiteurAdres(), factuurnummer: document.getElementById('factuurnummer').value, referentie: document.getElementById('referentie').value, factuurdatum: document.getElementById('factuurdatum').value, vervaldatum: document.getElementById('vervaldatum').value, btwTarief: parseFloat(document.getElementById('btw-tarief').value), status: document.getElementById('factuur-status').value, regelitems: getRegelitems(), type: factuurType }; }
+
+/* ═══════════ FACTUUR TYPE ═══════════ */
+function setFactuurType(type) {
+  factuurType = type;
+  document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  if (type === 'inkoop') {
+    document.getElementById('crediteur-section-title').textContent = 'Crediteur (afzender)';
+    document.getElementById('debiteur-section-title').textContent = 'Debiteur (ontvanger)';
+  } else {
+    document.getElementById('crediteur-section-title').textContent = 'Uw bedrijf (afzender)';
+    document.getElementById('debiteur-section-title').textContent = 'Klant (ontvanger)';
+  }
+  updatePreview();
+}
 
 document.getElementById('factuurdatum').addEventListener('change', function() { const c = crediteuren.find(x => x.id === selectedCrediteurId); if (c && this.value) document.getElementById('vervaldatum').value = addDagen(this.value, c.betalingstermijn || 30); updatePreview(); });
 ['factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status','debiteur-adres'].forEach(id => { const el = document.getElementById(id); if (el) { el.addEventListener('input', updatePreview); el.addEventListener('change', updatePreview); } });
@@ -953,8 +1010,9 @@ function renderFactuurHTML(data) {
   const btw = Math.round(sub * btwPct * 100) / 100, tot = Math.round((sub + btw) * 100) / 100;
   const btwL = btwPct === 0.21 ? '21%' : btwPct === 0.09 ? '9%' : '0%';
   const badge = data.status === 'betaald' ? '<span class="fa4-badge-betaald">BETAALD</span>' : '';
+  const typeLabel = (data.type === 'verkoop') ? 'VERKOOPFACTUUR' : 'FACTUUR';
   const det = [c.kvk ? 'KvK: ' + escapeHtml(c.kvk) : '', c.btw ? 'BTW: ' + escapeHtml(c.btw) : '', c.email ? escapeHtml(c.email) : ''].filter(Boolean).join(' | ');
-  return '<div class="fa4-header"><div class="fa4-header-left">' + (c.logo ? '<img class="fa4-logo" src="' + c.logo + '">' : '') + '<div class="fa4-crediteur-naam">' + (escapeHtml(c.naam) || 'Crediteur') + '</div><div class="fa4-crediteur-adres">' + (escapeHtml(c.adres) || '') + '</div>' + (det ? '<div class="fa4-crediteur-detail">' + det + '</div>' : '') + '</div><div class="fa4-header-right"><div class="fa4-title">FACTUUR ' + badge + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ' + (escapeHtml(data.factuurnummer) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ' + (formatDatum(data.factuurdatum) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ' + (formatDatum(data.vervaldatum) || '\u2014') + '</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">' + (escapeHtml(data.debiteurNaam) || 'Debiteur') + '\n' + (escapeHtml(data.debiteurAdres) || '') + '\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">' + (data.referentie ? 'Referentie: ' + escapeHtml(data.referentie) : '') + '</div><div class="fa4-meta-line">Betalingstermijn: ' + (c.betalingstermijn || 30) + ' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>' + items.map(r => { const b = (r.aantal || 0) * (r.stuksprijs || 0); return '<tr><td>' + (escapeHtml(r.omschrijving) || '\u2014') + '</td><td style="text-align:right">' + (r.aantal || 0) + '</td><td style="text-align:right">' + formatBedrag(r.stuksprijs || 0) + '</td><td style="text-align:right">' + formatBedrag(b) + '</td></tr>'; }).join('') + '</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>' + formatBedrag(sub) + '</span></div><div class="fa4-totalen-rij"><span>BTW ' + btwL + '</span><span>' + formatBedrag(btw) + '</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>' + formatBedrag(tot) + '</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>' + formatBedrag(tot) + '</strong> over te maken op rekeningnummer <strong>' + (escapeHtml(c.iban) || 'NL00 BANK 0000 0000 00') + '</strong> t.n.v. <strong>' + (escapeHtml(c.naam) || 'Crediteur') + '</strong> onder vermelding van factuurnummer <strong>' + (escapeHtml(data.factuurnummer) || '\u2014') + '</strong>.</p></div><div class="fa4-footer">' + (escapeHtml(c.naam) || '') + (c.kvk ? ' | KvK: ' + escapeHtml(c.kvk) : '') + (c.btw ? ' | BTW: ' + escapeHtml(c.btw) : '') + '</div>';
+  return '<div class="fa4-header"><div class="fa4-header-left">' + (c.logo ? '<img class="fa4-logo" src="' + c.logo + '">' : '') + '<div class="fa4-crediteur-naam">' + (escapeHtml(c.naam) || 'Crediteur') + '</div><div class="fa4-crediteur-adres">' + (escapeHtml(c.adres) || '') + '</div>' + (det ? '<div class="fa4-crediteur-detail">' + det + '</div>' : '') + '</div><div class="fa4-header-right"><div class="fa4-title">' + typeLabel + ' ' + badge + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> ' + (escapeHtml(data.factuurnummer) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> ' + (formatDatum(data.factuurdatum) || '\u2014') + '</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> ' + (formatDatum(data.vervaldatum) || '\u2014') + '</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">' + (escapeHtml(data.debiteurNaam) || 'Debiteur') + '\n' + (escapeHtml(data.debiteurAdres) || '') + '\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">' + (data.referentie ? 'Referentie: ' + escapeHtml(data.referentie) : '') + '</div><div class="fa4-meta-line">Betalingstermijn: ' + (c.betalingstermijn || 30) + ' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>' + items.map(r => { const b = (r.aantal || 0) * (r.stuksprijs || 0); return '<tr><td>' + (escapeHtml(r.omschrijving) || '\u2014') + '</td><td style="text-align:right">' + (r.aantal || 0) + '</td><td style="text-align:right">' + formatBedrag(r.stuksprijs || 0) + '</td><td style="text-align:right">' + formatBedrag(b) + '</td></tr>'; }).join('') + '</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>' + formatBedrag(sub) + '</span></div><div class="fa4-totalen-rij"><span>BTW ' + btwL + '</span><span>' + formatBedrag(btw) + '</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>' + formatBedrag(tot) + '</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>' + formatBedrag(tot) + '</strong> over te maken op rekeningnummer <strong>' + (escapeHtml(c.iban) || 'NL00 BANK 0000 0000 00') + '</strong> t.n.v. <strong>' + (escapeHtml(c.naam) || 'Crediteur') + '</strong> onder vermelding van factuurnummer <strong>' + (escapeHtml(data.factuurnummer) || '\u2014') + '</strong>.</p></div><div class="fa4-footer">' + (escapeHtml(c.naam) || '') + (c.kvk ? ' | KvK: ' + escapeHtml(c.kvk) : '') + (c.btw ? ' | BTW: ' + escapeHtml(c.btw) : '') + '</div>';
 }
 
 /* ═══════════ PREVIEW ═══════════ */
@@ -977,9 +1035,46 @@ async function genPDF(data) {
 async function downloadPDF() {
   const data = getFactuurData(); if (!data.factuurnummer) { showToast('Vul factuurnummer in'); return; } if (!data.crediteur.id) { showToast('Selecteer een crediteur'); return; }
   const pdf = await genPDF(data); pdf.save('Factuur-' + data.factuurnummer + '.pdf');
+  // Bankmutatie genereren
+  if (document.getElementById('gen-bankmutatie').checked) {
+    const mt940 = generateMT940(data);
+    const blob = new Blob([mt940], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = 'Bankmutatie-' + data.factuurnummer + '.sta'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
   const next = incrementNr(data.factuurnummer); saveNr(next); document.getElementById('factuurnummer').value = next;
-  showToast('PDF gedownload'); updatePreview();
+  showToast('PDF' + (document.getElementById('gen-bankmutatie').checked ? ' + bankmutatie' : '') + ' gedownload'); updatePreview();
 }
+
+/* ═══════════ MT940 BANKMUTATIE ═══════════ */
+function generateMT940(data) {
+  const c = data.crediteur || {};
+  const items = data.regelitems || [];
+  let sub = 0; items.forEach(r => { sub += (r.aantal || 0) * (r.stuksprijs || 0); });
+  const btw = sub * (data.btwTarief || 0);
+  const totaal = Math.round((sub + btw) * 100) / 100;
+  const datum = (data.factuurdatum || todayStr()).replace(/-/g, '').slice(2); // YYMMDD
+  const betaalDatum = (data.vervaldatum || data.factuurdatum || todayStr()).replace(/-/g, '').slice(2);
+  const iban = (c.iban || 'NL00BANK0000000000').replace(/\s/g, '');
+  const debiteurIban = 'NL91ABNA0417164300'; // placeholder eigen rekening
+  const bedragStr = totaal.toFixed(2).replace('.', ',');
+  const dc = data.type === 'verkoop' ? 'C' : 'D'; // Credit bij verkoop, Debit bij inkoop
+  const naam = data.type === 'verkoop' ? (data.debiteurNaam || 'Debiteur') : (c.naam || 'Crediteur');
+  const rekeningNr = data.type === 'verkoop' ? debiteurIban : iban;
+  // MT940 formaat
+  const lines = [
+    ':20:STARTUMS',
+    ':25:' + (data.type === 'verkoop' ? iban : debiteurIban),
+    ':28C:0',
+    ':60F:' + (dc === 'D' ? 'C' : 'C') + datum + 'EUR' + formatMT940Amount(10000), // fictief beginsaldo
+    ':61:' + betaalDatum + datum + dc + formatMT940Amount(totaal) + 'N078NONREF',
+    ':86:/IBAN/' + rekeningNr + '/NAME/' + naam + '/REMI/' + (data.factuurnummer || 'FACTUUR'),
+    ':62F:' + (dc === 'D' ? 'C' : 'C') + betaalDatum + 'EUR' + formatMT940Amount(dc === 'D' ? 10000 - totaal : 10000 + totaal),
+    '-'
+  ];
+  return lines.join('\r\n');
+}
+function formatMT940Amount(n) { return Math.abs(n).toFixed(2).replace('.', ','); }
 
 /* ═══════════ DEMO-SET TAB ═══════════ */
 function initDemoSetTab() {
@@ -999,6 +1094,8 @@ async function generateDemoSet() {
   const vanStr = document.getElementById('demoset-van').value, totStr = document.getElementById('demoset-tot').value;
   let nr = document.getElementById('demoset-startnr').value;
   const btwTarief = parseFloat(document.getElementById('demoset-btw').value), variatie = parseFloat(document.getElementById('demoset-variatie').value);
+  const genMutatie = document.getElementById('demoset-bankmutatie').checked;
+  const isVerkoop = document.getElementById('demoset-verkoop').checked;
   if (!vanStr || !totStr) { showToast('Vul van en tot maand in'); return; } if (!nr) { showToast('Vul startnummer in'); return; }
   const selected = Array.from(document.querySelectorAll('#demoset-crediteuren-lijst input:checked')).map(el => el.value);
   if (!selected.length) { showToast('Selecteer minimaal \u00E9\u00E9n crediteur'); return; }
@@ -1008,16 +1105,18 @@ async function generateDemoSet() {
   const totalFacturen = selected.length * totalMonths;
   const progress = document.getElementById('demoset-progress'), fill = document.getElementById('demoset-progress-fill'), txt = document.getElementById('demoset-progress-text'), btn = document.getElementById('btn-demoset-genereer');
   progress.classList.add('active'); btn.disabled = true; fill.style.width = '0%';
-  const zip = new JSZip(); let count = 0;
+  const zip = new JSZip(); let count = 0; let allMT940Lines = [];
   for (const credId of selected) { const cred = crediteuren.find(c => c.id === credId); if (!cred) continue;
     for (let i = 0; i < totalMonths; i++) { const mIdx = (vanM - 1 + i) % 12; const jaar = vanJ + Math.floor((vanM - 1 + i) / 12); const maand = MAANDEN[mIdx]; const datum = jaar + '-' + String(mIdx + 1).padStart(2, '0') + '-01';
       const regelitems = (cred.regelitems || []).map(r => ({omschrijving: r.omschrijving ? r.omschrijving + ' \u2014 ' + maand + ' ' + jaar : maand + ' ' + jaar, aantal: r.aantal || 1, stuksprijs: varyAmount(r.stuksprijs || 0, variatie)}));
-      const data = {crediteur: cred, debiteurNaam, debiteurAdres, factuurnummer: nr, referentie: '', factuurdatum: datum, vervaldatum: addDagen(datum, cred.betalingstermijn || 30), btwTarief, status: 'open', regelitems};
+      const data = {crediteur: cred, debiteurNaam, debiteurAdres, factuurnummer: nr, referentie: '', factuurdatum: datum, vervaldatum: addDagen(datum, cred.betalingstermijn || 30), btwTarief, status: 'open', regelitems, type: isVerkoop ? 'verkoop' : 'inkoop'};
       count++; fill.style.width = Math.round((count / totalFacturen) * 100) + '%'; txt.textContent = count + '/' + totalFacturen + ' \u2014 ' + cred.naam + ' (' + maand + ' ' + jaar + ')';
       const pdf = await genPDF(data); zip.file(cred.naam.replace(/[^a-zA-Z0-9 ]/g, '') + '/Factuur-' + nr + '.pdf', pdf.output('arraybuffer'));
+      if (genMutatie) { allMT940Lines.push(generateMT940(data)); }
       nr = incrementNr(nr); await new Promise(r => setTimeout(r, 80));
     }
   }
+  if (genMutatie && allMT940Lines.length) { zip.file('Bankmutaties/mutaties.sta', allMT940Lines.join('\r\n')); }
   saveNr(nr); document.getElementById('factuurnummer').value = nr; txt.textContent = 'ZIP genereren...';
   const content = await zip.generateAsync({type: 'blob'}); const url = URL.createObjectURL(content);
   const a = document.createElement('a'); a.href = url; a.download = 'Demo-facturen-' + vanStr + '-tot-' + totStr + '.zip'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
