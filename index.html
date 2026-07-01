@@ -607,6 +607,7 @@ body.dark .download-section{background:#1a4fa0}
 
 <script>
 /* ═══════════ STATE ═══════════ */
+const DATA_VERSION=2;
 const MAANDEN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 let crediteuren=[],debiteuren=[],historie=[],currentLogoBase64='';
 let selectedCrediteurId='',selectedDebiteurId='';
@@ -661,7 +662,8 @@ function promptDeleteEnv(){document.getElementById('env-dropdown').classList.rem
 document.addEventListener('click',e=>{if(!e.target.closest('.env-switcher'))document.getElementById('env-dropdown').classList.remove('open');});
 
 /* ═══════════ STORAGE ═══════════ */
-function loadAllData(){loadCred();loadDebs();loadHistorie();document.getElementById('factuurnummer').value=loadNr();selectedCrediteurId='';selectedDebiteurId='';if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';}
+function checkDataVersion(){const v=localStorage.getItem('df_data_version');if(parseInt(v)!==DATA_VERSION){const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'));keys.forEach(k=>localStorage.removeItem(k));localStorage.setItem('df_data_version',DATA_VERSION);return true;}return false;}
+function loadAllData(){const reset=checkDataVersion();loadCred();loadDebs();loadHistorie();document.getElementById('factuurnummer').value=loadNr();selectedCrediteurId='';selectedDebiteurId='';if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';if(reset||!crediteuren.length)loadVoorbeeldCrediteuren();}
 function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(lsKey('crediteuren')))||[];}catch{crediteuren=[];}autoMatchLogos();}
 function saveCred(){localStorage.setItem(lsKey('crediteuren'),JSON.stringify(crediteuren));}
 function loadDebs(){try{debiteuren=JSON.parse(localStorage.getItem(lsKey('debiteuren')))||[];}catch{debiteuren=[];}}
