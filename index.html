@@ -326,9 +326,9 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .factuur-a4[data-template="strak"] .fa4-badge-betaald{background:none;border:1px solid #000;color:#000;border-radius:20px;font-weight:500}
 
 /* TEMPLATE: HUISSTIJL — full brand-color header band, white text */
-.factuur-a4[data-template="huisstijl"]{padding-top:0;overflow:hidden}
-.factuur-a4[data-template="huisstijl"]::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(135deg,var(--brand,#0066CC),var(--brand-dark,#004499))}
-.factuur-a4[data-template="huisstijl"] .fa4-header{position:relative;z-index:1;padding:48px 56px 32px;margin:0 -56px 24px}
+.factuur-a4[data-template="huisstijl"]{padding-top:0;overflow:visible}
+.factuur-a4[data-template="huisstijl"]::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:linear-gradient(135deg,var(--brand,#0066CC),var(--brand-dark,#004499));border-radius:0}
+.factuur-a4[data-template="huisstijl"] .fa4-header{position:relative;z-index:1;padding:36px 56px 28px;margin:0 -56px 24px}
 .factuur-a4[data-template="huisstijl"] .fa4-logo{background:white;padding:8px 14px;border-radius:10px;max-height:64px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
 .factuur-a4[data-template="huisstijl"] .fa4-crediteur-naam{color:white;font-size:18px}
 .factuur-a4[data-template="huisstijl"] .fa4-crediteur-adres{color:rgba(255,255,255,0.8)}
