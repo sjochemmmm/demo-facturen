@@ -606,7 +606,7 @@ body.dark .download-section{background:#1a4fa0}
 
 <script>
 /* ═══════════ STATE ═══════════ */
-const DATA_VERSION=3;
+const DATA_VERSION=4;
 const MAANDEN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 let crediteuren=[],debiteuren=[],historie=[],currentLogoBase64='';
 let selectedCrediteurId='',selectedDebiteurId='';
@@ -815,7 +815,7 @@ function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h
 function randomFactuurnr(){const prefixes=['FV','INV','F','RK','FAC'];const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];const nr=String(Math.floor(Math.random()*900000)+100000);const val=prefix+'-'+new Date().getFullYear()+'-'+nr;document.getElementById('factuurnummer').value=val;saveNr(val);updatePreview();}
 function loadVoorbeeldCrediteuren(){
   const voorbeelden=[
-    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Zakelijk Telefonie Unlimited per lijn',aantal:3,stuksprijs:39.95}]},
+    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Telefoonabonnement maandelijks',aantal:1,stuksprijs:39.95}]},
     {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS ERP 10 licentie',aantal:1,stuksprijs:450}],variatieItem:{omschrijving:'Extra consultancy',aantal:4,stuksprijs:1100}},
     {naam:'ENECO Energie Services B.V.',adres:'Marten Meesweg 5\n3068 AV Rotterdam',kvk:'24352857',btw:'NL808912345B01',iban:'NL22 INGB 0000 1234 56',email:'facturen@eneco.nl',betalingstermijn:14,regelitems:[{omschrijving:'Maandelijks voorschot energie',aantal:1,stuksprijs:485}]},
     {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'BTW-afdracht kwartaal',aantal:1,stuksprijs:4850}]},
