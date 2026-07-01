@@ -931,6 +931,10 @@ function init(){
   // Auto-select EnYoi ICT Services als crediteur
   const enyoi=crediteuren.find(c=>c.naam.toLowerCase().includes('enyoi ict services'));
   if(enyoi&&!selectedCrediteurId){selectedCrediteurId=enyoi.id;crediteurCombo.setInput(enyoi.naam);renderCrediteurCard();applyCredData(enyoi);}
+  // Auto-select EnYoi ICT Services als debiteur
+  let enyoiDeb=debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'));
+  if(!enyoiDeb&&enyoi){enyoiDeb={id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'};debiteuren.push(enyoiDeb);saveDebs();}
+  if(enyoiDeb&&!selectedDebiteurId){selectedDebiteurId=enyoiDeb.id;debiteurCombo.setInput(enyoiDeb.naam);document.getElementById('debiteur-adres').value=enyoiDeb.adres||'';renderDebiteurCard();}
   updatePreview();}
 init();
 </script>
