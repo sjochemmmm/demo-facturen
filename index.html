@@ -606,7 +606,7 @@ body.dark .download-section{background:#1a4fa0}
 
 <script>
 /* ═══════════ STATE ═══════════ */
-const DATA_VERSION=2;
+const DATA_VERSION=3;
 const MAANDEN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 let crediteuren=[],debiteuren=[],historie=[],currentLogoBase64='';
 let selectedCrediteurId='',selectedDebiteurId='';
@@ -815,13 +815,13 @@ function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h
 function randomFactuurnr(){const prefixes=['FV','INV','F','RK','FAC'];const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];const nr=String(Math.floor(Math.random()*900000)+100000);const val=prefix+'-'+new Date().getFullYear()+'-'+nr;document.getElementById('factuurnummer').value=val;saveNr(val);updatePreview();}
 function loadVoorbeeldCrediteuren(){
   const voorbeelden=[
-    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Zakelijk Telefonie Unlimited',aantal:15,stuksprijs:39.95}]},
+    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Zakelijk Telefonie Unlimited per lijn',aantal:3,stuksprijs:39.95}]},
     {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS ERP 10 licentie',aantal:1,stuksprijs:450}],variatieItem:{omschrijving:'Extra consultancy',aantal:4,stuksprijs:1100}},
     {naam:'ENECO Energie Services B.V.',adres:'Marten Meesweg 5\n3068 AV Rotterdam',kvk:'24352857',btw:'NL808912345B01',iban:'NL22 INGB 0000 1234 56',email:'facturen@eneco.nl',betalingstermijn:14,regelitems:[{omschrijving:'Maandelijks voorschot energie',aantal:1,stuksprijs:485}]},
     {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'BTW-afdracht kwartaal',aantal:1,stuksprijs:4850}]},
-    {naam:'Dell Computer B.V.',adres:'Transformatorweg 38-72\n1014 AK Amsterdam',kvk:'34128796',btw:'NL812345678B01',iban:'NL90 ABNA 0512 3456 78',email:'invoices@dell.com',betalingstermijn:30,regelitems:[{omschrijving:'Lease Dell Latitude 5550',aantal:5,stuksprijs:89}]},
-    {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Acer B277 monitoren',aantal:5,stuksprijs:29}]},
-    {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Samsung Galaxy S24',aantal:5,stuksprijs:45}]},
+    {naam:'Dell Computer B.V.',adres:'Transformatorweg 38-72\n1014 AK Amsterdam',kvk:'34128796',btw:'NL812345678B01',iban:'NL90 ABNA 0512 3456 78',email:'invoices@dell.com',betalingstermijn:30,regelitems:[{omschrijving:'Lease Dell Latitude 5550 maandelijks',aantal:3,stuksprijs:89}]},
+    {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Acer B277 monitoren maandelijks',aantal:3,stuksprijs:29}]},
+    {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Samsung Galaxy S24 maandelijks',aantal:3,stuksprijs:45}]},
     {naam:'Manutan B.V.',adres:'Zonnebaan 34\n3542 EG Utrecht',kvk:'30145678',btw:'NL818234567B01',iban:'NL88 RABO 0345 6789 01',email:'facturatie@manutan.nl',betalingstermijn:30,regelitems:[{omschrijving:'Kantoorbenodigdheden',aantal:1,stuksprijs:189.50}]},
     {naam:'Bidfood B.V.',adres:'Marconiweg 2\n4131 PD Vianen',kvk:'30025786',btw:'NL001248462B01',iban:'NL62 ABNA 0457 2345 67',email:'klantenservice@bidfood.nl',betalingstermijn:14,regelitems:[{omschrijving:'Cateringservice kantoor',aantal:1,stuksprijs:342.50}]},
     {naam:'Securitas Beveiliging B.V.',adres:'Databankweg 26\n3821 AL Amersfoort',kvk:'30070025',btw:'NL801234567B01',iban:'NL23 RABO 0145 6789 01',email:'facturatie@securitas.nl',betalingstermijn:30,regelitems:[{omschrijving:'Bewakingsdienst abonnement',aantal:1,stuksprijs:1250}]},
