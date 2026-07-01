@@ -192,30 +192,30 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .fa4-header-left{max-width:55%}
 .fa4-header-right{text-align:right}
 .fa4-logo{max-height:56px;max-width:180px;margin-bottom:10px;display:block}
-.fa4-title{font-size:28px;font-weight:900;color:var(--primary);letter-spacing:-0.02em;margin-bottom:10px;display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.fa4-title{font-size:28px;font-weight:900;color:#0066CC;letter-spacing:-0.02em;margin-bottom:10px;display:flex;align-items:center;justify-content:flex-end;gap:12px}
 .fa4-badge-betaald{font-size:10px;font-weight:700;background:#D1FAE5;color:#065F46;padding:4px 10px;border-radius:4px;letter-spacing:0.05em;border:1px solid #6EE7B7}
 .fa4-crediteur-naam{font-size:15px;font-weight:700;color:#1E293B;margin-bottom:2px}
 .fa4-crediteur-adres{font-size:12px;color:#475569;white-space:pre-line;margin-bottom:4px}
 .fa4-crediteur-detail{font-size:11px;color:#64748B}
 .fa4-meta-line{font-size:13px;margin-bottom:3px;color:#475569}
 .fa4-meta-label{color:#94A3B8}
-.fa4-lijn{border:none;border-top:1.5px solid var(--primary);margin:16px 0;opacity:0.2}
+.fa4-lijn{border:none;border-top:1.5px solid #0066CC;margin:16px 0;opacity:0.2}
 .fa4-adressen{display:flex;justify-content:space-between;margin-bottom:4px}
 .fa4-adressen-links{max-width:55%}
 .fa4-adressen-rechts{text-align:right}
-.fa4-section-label{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.fa4-section-label{font-size:10px;font-weight:700;color:#0066CC;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
 .fa4-adres-tekst{font-size:13px;white-space:pre-line;line-height:1.5}
 .fa4-tabel{width:100%;border-collapse:collapse;margin-top:8px}
-.fa4-tabel thead th{background:var(--primary);color:white;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:10px 12px;text-align:left}
+.fa4-tabel thead th{background:#0066CC;color:white;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:10px 12px;text-align:left}
 .fa4-tabel thead th:last-child,.fa4-tabel thead th:nth-child(2),.fa4-tabel thead th:nth-child(3){text-align:right}
 .fa4-tabel tbody td{padding:10px 12px;border-bottom:1px solid #F1F5F9;font-size:13px}
 .fa4-tabel tbody td:last-child,.fa4-tabel tbody td:nth-child(2),.fa4-tabel tbody td:nth-child(3){text-align:right}
 .fa4-totalen{margin-top:16px;display:flex;justify-content:flex-end}
 .fa4-totalen-tabel{width:280px}
 .fa4-totalen-rij{display:flex;justify-content:space-between;padding:5px 12px;font-size:13px}
-.fa4-totalen-rij.totaal{background:var(--primary);color:white;font-weight:700;border-radius:4px;padding:8px 12px;margin-top:4px}
-.fa4-betaalblok{margin-top:auto;background:#F0F7FF;border-left:3px solid var(--primary);border-radius:0 8px 8px 0;padding:16px 20px}
-.fa4-betaalblok h4{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.fa4-totalen-rij.totaal{background:#0066CC;color:white;font-weight:700;border-radius:4px;padding:8px 12px;margin-top:4px}
+.fa4-betaalblok{margin-top:auto;background:#F0F7FF;border-left:3px solid #0066CC;border-radius:0 8px 8px 0;padding:16px 20px}
+.fa4-betaalblok h4{font-size:11px;font-weight:700;color:#0066CC;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
 .fa4-betaalblok p{font-size:12px;color:#475569;line-height:1.6}
 .fa4-footer{margin-top:20px;text-align:center;font-size:10px;color:#94A3B8;padding-top:12px;border-top:1px solid #E2E8F0}
 #pdf-render-area{position:fixed;left:-9999px;top:0;z-index:-1}
@@ -284,59 +284,76 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .template-card.active{border-color:var(--primary);background:var(--primary-very-light);box-shadow:0 0 0 2px rgba(0,102,204,0.15)}
 .template-card-icon{font-size:22px;margin-bottom:2px}
 .template-card-name{font-size:10px;font-weight:700;color:var(--text);letter-spacing:0.02em}
-.brand-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(0,0,0,0.1);display:inline-block;vertical-align:middle;margin-left:4px;transition:var(--transition)}
 
-/* TEMPLATE: KLASSIEK */
-.factuur-a4[data-template="klassiek"]{border-top:4px double #2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-title{color:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-tabel thead th{background:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-lijn{border-color:#2D3748;opacity:0.25}
-.factuur-a4[data-template="klassiek"] .fa4-totalen-rij.totaal{background:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-betaalblok{background:#FAFAF5;border-left-color:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-betaalblok h4{color:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-section-label{color:#2D3748}
-.factuur-a4[data-template="klassiek"] .fa4-badge-betaald{background:#E8F5E9;border-color:#81C784;color:#2E7D32}
+/* TEMPLATE: KLASSIEK — centered, formal, double-border frame */
+.factuur-a4[data-template="klassiek"]{border:3px double #1a1a1a;padding:36px 44px}
+.factuur-a4[data-template="klassiek"] .fa4-header{flex-direction:column;align-items:center;text-align:center}
+.factuur-a4[data-template="klassiek"] .fa4-header-left{max-width:100%;text-align:center}
+.factuur-a4[data-template="klassiek"] .fa4-header-right{text-align:center;width:100%}
+.factuur-a4[data-template="klassiek"] .fa4-logo{margin:0 auto 12px}
+.factuur-a4[data-template="klassiek"] .fa4-title{font-size:20px;letter-spacing:0.15em;font-weight:600;color:#1a1a1a;justify-content:center;border-bottom:1px solid #999;padding-bottom:10px;margin-bottom:14px}
+.factuur-a4[data-template="klassiek"] .fa4-crediteur-naam{font-size:18px}
+.factuur-a4[data-template="klassiek"] .fa4-meta-line{text-align:center}
+.factuur-a4[data-template="klassiek"] .fa4-tabel thead th{background:#1a1a1a}
+.factuur-a4[data-template="klassiek"] .fa4-tabel tbody tr:nth-child(even) td{background:#f7f7f2}
+.factuur-a4[data-template="klassiek"] .fa4-lijn{border-color:#1a1a1a;opacity:0.15;border-style:double;border-width:3px}
+.factuur-a4[data-template="klassiek"] .fa4-adressen{border:1px solid #ddd;padding:16px;border-radius:0}
+.factuur-a4[data-template="klassiek"] .fa4-totalen-tabel{border:1.5px solid #1a1a1a;padding:4px}
+.factuur-a4[data-template="klassiek"] .fa4-totalen-rij.totaal{background:#1a1a1a;border-radius:0}
+.factuur-a4[data-template="klassiek"] .fa4-betaalblok{background:#f7f7f2;border-left:3px double #1a1a1a;border-radius:0}
+.factuur-a4[data-template="klassiek"] .fa4-betaalblok h4{color:#1a1a1a}
+.factuur-a4[data-template="klassiek"] .fa4-section-label{color:#1a1a1a;letter-spacing:0.15em}
+.factuur-a4[data-template="klassiek"] .fa4-footer{border-top:3px double #1a1a1a}
+.factuur-a4[data-template="klassiek"] .fa4-badge-betaald{border-radius:0;background:#f7f7f2;color:#1a1a1a;border-color:#999}
 
-/* TEMPLATE: STRAK */
-.factuur-a4[data-template="strak"] .fa4-title{color:#111827;font-weight:900;letter-spacing:-0.03em}
-.factuur-a4[data-template="strak"] .fa4-tabel thead th{background:none;color:#111827;border-bottom:2px solid #111827;font-size:9px;letter-spacing:0.1em}
-.factuur-a4[data-template="strak"] .fa4-tabel tbody td{border-bottom:1px solid #F3F4F6}
-.factuur-a4[data-template="strak"] .fa4-lijn{border-color:#E5E7EB;opacity:1;border-width:1px}
-.factuur-a4[data-template="strak"] .fa4-totalen-rij.totaal{background:#111827;border-radius:6px}
-.factuur-a4[data-template="strak"] .fa4-betaalblok{background:#F9FAFB;border-left:2px solid #D1D5DB;border-radius:0 6px 6px 0}
-.factuur-a4[data-template="strak"] .fa4-betaalblok h4{color:#6B7280}
-.factuur-a4[data-template="strak"] .fa4-section-label{color:#6B7280}
-.factuur-a4[data-template="strak"] .fa4-badge-betaald{border-radius:20px}
+/* TEMPLATE: STRAK — ultra minimal, monochrome, zero decoration */
+.factuur-a4[data-template="strak"]{padding:60px 68px}
+.factuur-a4[data-template="strak"] .fa4-title{font-size:38px;font-weight:900;color:#000;letter-spacing:-0.04em}
+.factuur-a4[data-template="strak"] .fa4-lijn{display:none}
+.factuur-a4[data-template="strak"] .fa4-header{margin-bottom:40px}
+.factuur-a4[data-template="strak"] .fa4-adressen{margin-top:32px;margin-bottom:24px}
+.factuur-a4[data-template="strak"] .fa4-tabel{margin-top:32px}
+.factuur-a4[data-template="strak"] .fa4-tabel thead th{background:none;color:#aaa;border-bottom:1px solid #e0e0e0;font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;padding:6px 12px}
+.factuur-a4[data-template="strak"] .fa4-tabel tbody td{border-bottom:1px solid #f5f5f5;padding:14px 12px}
+.factuur-a4[data-template="strak"] .fa4-totalen-rij{color:#888}
+.factuur-a4[data-template="strak"] .fa4-totalen-rij.totaal{background:none;color:#000;font-size:20px;border-top:2px solid #000;border-radius:0;padding:14px 12px;margin-top:8px}
+.factuur-a4[data-template="strak"] .fa4-betaalblok{background:none;border-left:none;border-top:1px solid #eee;border-radius:0;padding:24px 0;margin-top:40px}
+.factuur-a4[data-template="strak"] .fa4-betaalblok h4{color:#aaa;font-weight:400;letter-spacing:0.05em}
+.factuur-a4[data-template="strak"] .fa4-section-label{color:#aaa;font-weight:400}
+.factuur-a4[data-template="strak"] .fa4-footer{border:none;color:#ddd}
+.factuur-a4[data-template="strak"] .fa4-meta-label{color:#ccc}
+.factuur-a4[data-template="strak"] .fa4-crediteur-naam{font-size:16px;font-weight:800;color:#000}
+.factuur-a4[data-template="strak"] .fa4-badge-betaald{background:none;border:1px solid #000;color:#000;border-radius:20px;font-weight:500}
 
-/* TEMPLATE: HUISSTIJL */
-.factuur-a4[data-template="huisstijl"]::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:var(--brand,#0066CC)}
-.factuur-a4[data-template="huisstijl"] .fa4-title{color:var(--brand,#0066CC)}
+/* TEMPLATE: HUISSTIJL — full brand-color header band, white text */
+.factuur-a4[data-template="huisstijl"]{padding-top:0;overflow:hidden}
+.factuur-a4[data-template="huisstijl"]::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(135deg,var(--brand,#0066CC),var(--brand-dark,#004499))}
+.factuur-a4[data-template="huisstijl"] .fa4-header{position:relative;z-index:1;padding:48px 56px 32px;margin:0 -56px 24px}
+.factuur-a4[data-template="huisstijl"] .fa4-logo{background:white;padding:8px 14px;border-radius:10px;max-height:64px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.factuur-a4[data-template="huisstijl"] .fa4-crediteur-naam{color:white;font-size:18px}
+.factuur-a4[data-template="huisstijl"] .fa4-crediteur-adres{color:rgba(255,255,255,0.8)}
+.factuur-a4[data-template="huisstijl"] .fa4-crediteur-detail{color:rgba(255,255,255,0.65)}
+.factuur-a4[data-template="huisstijl"] .fa4-title{color:white;font-size:24px}
+.factuur-a4[data-template="huisstijl"] .fa4-meta-line{color:rgba(255,255,255,0.9)}
+.factuur-a4[data-template="huisstijl"] .fa4-meta-label{color:rgba(255,255,255,0.55)}
+.factuur-a4[data-template="huisstijl"] .fa4-badge-betaald{background:rgba(255,255,255,0.2);color:white;border-color:rgba(255,255,255,0.3)}
 .factuur-a4[data-template="huisstijl"] .fa4-tabel thead th{background:var(--brand,#0066CC)}
-.factuur-a4[data-template="huisstijl"] .fa4-lijn{border-color:var(--brand,#0066CC);opacity:0.2}
-.factuur-a4[data-template="huisstijl"] .fa4-totalen-rij.totaal{background:var(--brand,#0066CC)}
-.factuur-a4[data-template="huisstijl"] .fa4-betaalblok{border-left-color:var(--brand,#0066CC);background:var(--brand-light,#EBF5FF)}
+.factuur-a4[data-template="huisstijl"] .fa4-tabel{border-radius:8px;overflow:hidden}
+.factuur-a4[data-template="huisstijl"] .fa4-lijn{border-color:var(--brand,#0066CC);opacity:0.12}
+.factuur-a4[data-template="huisstijl"] .fa4-totalen-rij.totaal{background:var(--brand,#0066CC);border-radius:8px}
+.factuur-a4[data-template="huisstijl"] .fa4-betaalblok{border-left-color:var(--brand,#0066CC);background:var(--brand-light,#EBF5FF);border-radius:0 10px 10px 0}
 .factuur-a4[data-template="huisstijl"] .fa4-betaalblok h4{color:var(--brand,#0066CC)}
 .factuur-a4[data-template="huisstijl"] .fa4-section-label{color:var(--brand,#0066CC)}
-.factuur-a4[data-template="huisstijl"] .fa4-crediteur-naam{color:var(--brand,#0066CC)}
+.factuur-a4[data-template="huisstijl"] .fa4-footer{border-color:var(--brand,#0066CC);opacity:0.4}
 
 /* DARK MODE */
 .dark-toggle{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;cursor:pointer;font-size:16px;line-height:1;transition:var(--transition);display:flex;align-items:center}
 .dark-toggle:hover{border-color:var(--primary);background:var(--primary-very-light)}
-body.dark{--primary:#60A5FA;--primary-light:#93C5FD;--primary-very-light:rgba(96,165,250,0.1);--accent:#F59E0B;--accent-hover:#D97706;--green:#34D399;--green-light:rgba(52,211,153,0.1);--text:#E2E8F0;--text-secondary:#94A3B8;--text-muted:#64748B;--bg:#0F172A;--surface:#1E293B;--border:#334155;--border-hover:#475569;--danger:#F87171;--danger-light:rgba(248,113,113,0.1);--shadow-sm:0 1px 2px rgba(0,0,0,0.4);--shadow:0 1px 3px rgba(0,0,0,0.5);--shadow-md:0 4px 6px rgba(0,0,0,0.4);--shadow-lg:0 10px 15px rgba(0,0,0,0.5);--shadow-xl:0 20px 25px rgba(0,0,0,0.5)}
-body.dark .app-header{background:rgba(30,41,59,0.95)}
-body.dark .factuur-a4{background:white;color:#1E293B}
-body.dark .factuur-a4 .fa4-title{color:#0066CC}
-body.dark .factuur-a4 .fa4-tabel thead th{color:white}
-body.dark .factuur-a4 .fa4-meta-label{color:#94A3B8}
-body.dark .factuur-a4 .fa4-crediteur-adres{color:#475569}
-body.dark .factuur-a4 .fa4-crediteur-detail{color:#64748B}
-body.dark .factuur-a4 .fa4-adres-tekst{color:#1E293B}
-body.dark .factuur-a4 .fa4-totalen-rij{color:#1E293B}
-body.dark .factuur-a4 .fa4-totalen-rij.totaal{color:white}
-body.dark .factuur-a4 .fa4-betaalblok p{color:#475569}
-body.dark .factuur-a4 .fa4-footer{color:#94A3B8}
+body.dark{--primary:#60A5FA;--primary-light:#93C5FD;--primary-very-light:rgba(96,165,250,0.12);--accent:#FBBF24;--accent-hover:#F59E0B;--green:#34D399;--green-light:rgba(52,211,153,0.12);--text:#F1F5F9;--text-secondary:#CBD5E1;--text-muted:#94A3B8;--bg:#0B1120;--surface:#162032;--border:#2D3F56;--border-hover:#3D5068;--danger:#F87171;--danger-light:rgba(248,113,113,0.12);--shadow-sm:0 1px 3px rgba(0,0,0,0.5);--shadow:0 2px 4px rgba(0,0,0,0.5);--shadow-md:0 4px 8px rgba(0,0,0,0.5);--shadow-lg:0 10px 20px rgba(0,0,0,0.5);--shadow-xl:0 20px 30px rgba(0,0,0,0.5)}
+body.dark .app-header{background:rgba(22,32,50,0.97);border-bottom-color:var(--border)}
 body.dark input,body.dark select,body.dark textarea{background:var(--surface);color:var(--text);border-color:var(--border)}
 body.dark .combobox-input{background:var(--surface);color:var(--text);border-color:var(--border)}
+body.dark .download-section{background:#1a4fa0}
 
 /* PREVIEW ANIMATION */
 .preview-wrapper{transition:box-shadow 0.3s ease}
@@ -350,7 +367,7 @@ body.dark .combobox-input{background:var(--surface);color:var(--text);border-col
 }
   </style>
 </head>
-<body>
+<body class="dark">
 
 <header class="app-header">
   <div class="app-brand">
@@ -364,7 +381,7 @@ body.dark .combobox-input{background:var(--surface);color:var(--text);border-col
     <button class="tab-btn" data-tab="demoset">Demo-set</button>
     <button class="tab-btn" data-tab="instellingen">Instellingen</button>
   </nav>
-  <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Donker/licht thema">🌙</button>
+  <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Donker/licht thema">☀️</button>
   <div class="env-switcher">
     <button class="env-btn" id="env-btn" onclick="toggleEnvDropdown()">
       <span class="env-dot"></span>
@@ -613,6 +630,7 @@ function getKwartaal(m){return Math.floor(m/3)+1;}
 
 /* ═══════════ TEMPLATES & DARK MODE ═══════════ */
 function hexToRgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}
+function darkenHex(hex,amt){const r=Math.max(0,parseInt(hex.slice(1,3),16)-amt),g=Math.max(0,parseInt(hex.slice(3,5),16)-amt),b=Math.max(0,parseInt(hex.slice(5,7),16)-amt);return '#'+[r,g,b].map(c=>c.toString(16).padStart(2,'0')).join('');}
 function extractDominantColor(imgSrc,cb){
   if(!imgSrc){cb('#0066CC');return;}
   const img=new Image();img.crossOrigin='anonymous';
@@ -621,7 +639,7 @@ function extractDominantColor(imgSrc,cb){
     try{const d=ctx.getImageData(0,0,40,40).data;const counts={};for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<128||r+g+b>720||r+g+b<30)continue;const k=(Math.round(r/32)*32)+','+(Math.round(g/32)*32)+','+(Math.round(b/32)*32);counts[k]=(counts[k]||0)+1;}
     let mx=0,dom='0,96,192';for(const[k,v] of Object.entries(counts)){if(v>mx){mx=v;dom=k;}}const[cr,cg,cb2]=dom.split(',').map(Number);cb('#'+[cr,cg,cb2].map(c=>c.toString(16).padStart(2,'0')).join(''));}catch(e){cb('#0066CC');}};img.onerror=()=>cb('#0066CC');img.src=imgSrc;}
 function setTemplate(name,silent){activeTemplate=name;document.querySelectorAll('.template-card').forEach(c=>c.classList.toggle('active',c.dataset.tpl===name));if(!silent){localStorage.setItem('df_template',name);updatePreview();showToast('Template: '+name.charAt(0).toUpperCase()+name.slice(1));}}
-function toggleDarkMode(){const isDark=document.body.classList.toggle('dark');document.getElementById('dark-toggle').textContent=isDark?'\u2600\uFE0F':'\uD83C\uDF19';localStorage.setItem('df_darkmode',isDark);}
+function toggleDarkMode(){const isDark=document.body.classList.toggle('dark');document.getElementById('dark-toggle').textContent=isDark?'\u2600\uFE0F':'\uD83C\uDF19';localStorage.setItem('df_darkmode',isDark?'true':'false');}
 
 /* ═══════════ OMGEVINGEN ═══════════ */
 function lsKey(key){return 'dfenv_'+activeEnv+'_'+key;}
@@ -732,12 +750,12 @@ function renderFactuurHTML(data){
 }
 
 /* ═══════════ PREVIEW ═══════════ */
-function updatePreview(){const fp=document.getElementById('factuur-preview');fp.innerHTML=renderFactuurHTML(getFactuurData());fp.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){fp.style.setProperty('--brand',currentBrandColor);fp.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));}else{fp.style.removeProperty('--brand');fp.style.removeProperty('--brand-light');}scalePreview();updateTotalsBar();}
+function updatePreview(){const fp=document.getElementById('factuur-preview');fp.innerHTML=renderFactuurHTML(getFactuurData());fp.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){fp.style.setProperty('--brand',currentBrandColor);fp.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));fp.style.setProperty('--brand-dark',darkenHex(currentBrandColor,40));}else{fp.style.removeProperty('--brand');fp.style.removeProperty('--brand-light');fp.style.removeProperty('--brand-dark');}scalePreview();updateTotalsBar();}
 function scalePreview(){const w=document.querySelector('.preview-wrapper'),s=document.getElementById('preview-scaler'),a=document.getElementById('factuur-preview');if(!w||!a)return;const sc=w.clientWidth/794;s.style.transform='scale('+sc+')';s.style.width='794px';w.style.height=(a.offsetHeight*sc)+'px';}
 window.addEventListener('resize',scalePreview);
 
 /* ═══════════ PDF ═══════════ */
-async function genPDF(data){const ra=document.getElementById('pdf-factuur');ra.innerHTML=renderFactuurHTML(data);ra.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){ra.style.setProperty('--brand',currentBrandColor);ra.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));}else{ra.style.removeProperty('--brand');ra.style.removeProperty('--brand-light');}const c=document.getElementById('pdf-render-area');c.style.left='0';c.style.opacity='0';c.style.pointerEvents='none';await Promise.all(Array.from(ra.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=r;img.onerror=r;})));const canvas=await html2canvas(ra,{scale:2,useCORS:true,backgroundColor:'#fff',width:794,windowWidth:794});c.style.left='-9999px';c.style.opacity='';c.style.pointerEvents='';const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const imgData=canvas.toDataURL('image/png');const aspect=canvas.height/canvas.width;const h=210*aspect;if(h<=297)pdf.addImage(imgData,'PNG',0,0,210,h);else pdf.addImage(imgData,'PNG',0,0,297/aspect,297);return pdf;}
+async function genPDF(data){const ra=document.getElementById('pdf-factuur');ra.innerHTML=renderFactuurHTML(data);ra.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){ra.style.setProperty('--brand',currentBrandColor);ra.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));ra.style.setProperty('--brand-dark',darkenHex(currentBrandColor,40));}else{ra.style.removeProperty('--brand');ra.style.removeProperty('--brand-light');ra.style.removeProperty('--brand-dark');}const c=document.getElementById('pdf-render-area');c.style.left='0';c.style.opacity='0';c.style.pointerEvents='none';await Promise.all(Array.from(ra.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=r;img.onerror=r;})));const canvas=await html2canvas(ra,{scale:2,useCORS:true,backgroundColor:'#fff',width:794,windowWidth:794});c.style.left='-9999px';c.style.opacity='';c.style.pointerEvents='';const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const imgData=canvas.toDataURL('image/png');const aspect=canvas.height/canvas.width;const h=210*aspect;if(h<=297)pdf.addImage(imgData,'PNG',0,0,210,h);else pdf.addImage(imgData,'PNG',0,0,297/aspect,297);return pdf;}
 
 async function downloadPDF(){
   const data=getFactuurData();if(!data.factuurnummer){showToast('Vul factuurnummer in');return;}if(!data.crediteur.id){showToast('Selecteer een crediteur');return;}
@@ -893,7 +911,7 @@ function init(){
   loadAllData();setupCrediteurCombo();setupDebiteurCombo();renderCredLijst();renderHistorie();
   document.getElementById('factuurnummer').value=loadNr();document.getElementById('factuurdatum').value=todayStr();
   const savedTpl=localStorage.getItem('df_template');if(savedTpl)setTemplate(savedTpl,true);
-  if(localStorage.getItem('df_darkmode')==='true'){document.body.classList.add('dark');document.getElementById('dark-toggle').textContent='\u2600\uFE0F';}
+  if(localStorage.getItem('df_darkmode')==='false'){document.body.classList.remove('dark');document.getElementById('dark-toggle').textContent='\uD83C\uDF19';}
   renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);updatePreview();}
 init();
 </script>
