@@ -838,7 +838,22 @@ function loadVoorbeeldCrediteuren(){
   voorbeelden.forEach(v=>{const existing=crediteuren.find(c=>c.naam.toLowerCase()===v.naam.toLowerCase());if(existing)return;
     let logo='';if(typeof DEMO_LOGOS!=='undefined'){for(const[key,match] of Object.entries(logoMap)){if(v.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){logo=DEMO_LOGOS[key];break;}}}
     crediteuren.push({...v,id:genId(),logo});added++;});
-  if(added){saveCred();renderCredLijst();showToast(added+' crediteuren toegevoegd');}else{showToast('Voorbeeldcrediteuren bestaan al');}}
+  if(added){saveCred();renderCredLijst();showToast(added+' crediteuren toegevoegd');}else{showToast('Voorbeeldcrediteuren bestaan al');}
+  // Voorbeeld debiteuren
+  const voorbeeldDebs=[
+    {naam:'Bakkerij De Gouden Aar',adres:'Dorpsstraat 12\n3941 JK Doorn'},
+    {naam:'Sportschool FitWell',adres:'Industrieweg 88\n3542 AD Utrecht'},
+    {naam:'Restaurant De Smulhoek',adres:'Marktplein 3\n3811 MC Amersfoort'},
+    {naam:'Schildersbedrijf Jansen & Zn.',adres:'Kerkweg 45\n3901 AB Veenendaal'},
+    {naam:'Bloemenwinkel Flora',adres:'Hoofdstraat 67\n3971 KE Driebergen'},
+    {naam:'Autogarage Van Dijk',adres:'Stationsweg 102\n3811 MH Amersfoort'},
+    {naam:'Kapsalon Mooi & Co',adres:'Utrechtseweg 24\n3818 ED Amersfoort'},
+    {naam:'Advocatenkantoor De Wit',adres:'Stadsring 171\n3817 BA Amersfoort'}
+  ];
+  let debAdded=0;
+  voorbeeldDebs.forEach(v=>{const existing=debiteuren.find(d=>d.naam.toLowerCase()===v.naam.toLowerCase());if(existing)return;debiteuren.push({...v,id:genId()});debAdded++;});
+  if(debAdded){saveDebs();}
+}
 
 /* ═══════════ CREDITEUREN BEHEER ═══════════ */
 function renderCredLijst(){const g=document.getElementById('crediteuren-grid');if(!crediteuren.length){g.innerHTML='<div class="empty-state"><p>Nog geen crediteuren.</p><button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">\uD83C\uDFE2 Demo-data laden</button></div>';return;}g.innerHTML=crediteuren.map(c=>'<div class="crediteur-card">'+(c.logo?'<img class="crediteur-card-logo" src="'+c.logo+'">':'<div class="crediteur-card-logo placeholder">\uD83C\uDFE2</div>')+'<div class="crediteur-card-info"><h4>'+escapeHtml(c.naam)+'</h4><p>'+escapeHtml(c.email||c.kvk||'\u2014')+'</p></div><div class="crediteur-card-actions"><button class="btn btn-ghost btn-sm" onclick="openCrediteurModal(\''+c.id+'\')">\u270F\uFE0F</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="confirmDel(\''+c.id+'\')">\uD83D\uDDD1</button></div></div>').join('');}
