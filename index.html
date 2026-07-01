@@ -829,7 +829,6 @@ function loadVoorbeeldCrediteuren(){
     {naam:'Kamer van Koophandel',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@kvk.nl',betalingstermijn:30,regelitems:[{omschrijving:'Uittreksel handelsregister',aantal:1,stuksprijs:15.40}]},
     {naam:'Centraal Bureau voor de Statistiek',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@cbs.nl',betalingstermijn:30,regelitems:[{omschrijving:'Statistische dienstverlening',aantal:1,stuksprijs:1750}]},
     {naam:'CJIB',adres:'Postbus 1794\n8901 CB Leeuwarden',kvk:'',btw:'',iban:'NL72 INGB 0000 0044 55',email:'',betalingstermijn:0,regelitems:[{omschrijving:'Verkeersboete [kenteken]',aantal:1,stuksprijs:169}]},
-    {naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN',kvk:'31046822',btw:'NL123456782B01',iban:'NL46 RABO 0198 7654 33',email:'verkoop@outsitedemo.nl',betalingstermijn:30,regelitems:[{omschrijving:'Managed hosting pakket',aantal:1,stuksprijs:1250}]},
     {naam:'EnYoi Holding B.V.',adres:'Stationsplein 45\n3013 AK Rotterdam',kvk:'71234567',btw:'NL862345678B01',iban:'NL45 RABO 0198 7654 32',email:'administratie@enyoi.nl',betalingstermijn:30,regelitems:[{omschrijving:'Detachering software developer',aantal:160,stuksprijs:95}]},
     {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte',aantal:1,stuksprijs:4850}]}
   ];
@@ -839,20 +838,8 @@ function loadVoorbeeldCrediteuren(){
     let logo='';if(typeof DEMO_LOGOS!=='undefined'){for(const[key,match] of Object.entries(logoMap)){if(v.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){logo=DEMO_LOGOS[key];break;}}}
     crediteuren.push({...v,id:genId(),logo});added++;});
   if(added){saveCred();renderCredLijst();showToast(added+' crediteuren toegevoegd');}else{showToast('Voorbeeldcrediteuren bestaan al');}
-  // Voorbeeld debiteuren
-  const voorbeeldDebs=[
-    {naam:'Bakkerij De Gouden Aar',adres:'Dorpsstraat 12\n3941 JK Doorn'},
-    {naam:'Sportschool FitWell',adres:'Industrieweg 88\n3542 AD Utrecht'},
-    {naam:'Restaurant De Smulhoek',adres:'Marktplein 3\n3811 MC Amersfoort'},
-    {naam:'Schildersbedrijf Jansen & Zn.',adres:'Kerkweg 45\n3901 AB Veenendaal'},
-    {naam:'Bloemenwinkel Flora',adres:'Hoofdstraat 67\n3971 KE Driebergen'},
-    {naam:'Autogarage Van Dijk',adres:'Stationsweg 102\n3811 MH Amersfoort'},
-    {naam:'Kapsalon Mooi & Co',adres:'Utrechtseweg 24\n3818 ED Amersfoort'},
-    {naam:'Advocatenkantoor De Wit',adres:'Stadsring 171\n3817 BA Amersfoort'}
-  ];
-  let debAdded=0;
-  voorbeeldDebs.forEach(v=>{const existing=debiteuren.find(d=>d.naam.toLowerCase()===v.naam.toLowerCase());if(existing)return;debiteuren.push({...v,id:genId()});debAdded++;});
-  if(debAdded){saveDebs();}
+  // Debiteur: altijd alleen EnYoi ICT Services
+  if(!debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'))){debiteuren=[{id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'}];saveDebs();}
 }
 
 /* ═══════════ CREDITEUREN BEHEER ═══════════ */
@@ -930,10 +917,10 @@ function init(){
   // Auto-select EnYoi ICT Services als crediteur
   const enyoi=crediteuren.find(c=>c.naam.toLowerCase().includes('enyoi ict services'));
   if(enyoi&&!selectedCrediteurId){selectedCrediteurId=enyoi.id;crediteurCombo.setInput(enyoi.naam);renderCrediteurCard();applyCredData(enyoi);}
-  // Auto-select EnYoi ICT Services als debiteur
+  // Auto-select EnYoi ICT Services als debiteur (altijd enige debiteur)
   let enyoiDeb=debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'));
-  if(!enyoiDeb&&enyoi){enyoiDeb={id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'};debiteuren.push(enyoiDeb);saveDebs();}
-  if(enyoiDeb&&!selectedDebiteurId){selectedDebiteurId=enyoiDeb.id;debiteurCombo.setInput(enyoiDeb.naam);document.getElementById('debiteur-adres').value=enyoiDeb.adres||'';renderDebiteurCard();}
+  if(!enyoiDeb){enyoiDeb={id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'};debiteuren=[enyoiDeb];saveDebs();}
+  selectedDebiteurId=enyoiDeb.id;debiteurCombo.setInput(enyoiDeb.naam);document.getElementById('debiteur-adres').value=enyoiDeb.adres||'';renderDebiteurCard();
   updatePreview();}
 init();
 </script>
