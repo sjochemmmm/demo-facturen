@@ -927,7 +927,11 @@ function init(){
   document.getElementById('factuurnummer').value=loadNr();document.getElementById('factuurdatum').value=todayStr();
   const savedTpl=localStorage.getItem('df_template');if(savedTpl)setTemplate(savedTpl,true);
   if(localStorage.getItem('df_darkmode')==='false'){document.body.classList.remove('dark');document.getElementById('dark-toggle').textContent='\uD83C\uDF19';}
-  renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);updatePreview();}
+  renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);
+  // Auto-select EnYoi ICT Services als crediteur
+  const enyoi=crediteuren.find(c=>c.naam.toLowerCase().includes('enyoi ict services'));
+  if(enyoi&&!selectedCrediteurId){selectedCrediteurId=enyoi.id;crediteurCombo.setInput(enyoi.naam);renderCrediteurCard();applyCredData(enyoi);}
+  updatePreview();}
 init();
 </script>
 </body>
