@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Factuur Generator â€” AFAS</title>
+  <title>Demo Factuur Generator — AFAS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -183,7 +183,7 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .modal-close:hover{background:var(--danger-light);color:var(--danger)}
 .modal-body{padding:24px;overflow-y:auto;flex:1}
 .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--bg)}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:white;padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;box-shadow:var(--shadow-xl);transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);z-index:999}
+.toast{position:fixed;bottom:24px;right:24px;background:#F97316;color:white;padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;box-shadow:var(--shadow-xl);transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);z-index:999}
 .toast.show{transform:translateY(0);opacity:1}
 
 .factuur-a4{width:794px;min-height:1123px;background:white;padding:48px 56px;font-family:'Inter',sans-serif;font-size:13px;color:#1E293B;position:relative;display:flex;flex-direction:column}
@@ -244,10 +244,9 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .info-box{background:var(--primary-very-light);border-left:3px solid var(--primary);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text-secondary);line-height:1.6}
 .info-box strong{color:var(--primary);font-weight:700}
 .demoset-crediteur-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;transition:var(--transition);cursor:pointer}
-.demoset-crediteur-item:hover{border-color:var(--primary);background:var(--surface-hover)}
+.demoset-crediteur-item:hover{border-color:var(--primary);background:var(--surface-hover,rgba(255,255,255,0.03))}
 .demoset-crediteur-item.selected{border-color:var(--primary);background:rgba(59,130,246,0.08);box-shadow:0 0 0 2px rgba(59,130,246,0.2)}
 .demoset-crediteur-item label{margin-bottom:0;font-size:13px;font-weight:600;flex:1;cursor:pointer}
-.demoset-crediteur-item input[type="radio"]{width:auto;accent-color:var(--primary)}
 .demoset-crediteur-item img{width:28px;height:28px;object-fit:contain;border-radius:4px}
 .demoset-periode-btns{display:flex;gap:8px;margin-bottom:12px}
 .demoset-periode-btns .btn{flex:1;text-align:center;padding:10px 8px;font-size:13px;font-weight:600}
@@ -262,6 +261,11 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .demoset-slider-row{display:flex;align-items:center;gap:12px}
 .demoset-slider-row input[type="range"]{flex:1}
 .demoset-slider-row .slider-val{font-weight:700;font-size:15px;min-width:30px;text-align:center;color:var(--primary)}
+.demoset-layout{display:flex;gap:24px}
+.demoset-layout .form-panel{flex:1;max-width:none!important}
+.demoset-preview{flex:0 0 420px;position:sticky;top:20px;align-self:flex-start}
+.demoset-preview .factuur-a4{transform:scale(0.5);transform-origin:top left;width:794px;pointer-events:none}
+.demoset-preview-wrap{width:420px;height:580px;overflow:hidden;border-radius:var(--radius);border:1px solid var(--border);background:white}
 .debiteur-fields{display:none;margin-top:10px}
 .debiteur-fields.visible{display:block}
 .totals-bar{display:flex;justify-content:flex-end;gap:20px;padding:12px 0;margin-top:4px;border-top:1.5px solid var(--border)}
@@ -300,7 +304,7 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .template-card-icon{font-size:22px;margin-bottom:2px}
 .template-card-name{font-size:10px;font-weight:700;color:var(--text);letter-spacing:0.02em}
 
-/* TEMPLATE: KLASSIEK â€” centered, formal, double-border frame */
+/* TEMPLATE: KLASSIEK — centered, formal, double-border frame */
 .factuur-a4[data-template="klassiek"]{border:3px double #1a1a1a;padding:36px 44px}
 .factuur-a4[data-template="klassiek"] .fa4-header{flex-direction:column;align-items:center;text-align:center}
 .factuur-a4[data-template="klassiek"] .fa4-header-left{max-width:100%;text-align:center}
@@ -321,7 +325,7 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .factuur-a4[data-template="klassiek"] .fa4-footer{border-top:3px double #1a1a1a}
 .factuur-a4[data-template="klassiek"] .fa4-badge-betaald{border-radius:0;background:#f7f7f2;color:#1a1a1a;border-color:#999}
 
-/* TEMPLATE: STRAK â€” ultra minimal, monochrome, zero decoration */
+/* TEMPLATE: STRAK — ultra minimal, monochrome, zero decoration */
 .factuur-a4[data-template="strak"]{padding:60px 68px}
 .factuur-a4[data-template="strak"] .fa4-title{font-size:38px;font-weight:900;color:#000;letter-spacing:-0.04em}
 .factuur-a4[data-template="strak"] .fa4-lijn{display:none}
@@ -340,7 +344,7 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .factuur-a4[data-template="strak"] .fa4-crediteur-naam{font-size:16px;font-weight:800;color:#000}
 .factuur-a4[data-template="strak"] .fa4-badge-betaald{background:none;border:1px solid #000;color:#000;border-radius:20px;font-weight:500}
 
-/* TEMPLATE: HUISSTIJL â€” full brand-color header band, white text */
+/* TEMPLATE: HUISSTIJL — full brand-color header band, white text */
 .factuur-a4[data-template="huisstijl"]{padding-top:0;overflow:visible}
 .factuur-a4[data-template="huisstijl"] .fa4-header{position:relative;z-index:1;padding:32px 56px 24px;margin:0 -56px 24px;background:linear-gradient(135deg,var(--brand,#0066CC),var(--brand-dark,#004499))}
 .factuur-a4[data-template="huisstijl"] .fa4-logo{background:white;padding:8px 14px;border-radius:10px;max-height:64px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
@@ -395,12 +399,12 @@ body.dark .download-section{background:#1a4fa0}
     <button class="tab-btn" data-tab="demoset">Demo-set</button>
     <button class="tab-btn" data-tab="instellingen">Instellingen</button>
   </nav>
-  <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Donker/licht thema">â˜€ï¸</button>
+  <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Donker/licht thema">☀️</button>
   <div class="env-switcher">
     <button class="env-btn" id="env-btn" onclick="toggleEnvDropdown()">
       <span class="env-dot"></span>
       <span id="env-btn-label">Omgeving</span>
-      <span>â–¾</span>
+      <span>▾</span>
     </button>
     <div class="env-dropdown" id="env-dropdown"></div>
   </div>
@@ -412,22 +416,22 @@ body.dark .download-section{background:#1a4fa0}
     <div class="form-panel">
       <div class="form-panel-inner">
         <div class="type-toggle">
-          <button class="type-toggle-btn active" data-type="inkoop" onclick="setFactuurType('inkoop')"><span class="toggle-icon">ðŸ“¥</span>Inkoopfactuur</button>
-          <button class="type-toggle-btn" data-type="verkoop" onclick="setFactuurType('verkoop')"><span class="toggle-icon">ðŸ“¤</span>Verkoopfactuur</button>
+          <button class="type-toggle-btn active" data-type="inkoop" onclick="setFactuurType('inkoop')"><span class="toggle-icon">📥</span>Inkoopfactuur</button>
+          <button class="type-toggle-btn" data-type="verkoop" onclick="setFactuurType('verkoop')"><span class="toggle-icon">📤</span>Verkoopfactuur</button>
         </div>
         <div class="template-picker" id="template-picker">
-          <div class="template-card active" data-tpl="modern" onclick="setTemplate('modern')"><div class="template-card-icon">ðŸ“</div><div class="template-card-name">Modern</div></div>
-          <div class="template-card" data-tpl="klassiek" onclick="setTemplate('klassiek')"><div class="template-card-icon">ðŸ›ï¸</div><div class="template-card-name">Klassiek</div></div>
-          <div class="template-card" data-tpl="strak" onclick="setTemplate('strak')"><div class="template-card-icon">âœ¨</div><div class="template-card-name">Strak</div></div>
-          <div class="template-card" data-tpl="huisstijl" onclick="setTemplate('huisstijl')"><div class="template-card-icon">ðŸŽ¨</div><div class="template-card-name">Huisstijl</div></div>
+          <div class="template-card active" data-tpl="modern" onclick="setTemplate('modern')"><div class="template-card-icon">📐</div><div class="template-card-name">Modern</div></div>
+          <div class="template-card" data-tpl="klassiek" onclick="setTemplate('klassiek')"><div class="template-card-icon">🏛️</div><div class="template-card-name">Klassiek</div></div>
+          <div class="template-card" data-tpl="strak" onclick="setTemplate('strak')"><div class="template-card-icon">✨</div><div class="template-card-name">Strak</div></div>
+          <div class="template-card" data-tpl="huisstijl" onclick="setTemplate('huisstijl')"><div class="template-card-icon">🎨</div><div class="template-card-name">Huisstijl</div></div>
         </div>
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">ðŸ¢</div><h3 id="crediteur-section-title">Crediteur (afzender)</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">🏢</div><h3 id="crediteur-section-title">Crediteur (afzender)</h3></div>
           <div class="form-group">
             <div class="combobox" id="crediteur-combobox">
               <div class="combobox-input-wrap">
                 <input type="text" class="combobox-input" id="crediteur-search" placeholder="Zoek of selecteer crediteur..." autocomplete="off">
-                <span class="combobox-chevron">â–¼</span>
+                <span class="combobox-chevron">▼</span>
                 <button class="btn btn-primary btn-add" onclick="openCrediteurModal()" title="Nieuwe crediteur">+</button>
               </div>
               <div class="combobox-dropdown" id="crediteur-dropdown"></div>
@@ -436,12 +440,12 @@ body.dark .download-section{background:#1a4fa0}
           <div id="crediteur-selected-card"></div>
         </div>
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">ðŸ“‹</div><h3 id="debiteur-section-title">Debiteur (ontvanger)</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">📋</div><h3 id="debiteur-section-title">Debiteur (ontvanger)</h3></div>
           <div class="form-group">
             <div class="combobox" id="debiteur-combobox">
               <div class="combobox-input-wrap">
                 <input type="text" class="combobox-input" id="debiteur-search" placeholder="Zoek of typ debiteurnaam..." autocomplete="off">
-                <span class="combobox-chevron">â–¼</span>
+                <span class="combobox-chevron">▼</span>
                 <button class="btn btn-primary btn-add" onclick="openDebiteurModal()" title="Nieuwe debiteur">+</button>
               </div>
               <div class="combobox-dropdown" id="debiteur-dropdown"></div>
@@ -453,9 +457,9 @@ body.dark .download-section{background:#1a4fa0}
           </div>
         </div>
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">ðŸ“„</div><h3>Factuurgegevens</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">📄</div><h3>Factuurgegevens</h3></div>
           <div class="form-row">
-            <div class="form-group"><label>Factuurnummer</label><div class="combobox-input-wrap"><input type="text" id="factuurnummer" style="font-family:'JetBrains Mono',monospace;"><button class="btn btn-outline btn-add" onclick="randomFactuurnr()" title="Willekeurig nummer">ðŸŽ²</button></div></div>
+            <div class="form-group"><label>Factuurnummer</label><div class="combobox-input-wrap"><input type="text" id="factuurnummer" style="font-family:'JetBrains Mono',monospace;"><button class="btn btn-outline btn-add" onclick="randomFactuurnr()" title="Willekeurig nummer">🎲</button></div></div>
             <div class="form-group"><label>Referentie</label><input type="text" id="referentie" placeholder="PO-0001"></div>
           </div>
           <div class="form-row">
@@ -468,18 +472,18 @@ body.dark .download-section{background:#1a4fa0}
           </div>
         </div>
         <div class="form-section">
-          <div class="form-section-header"><div class="form-section-icon">ðŸ“¦</div><h3>Regelitems</h3></div>
+          <div class="form-section-header"><div class="form-section-icon">📦</div><h3>Regelitems</h3></div>
           <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Prijs</th><th class="col-bedrag">Bedrag</th><th class="col-actie"></th></tr></thead><tbody id="regelitems-body"></tbody></table>
           <div style="display:flex;gap:8px;align-items:center;margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="addRegelitem()">+ Lege regel</button></div>
-          <div class="artikel-picker" id="artikel-picker"><div class="artikel-picker-label">Artikelen van deze crediteur â€” klik om toe te voegen:</div><div class="artikel-picker-grid" id="artikel-picker-grid"></div></div>
+          <div class="artikel-picker" id="artikel-picker"><div class="artikel-picker-label">Artikelen van deze crediteur — klik om toe te voegen:</div><div class="artikel-picker-grid" id="artikel-picker-grid"></div></div>
           <div class="totals-bar" id="totals-bar"></div>
         </div>
       </div>
       <div class="download-section">
         <div class="download-options">
-          <div class="download-option"><input type="checkbox" id="gen-bankmutatie" checked><label for="gen-bankmutatie">ðŸ¦ Genereer ook bankmutatie (MT940)</label></div>
+          <div class="download-option"><input type="checkbox" id="gen-bankmutatie" checked><label for="gen-bankmutatie">🏦 Genereer ook bankmutatie (MT940)</label></div>
         </div>
-        <button class="btn btn-block" onclick="downloadPDF()">â¬‡ Download PDF</button>
+        <button class="btn btn-block" onclick="downloadPDF()">⬇ Download PDF</button>
       </div>
     </div>
     <div class="preview-panel"><div class="preview-wrapper"><div class="preview-scaler" id="preview-scaler"><div class="factuur-a4" id="factuur-preview"></div></div></div></div>
@@ -488,7 +492,7 @@ body.dark .download-section{background:#1a4fa0}
 
 <!-- TAB: HISTORIE -->
 <div class="tab-content" id="tab-historie">
-  <div class="page-header"><h2>Mijn facturen</h2><div class="page-actions"><button class="btn btn-outline btn-sm" onclick="clearHistorie()">ðŸ—‘ Alles wissen</button></div></div>
+  <div class="page-header"><h2>Mijn facturen</h2><div class="page-actions"><button class="btn btn-outline btn-sm" onclick="clearHistorie()">🗑 Alles wissen</button></div></div>
   <div id="historie-content"></div>
 </div>
 
@@ -498,13 +502,13 @@ body.dark .download-section{background:#1a4fa0}
     <h2>Crediteuren</h2>
     <div class="page-actions">
       <button class="btn btn-primary" onclick="openCrediteurModal()">+ Nieuwe crediteur</button>
-      <button class="btn btn-success" onclick="document.getElementById('excel-file-input').click()">ðŸ“Š Import Excel</button>
-      <button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">ðŸ¢ Demo-data laden</button>
+      <button class="btn btn-success" onclick="document.getElementById('excel-file-input').click()">📊 Import Excel</button>
+      <button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">🏢 Demo-data laden</button>
       <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelUpload(event)">
     </div>
   </div>
   <div class="upload-area" id="excel-drop-area" onclick="document.getElementById('excel-file-input').click()">
-    <div class="upload-icon">ðŸ“Š</div>
+    <div class="upload-icon">📊</div>
     <div class="upload-title">Sleep een Excel-bestand hierheen of klik om te uploaden</div>
     <div class="upload-hint">Kolommen: Naam, Adres, KvK, BTW, IBAN, Email, Betalingstermijn</div>
   </div>
@@ -515,50 +519,55 @@ body.dark .download-section{background:#1a4fa0}
 <!-- TAB: DEMO-SET -->
 <div class="tab-content" id="tab-demoset">
   <div class="page-header"><h2>Genereer Demo-set</h2></div>
-  <div class="info-box"><strong>EÃ©n crediteur, Ã©Ã©n download.</strong> Kies een crediteur, stel de periode in en bepaal hoeveel facturen afwijken â€” ideaal voor Scan &amp; Herken demos.</div>
-  <div class="form-panel" style="max-width:700px;">
-    <div class="form-panel-inner">
-      <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">ðŸ¢</div><h3>1. Kies crediteur</h3></div>
-        <div id="demoset-crediteuren-lijst" style="max-height:320px;overflow-y:auto;"></div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">ðŸ“…</div><h3>2. Periode</h3></div>
-        <div class="demoset-periode-btns">
-          <button class="btn btn-outline" data-maanden="1" onclick="setDemosetPeriode(1)">1 maand</button>
-          <button class="btn btn-outline" data-maanden="3" onclick="setDemosetPeriode(3)">3 maanden</button>
-          <button class="btn btn-outline active" data-maanden="6" onclick="setDemosetPeriode(6)">6 maanden</button>
-          <button class="btn btn-outline" data-maanden="12" onclick="setDemosetPeriode(12)">12 maanden</button>
+  <div class="info-box"><strong>Kies een crediteur</strong>, stel de periode in en bepaal hoeveel facturen afwijken. Ideaal voor Scan &amp; Herken demos.</div>
+  <div class="demoset-layout">
+    <div class="form-panel">
+      <div class="form-panel-inner">
+        <div class="form-section">
+          <div class="form-section-header"><h3>1. Kies crediteur</h3></div>
+          <div id="demoset-crediteuren-lijst" style="max-height:280px;overflow-y:auto;"></div>
         </div>
-        <div class="form-row"><div class="form-group"><label>Van</label><input type="month" id="demoset-van"></div><div class="form-group"><label>Tot</label><input type="month" id="demoset-tot"></div></div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">ðŸŽ¨</div><h3>3. Template</h3></div>
-        <div class="demoset-template-btns">
-          <div class="template-card active" data-tpl="modern" onclick="setDemosetTemplate('modern')"><div class="template-card-icon">ðŸ“</div><div class="template-card-name">Modern</div></div>
-          <div class="template-card" data-tpl="klassiek" onclick="setDemosetTemplate('klassiek')"><div class="template-card-icon">ðŸ›ï¸</div><div class="template-card-name">Klassiek</div></div>
-          <div class="template-card" data-tpl="strak" onclick="setDemosetTemplate('strak')"><div class="template-card-icon">âœ¨</div><div class="template-card-name">Strak</div></div>
-          <div class="template-card" data-tpl="huisstijl" onclick="setDemosetTemplate('huisstijl')"><div class="template-card-icon">ðŸŽ¨</div><div class="template-card-name">Huisstijl</div></div>
+        <div class="form-section">
+          <div class="form-section-header"><h3>2. Periode</h3></div>
+          <div class="demoset-periode-btns">
+            <button class="btn btn-outline" data-maanden="1" onclick="setDemosetPeriode(1)">1 maand</button>
+            <button class="btn btn-outline" data-maanden="3" onclick="setDemosetPeriode(3)">3 maanden</button>
+            <button class="btn btn-outline active" data-maanden="6" onclick="setDemosetPeriode(6)">6 maanden</button>
+            <button class="btn btn-outline" data-maanden="12" onclick="setDemosetPeriode(12)">12 maanden</button>
+          </div>
+          <div class="form-row"><div class="form-group"><label>Van</label><input type="month" id="demoset-van"></div><div class="form-group"><label>Tot</label><input type="month" id="demoset-tot"></div></div>
         </div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">ðŸŽ²</div><h3>4. Afwijkende facturen</h3></div>
-        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">Hoeveel facturen krijgen een extra regel met afwijkend bedrag? (voor S&amp;H demo: de rest matcht automatisch)</p>
-        <div class="demoset-slider-row">
-          <span style="font-size:12px;">0</span>
-          <input type="range" id="demoset-variatie-slider" min="0" max="12" value="2" oninput="updateVariatieSlider()">
-          <span style="font-size:12px;">alle</span>
-          <span class="slider-val" id="demoset-variatie-val">2</span>
+        <div class="form-section">
+          <div class="form-section-header"><h3>3. Template</h3></div>
+          <div class="demoset-template-btns">
+            <div class="template-card active" data-tpl="modern" onclick="setDemosetTemplate('modern')"><div class="template-card-name">Modern</div></div>
+            <div class="template-card" data-tpl="klassiek" onclick="setDemosetTemplate('klassiek')"><div class="template-card-name">Klassiek</div></div>
+            <div class="template-card" data-tpl="strak" onclick="setDemosetTemplate('strak')"><div class="template-card-name">Strak</div></div>
+            <div class="template-card" data-tpl="huisstijl" onclick="setDemosetTemplate('huisstijl')"><div class="template-card-name">Huisstijl</div></div>
+          </div>
         </div>
-        <div class="demoset-variatie-preview" id="demoset-variatie-preview">Selecteer een crediteur om de mogelijke afwijkingen te zien.</div>
+        <div class="form-section">
+          <div class="form-section-header"><h3>4. Afwijkende facturen</h3></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">Hoeveel facturen krijgen een extra regel met afwijkend bedrag?</p>
+          <div class="demoset-slider-row">
+            <span style="font-size:12px;">0</span>
+            <input type="range" id="demoset-variatie-slider" min="0" max="6" value="2" oninput="updateVariatieSlider()">
+            <span style="font-size:12px;">alle</span>
+            <span class="slider-val" id="demoset-variatie-val">2</span>
+          </div>
+          <div class="demoset-variatie-preview" id="demoset-variatie-preview">Selecteer een crediteur om de mogelijke afwijkingen te zien.</div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-header"><h3>5. Opties</h3></div>
+          <div class="form-row"><div class="form-group"><label>Start factuurnr</label><input type="text" id="demoset-startnr"></div><div class="form-group"><label>BTW-tarief</label><select id="demoset-btw"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div></div>
+          <div class="form-group" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="demoset-bankmutatie" checked style="width:auto;accent-color:var(--primary);"><label for="demoset-bankmutatie" style="margin-bottom:0;font-size:13px;cursor:pointer;">Bankmutaties (MT940) meegenereren</label></div>
+        </div>
+        <div class="reeks-progress" id="demoset-progress"><div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div><p class="progress-text" id="demoset-progress-text"></p></div>
+        <button class="btn btn-accent btn-block" id="btn-demoset-genereer" onclick="generateDemoSet()" style="padding:14px;">Genereer Demo-set (ZIP)</button>
       </div>
-      <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">âš™ï¸</div><h3>5. Opties</h3></div>
-        <div class="form-row"><div class="form-group"><label>Start factuurnr</label><input type="text" id="demoset-startnr"></div><div class="form-group"><label>BTW-tarief</label><select id="demoset-btw"><option value="0.21">21%</option><option value="0.09">9%</option><option value="0">0%</option></select></div></div>
-        <div class="form-group" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="demoset-bankmutatie" checked style="width:auto;accent-color:var(--primary);"><label for="demoset-bankmutatie" style="margin-bottom:0;font-size:13px;cursor:pointer;">ðŸ¦ Bankmutaties (MT940) meegenereren</label></div>
-      </div>
-      <div class="reeks-progress" id="demoset-progress"><div class="progress-bar"><div class="progress-bar-fill" id="demoset-progress-fill"></div></div><p class="progress-text" id="demoset-progress-text"></p></div>
-      <button class="btn btn-accent btn-block" id="btn-demoset-genereer" onclick="generateDemoSet()" style="padding:14px;">ðŸš€ Genereer Demo-set (ZIP)</button>
+    </div>
+    <div class="demoset-preview">
+      <div class="demoset-preview-wrap" id="demoset-preview-wrap"><p style="padding:40px;text-align:center;color:#94A3B8;">Selecteer een crediteur voor preview</p></div>
     </div>
   </div>
 </div>
@@ -569,14 +578,14 @@ body.dark .download-section{background:#1a4fa0}
   <div class="form-panel" style="max-width:600px;">
     <div class="form-panel-inner">
       <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">ðŸ’¾</div><h3>Exporteer / Importeer</h3></div>
+        <div class="form-section-header"><div class="form-section-icon">💾</div><h3>Exporteer / Importeer</h3></div>
         <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Alles als JSON-bestand.</p>
-        <div class="btn-group"><button class="btn btn-primary" onclick="exportAlles()">â¬‡ Exporteer JSON</button><button class="btn btn-outline" onclick="document.getElementById('import-json-input').click()">â¬† Importeer JSON</button><input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importAlles(event)"></div>
+        <div class="btn-group"><button class="btn btn-primary" onclick="exportAlles()">⬇ Exporteer JSON</button><button class="btn btn-outline" onclick="document.getElementById('import-json-input').click()">⬆ Importeer JSON</button><input type="file" id="import-json-input" accept=".json" style="display:none" onchange="importAlles(event)"></div>
       </div>
       <div class="form-section">
-        <div class="form-section-header"><div class="form-section-icon">âš ï¸</div><h3>Omgeving wissen</h3></div>
+        <div class="form-section-header"><div class="form-section-icon">⚠️</div><h3>Omgeving wissen</h3></div>
         <p style="font-size:13px;color:var(--danger);margin-bottom:12px;">Verwijdert alle data in de huidige omgeving.</p>
-        <button class="btn btn-danger btn-sm" onclick="confirmWisAlles()">ðŸ—‘ Alles wissen</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmWisAlles()">🗑 Alles wissen</button>
       </div>
     </div>
   </div>
@@ -587,7 +596,7 @@ body.dark .download-section{background:#1a4fa0}
   <div class="modal" style="max-width:480px;">
     <div class="modal-body">
       <div class="welcome-content">
-        <div class="welcome-icon">ðŸ“„</div>
+        <div class="welcome-icon">📄</div>
         <h2>Demo Factuur Generator</h2>
         <p>Maak snel realistische facturen en bankmutaties voor jouw AFAS SB demo-omgeving.</p>
         <div class="form-group"><label>Naam of omgevingsnaam</label><input type="text" id="welcome-naam" placeholder="bijv. Jochem, of Demo Regio West"></div>
@@ -601,17 +610,17 @@ body.dark .download-section{background:#1a4fa0}
 <!-- MODAL: CREDITEUR -->
 <div class="modal-overlay" id="modal-crediteur">
   <div class="modal" style="max-width:700px;">
-    <div class="modal-header"><h2 id="modal-crediteur-titel">Nieuwe crediteur</h2><button class="modal-close" onclick="sluitCrediteurModal()">âœ•</button></div>
+    <div class="modal-header"><h2 id="modal-crediteur-titel">Nieuwe crediteur</h2><button class="modal-close" onclick="sluitCrediteurModal()">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="crediteur-id">
       <div class="form-row" style="margin-bottom:16px;">
         <div style="flex:1;"><div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="cred-naam" placeholder="Bedrijfsnaam B.V."></div><div class="form-group"><label>Adres</label><textarea id="cred-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div></div>
-        <div style="flex:0 0 150px;"><label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;">Logo</label><div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()"><img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om te uploaden</p><input type="file" id="cred-logo-input" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)"></div><div class="logo-or-gallery">â€” of kies uit galerij â€”</div><div class="logo-gallery" id="cred-logo-gallery"></div></div>
+        <div style="flex:0 0 150px;"><label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;">Logo</label><div class="logo-upload-area" onclick="document.getElementById('cred-logo-input').click()"><img id="cred-logo-preview" src="" style="display:none;"><p id="cred-logo-text">Klik om te uploaden</p><input type="file" id="cred-logo-input" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)"></div><div class="logo-or-gallery">— of kies uit galerij —</div><div class="logo-gallery" id="cred-logo-gallery"></div></div>
       </div>
       <div class="form-row"><div class="form-group"><label>KvK-nummer</label><input type="text" id="cred-kvk" placeholder="12345678"></div><div class="form-group"><label>BTW-nummer</label><input type="text" id="cred-btw" placeholder="NL123456789B01"></div></div>
       <div class="form-row"><div class="form-group"><label>IBAN</label><input type="text" id="cred-iban" placeholder="NL00 BANK 0123 4567 89"></div><div class="form-group"><label>E-mailadres</label><input type="text" id="cred-email" placeholder="info@bedrijf.nl"></div></div>
       <div class="form-group"><label>Betalingstermijn (dagen)</label><input type="number" id="cred-termijn" value="30" min="0" max="365" style="width:120px;"></div>
-      <div class="form-section-header" style="margin-top:20px;"><div class="form-section-icon">ðŸ“¦</div><h3>Standaard regelitems</h3></div>
+      <div class="form-section-header" style="margin-top:20px;"><div class="form-section-icon">📦</div><h3>Standaard regelitems</h3></div>
       <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Prijs</th><th class="col-actie"></th></tr></thead><tbody id="cred-regelitems-body"></tbody></table>
       <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="addCredRegelitem()">+ Regel toevoegen</button>
     </div>
@@ -622,7 +631,7 @@ body.dark .download-section{background:#1a4fa0}
 <!-- MODAL: DEBITEUR -->
 <div class="modal-overlay" id="modal-debiteur">
   <div class="modal" style="max-width:500px;">
-    <div class="modal-header"><h2 id="modal-debiteur-titel">Nieuwe debiteur</h2><button class="modal-close" onclick="sluitDebiteurModal()">âœ•</button></div>
+    <div class="modal-header"><h2 id="modal-debiteur-titel">Nieuwe debiteur</h2><button class="modal-close" onclick="sluitDebiteurModal()">✕</button></div>
     <div class="modal-body"><input type="hidden" id="debiteur-edit-id"><div class="form-group"><label>Bedrijfsnaam *</label><input type="text" id="deb-naam" placeholder="Bedrijfsnaam B.V."></div><div class="form-group"><label>Adres</label><textarea id="deb-adres" rows="3" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div></div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="sluitDebiteurModal()">Annuleren</button><button class="btn btn-primary" onclick="saveDebiteurModal()">Opslaan</button></div>
   </div>
@@ -631,7 +640,7 @@ body.dark .download-section{background:#1a4fa0}
 <!-- MODAL: CONFIRM -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;">
-    <div class="modal-header"><h2>Bevestigen</h2><button class="modal-close" onclick="sluitConfirmModal()">âœ•</button></div>
+    <div class="modal-header"><h2>Bevestigen</h2><button class="modal-close" onclick="sluitConfirmModal()">✕</button></div>
     <div class="modal-body"><p id="confirm-message"></p></div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="sluitConfirmModal()">Annuleren</button><button class="btn btn-danger" id="btn-confirm-ok">Verwijderen</button></div>
   </div>
@@ -641,7 +650,7 @@ body.dark .download-section{background:#1a4fa0}
 <div id="pdf-render-area"><div class="factuur-a4" id="pdf-factuur"></div></div>
 
 <script>
-/* â•â•â•â•â•â•â•â•â•â•â• STATE â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ STATE ═══════════ */
 const DATA_VERSION=5;
 const MAANDEN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 let crediteuren=[],debiteuren=[],historie=[],currentLogoBase64='';
@@ -650,7 +659,7 @@ let factuurType='inkoop';
 let activeTemplate='modern',currentBrandColor='#0066CC';
 let activeEnv='',envList=[];
 
-/* â•â•â•â•â•â•â•â•â•â•â• UTILS â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ UTILS ═══════════ */
 const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const formatBedrag=n=>'\u20AC '+new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 const formatDatum=ds=>{if(!ds)return'';const d=new Date(ds+'T00:00:00');return d.getDate()+' '+MAANDEN[d.getMonth()]+' '+d.getFullYear();};
@@ -664,7 +673,7 @@ function incrementNr(nr){const m=nr.match(/^(.*?)(\d+)$/);if(m)return m[1]+Strin
 function varyAmount(base,pct){if(!pct)return base;const factor=1+(Math.random()*2-1)*pct;return Math.round(factor*base*100)/100;}
 function getKwartaal(m){return Math.floor(m/3)+1;}
 
-/* â•â•â•â•â•â•â•â•â•â•â• TEMPLATES & DARK MODE â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ TEMPLATES & DARK MODE ═══════════ */
 function hexToRgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}
 function darkenHex(hex,amt){const r=Math.max(0,parseInt(hex.slice(1,3),16)-amt),g=Math.max(0,parseInt(hex.slice(3,5),16)-amt),b=Math.max(0,parseInt(hex.slice(5,7),16)-amt);return '#'+[r,g,b].map(c=>c.toString(16).padStart(2,'0')).join('');}
 function extractDominantColor(imgSrc,cb){
@@ -677,26 +686,26 @@ function extractDominantColor(imgSrc,cb){
 function setTemplate(name,silent){activeTemplate=name;document.querySelectorAll('.template-card').forEach(c=>c.classList.toggle('active',c.dataset.tpl===name));if(!silent){localStorage.setItem('df_template',name);updatePreview();showToast('Template: '+name.charAt(0).toUpperCase()+name.slice(1));}}
 function toggleDarkMode(){const isDark=document.body.classList.toggle('dark');document.getElementById('dark-toggle').textContent=isDark?'\u2600\uFE0F':'\uD83C\uDF19';localStorage.setItem('df_darkmode',isDark?'true':'false');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• OMGEVINGEN â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ OMGEVINGEN ═══════════ */
 function lsKey(key){return 'dfenv_'+activeEnv+'_'+key;}
 function loadEnvList(){try{envList=JSON.parse(localStorage.getItem('df_environments'))||[];}catch{envList=[];}}
 function saveEnvList(){localStorage.setItem('df_environments',JSON.stringify(envList));}
 function setActiveEnv(name){activeEnv=name;localStorage.setItem('df_active_env',name);document.getElementById('env-btn-label').textContent=name;loadAllData();renderCredLijst();renderHistorie();updatePreview();}
 function createEnv(name,loadDemo){envList.push(name);saveEnvList();setActiveEnv(name);if(loadDemo)loadVoorbeeldCrediteuren();}
-function deleteEnv(name){if(envList.length<=1){showToast('Minimaal Ã©Ã©n omgeving vereist');return;}
+function deleteEnv(name){if(envList.length<=1){showToast('Minimaal één omgeving vereist');return;}
   const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'+name+'_'));keys.forEach(k=>localStorage.removeItem(k));
   envList=envList.filter(e=>e!==name);saveEnvList();setActiveEnv(envList[0]);}
 function toggleEnvDropdown(){const dd=document.getElementById('env-dropdown');if(dd.classList.contains('open')){dd.classList.remove('open');return;}
-  let html=envList.map(e=>'<div class="env-dropdown-item'+(e===activeEnv?' active':'')+'" onclick="switchEnv(\''+escapeHtml(e)+'\')">'+escapeHtml(e)+(e===activeEnv?' âœ“':'')+'</div>').join('');
+  let html=envList.map(e=>'<div class="env-dropdown-item'+(e===activeEnv?' active':'')+'" onclick="switchEnv(\''+escapeHtml(e)+'\')">'+escapeHtml(e)+(e===activeEnv?' ✓':'')+'</div>').join('');
   html+='<div class="env-dropdown-divider"></div><div class="env-dropdown-item" onclick="promptNewEnv()">+ Nieuwe omgeving</div>';
-  if(envList.length>1)html+='<div class="env-dropdown-item danger" onclick="promptDeleteEnv()">ðŸ—‘ Verwijder huidige</div>';
+  if(envList.length>1)html+='<div class="env-dropdown-item danger" onclick="promptDeleteEnv()">🗑 Verwijder huidige</div>';
   dd.innerHTML=html;dd.classList.add('open');}
 function switchEnv(name){setActiveEnv(name);document.getElementById('env-dropdown').classList.remove('open');showToast('Omgeving: '+name);}
 function promptNewEnv(){document.getElementById('env-dropdown').classList.remove('open');const name=prompt('Naam nieuwe omgeving:');if(name&&name.trim()){createEnv(name.trim(),confirm('Voorbeelddata laden?'));showToast('Omgeving "'+name.trim()+'" aangemaakt');}}
 function promptDeleteEnv(){document.getElementById('env-dropdown').classList.remove('open');if(confirm('Omgeving "'+activeEnv+'" verwijderen?'))deleteEnv(activeEnv);}
 document.addEventListener('click',e=>{if(!e.target.closest('.env-switcher'))document.getElementById('env-dropdown').classList.remove('open');});
 
-/* â•â•â•â•â•â•â•â•â•â•â• STORAGE â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ STORAGE ═══════════ */
 function checkDataVersion(){const v=localStorage.getItem('df_data_version');if(parseInt(v)!==DATA_VERSION){const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'));keys.forEach(k=>localStorage.removeItem(k));localStorage.setItem('df_data_version',DATA_VERSION);return true;}return false;}
 function loadAllData(){const reset=checkDataVersion();loadCred();loadDebs();loadHistorie();document.getElementById('factuurnummer').value=loadNr();selectedCrediteurId='';selectedDebiteurId='';if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';if(reset||!crediteuren.length)loadVoorbeeldCrediteuren();}
 function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(lsKey('crediteuren')))||[];}catch{crediteuren=[];}autoMatchLogos();}
@@ -713,16 +722,16 @@ function autoMatchLogos(){
   let changed=false;crediteuren.forEach(c=>{if(c.logo)return;for(const[key,match] of Object.entries(logoMap)){if(c.naam.toLowerCase().includes(match)&&DEMO_LOGOS[key]){c.logo=DEMO_LOGOS[key];changed=true;break;}}});
   if(changed)saveCred();}
 
-/* â•â•â•â•â•â•â•â•â•â•â• WELCOME â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ WELCOME ═══════════ */
 function checkWelcome(){loadEnvList();const active=localStorage.getItem('df_active_env');if(active&&envList.includes(active)){activeEnv=active;document.getElementById('env-btn-label').textContent=active;return true;}return false;}
 function startOmgeving(){const naam=document.getElementById('welcome-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
   const loadDemo=document.getElementById('welcome-demo').checked;document.getElementById('modal-welcome').classList.remove('active');
   createEnv(naam,loadDemo);showToast('Welkom, '+naam+'!');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• TABS â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ TABS ═══════════ */
 document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');if(btn.dataset.tab==='factuur')updatePreview();if(btn.dataset.tab==='demoset')initDemoSetTab();if(btn.dataset.tab==='historie')renderHistorie();});});
 
-/* â•â•â•â•â•â•â•â•â•â•â• COMBOBOX â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ COMBOBOX ═══════════ */
 function initCombobox(inputId,dropdownId,comboboxId,getItems,onSelect,onFreetext){
   const input=document.getElementById(inputId),dropdown=document.getElementById(dropdownId),combobox=document.getElementById(comboboxId);
   let highlightIdx=-1,items=[];
@@ -739,7 +748,7 @@ function initCombobox(inputId,dropdownId,comboboxId,getItems,onSelect,onFreetext
   return{close,setInput:v=>{input.value=v;},clear:()=>{input.value='';}};
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â• CREDITEUR COMBOBOX â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ CREDITEUR COMBOBOX ═══════════ */
 let crediteurCombo,debiteurCombo;
 function setupCrediteurCombo(){crediteurCombo=initCombobox('crediteur-search','crediteur-dropdown','crediteur-combobox',filter=>crediteuren.filter(c=>!filter||c.naam.toLowerCase().includes(filter.toLowerCase())).map(c=>({...c,detail:c.email||c.kvk||''})),item=>{selectedCrediteurId=item.id;renderCrediteurCard();applyCredData(item);updatePreview();});}
 function renderCrediteurCard(){const card=document.getElementById('crediteur-selected-card');const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(!c){card.innerHTML='';return;}card.innerHTML='<div class="selected-card">'+(c.logo?'<img class="sc-logo" src="'+c.logo+'">':'<div class="sc-logo placeholder">\uD83C\uDFE2</div>')+'<div class="sc-info"><div class="sc-naam">'+escapeHtml(c.naam)+'</div><div class="sc-detail">'+escapeHtml(c.email||c.kvk||'')+'</div></div><button class="sc-clear" onclick="clearCrediteurSelection()" title="Deselecteren">\u00D7</button></div>';}
@@ -749,7 +758,7 @@ function renderArtikelPicker(c){const picker=document.getElementById('artikel-pi
 function addArtikelFromPicker(idx){const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(!c||!c.regelitems||!c.regelitems[idx])return;const art=c.regelitems[idx];const items=getRegelitems();if(items.length===1&&!items[0].omschrijving&&!items[0].stuksprijs){items[0]={...art};}else{items.push({...art});}renderRegelitems(items);updatePreview();showToast('"'+art.omschrijving+'" toegevoegd');}
 function hideArtikelPicker(){document.getElementById('artikel-picker').classList.remove('visible');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• DEBITEUR COMBOBOX â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ DEBITEUR COMBOBOX ═══════════ */
 function setupDebiteurCombo(){debiteurCombo=initCombobox('debiteur-search','debiteur-dropdown','debiteur-combobox',filter=>debiteuren.filter(d=>!filter||d.naam.toLowerCase().includes(filter.toLowerCase())).map(d=>({...d,logo:null,detail:d.adres?d.adres.split('\n')[0]:''})),item=>{selectedDebiteurId=item.id;renderDebiteurCard();updatePreview();},freetext=>{selectedDebiteurId='';document.getElementById('debiteur-selected-card').innerHTML='';document.getElementById('debiteur-fields').classList.toggle('visible',!!freetext.trim());updatePreview();});}
 function renderDebiteurCard(){const card=document.getElementById('debiteur-selected-card');const d=debiteuren.find(x=>x.id===selectedDebiteurId);if(!d){card.innerHTML='';document.getElementById('debiteur-fields').classList.remove('visible');return;}document.getElementById('debiteur-adres').value=d.adres||'';document.getElementById('debiteur-fields').classList.remove('visible');card.innerHTML='<div class="selected-card"><div class="sc-logo placeholder">\uD83C\uDFDB\uFE0F</div><div class="sc-info"><div class="sc-naam">'+escapeHtml(d.naam)+'</div><div class="sc-detail">'+escapeHtml(d.adres?d.adres.split('\n')[0]:'Geen adres')+'</div></div><button class="sc-clear" onclick="clearDebiteurSelection()" title="Deselecteren">\u00D7</button></div>';}
 function clearDebiteurSelection(){selectedDebiteurId='';debiteurCombo.clear();document.getElementById('debiteur-selected-card').innerHTML='';document.getElementById('debiteur-adres').value='';document.getElementById('debiteur-fields').classList.remove('visible');updatePreview();}
@@ -757,10 +766,10 @@ function openDebiteurModal(id){const modal=document.getElementById('modal-debite
 function sluitDebiteurModal(){document.getElementById('modal-debiteur').classList.remove('active');}
 function saveDebiteurModal(){const naam=document.getElementById('deb-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}const id=document.getElementById('debiteur-edit-id').value;const d={id:id||genId(),naam,adres:document.getElementById('deb-adres').value.trim()};if(id){const idx=debiteuren.findIndex(x=>x.id===id);if(idx>=0)debiteuren[idx]=d;}else{debiteuren.push(d);}saveDebs();sluitDebiteurModal();showToast('Debiteur opgeslagen');selectedDebiteurId=d.id;debiteurCombo.setInput(d.naam);renderDebiteurCard();updatePreview();}
 
-/* â•â•â•â•â•â•â•â•â•â•â• FACTUUR TYPE â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ FACTUUR TYPE ═══════════ */
 function setFactuurType(type){factuurType=type;document.querySelectorAll('.type-toggle-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));if(type==='inkoop'){document.getElementById('crediteur-section-title').textContent='Crediteur (afzender)';document.getElementById('debiteur-section-title').textContent='Debiteur (ontvanger)';}else{document.getElementById('crediteur-section-title').textContent='Uw bedrijf (afzender)';document.getElementById('debiteur-section-title').textContent='Klant (ontvanger)';const enyoi=crediteuren.find(c=>c.naam.toLowerCase().includes('enyoi ict services'));if(enyoi){selectedCrediteurId=enyoi.id;crediteurCombo.setInput(enyoi.naam);renderCrediteurCard();applyCredData(enyoi);}}updatePreview();}
 
-/* â•â•â•â•â•â•â•â•â•â•â• REGELITEMS â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ REGELITEMS ═══════════ */
 function renderRegelitems(items){document.getElementById('regelitems-body').innerHTML=items.map((it,i)=>'<tr><td class="col-omschrijving"><input type="text" value="'+escapeHtml(it.omschrijving)+'" data-field="omschrijving" oninput="updatePreview()"></td><td class="col-aantal"><input type="number" value="'+it.aantal+'" min="0" step="1" data-field="aantal" oninput="updRegel(this);updatePreview()"></td><td class="col-prijs"><input type="number" value="'+it.stuksprijs+'" min="0" step="0.01" data-field="stuksprijs" oninput="updRegel(this);updatePreview()"></td><td class="col-bedrag">'+formatBedrag(it.aantal*it.stuksprijs)+'</td><td class="col-actie"><button class="btn-remove-row" onclick="rmRegel('+i+')">\u00D7</button></td></tr>').join('');updateTotalsBar();}
 function getRegelitems(){return Array.from(document.querySelectorAll('#regelitems-body tr')).map(r=>({omschrijving:r.querySelector('[data-field="omschrijving"]').value,aantal:parseFloat(r.querySelector('[data-field="aantal"]').value)||0,stuksprijs:parseFloat(r.querySelector('[data-field="stuksprijs"]').value)||0}));}
 function addRegelitem(){const i=getRegelitems();i.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(i);updatePreview();}
@@ -774,7 +783,7 @@ function getFactuurData(){return{crediteur:crediteuren.find(c=>c.id===selectedCr
 document.getElementById('factuurdatum').addEventListener('change',function(){const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(c&&this.value)document.getElementById('vervaldatum').value=addDagen(this.value,c.betalingstermijn||30);updatePreview();});
 ['factuurnummer','referentie','vervaldatum','btw-tarief','factuur-status','debiteur-adres'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',updatePreview);el.addEventListener('change',updatePreview);}});
 
-/* â•â•â•â•â•â•â•â•â•â•â• FACTUUR RENDER â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ FACTUUR RENDER ═══════════ */
 function renderFactuurHTML(data){
   const c=data.crediteur||{},items=data.regelitems||[],btwPct=data.btwTarief||0;
   let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});sub=Math.round(sub*100)/100;
@@ -786,12 +795,12 @@ function renderFactuurHTML(data){
   return '<div class="fa4-header"><div class="fa4-header-left">'+(c.logo?'<img class="fa4-logo" src="'+c.logo+'">':'')+'<div class="fa4-crediteur-naam">'+(escapeHtml(c.naam)||'Crediteur')+'</div><div class="fa4-crediteur-adres">'+(escapeHtml(c.adres)||'')+'</div>'+(det?'<div class="fa4-crediteur-detail">'+det+'</div>':'')+'</div><div class="fa4-header-right"><div class="fa4-title">'+typeLabel+' '+badge+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> '+(escapeHtml(data.factuurnummer)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> '+(formatDatum(data.factuurdatum)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> '+(formatDatum(data.vervaldatum)||'\u2014')+'</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">'+(escapeHtml(data.debiteurNaam)||'Debiteur')+'\n'+(escapeHtml(data.debiteurAdres)||'')+'\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">'+(data.referentie?'Ref: '+escapeHtml(data.referentie):'')+'</div><div class="fa4-meta-line">Betalingstermijn: '+(c.betalingstermijn||30)+' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>'+items.map(r=>{const b=(r.aantal||0)*(r.stuksprijs||0);return '<tr><td>'+(escapeHtml(r.omschrijving)||'\u2014')+'</td><td style="text-align:right">'+(r.aantal||0)+'</td><td style="text-align:right">'+formatBedrag(r.stuksprijs||0)+'</td><td style="text-align:right">'+formatBedrag(b)+'</td></tr>';}).join('')+'</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>'+formatBedrag(sub)+'</span></div><div class="fa4-totalen-rij"><span>BTW '+btwL+'</span><span>'+formatBedrag(btw)+'</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>'+formatBedrag(tot)+'</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>'+formatBedrag(tot)+'</strong> over te maken op <strong>'+(escapeHtml(c.iban)||'NL00 BANK 0000 0000 00')+'</strong> t.n.v. <strong>'+(escapeHtml(c.naam)||'Crediteur')+'</strong> o.v.v. <strong>'+(escapeHtml(data.factuurnummer)||'\u2014')+'</strong>.</p></div><div class="fa4-footer">'+(escapeHtml(c.naam)||'')+(c.kvk?' | KvK: '+escapeHtml(c.kvk):'')+(c.btw?' | BTW: '+escapeHtml(c.btw):'')+'</div>';
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â• PREVIEW â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ PREVIEW ═══════════ */
 function updatePreview(){const fp=document.getElementById('factuur-preview');fp.innerHTML=renderFactuurHTML(getFactuurData());fp.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){fp.style.setProperty('--brand',currentBrandColor);fp.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));fp.style.setProperty('--brand-dark',darkenHex(currentBrandColor,40));}else{fp.style.removeProperty('--brand');fp.style.removeProperty('--brand-light');fp.style.removeProperty('--brand-dark');}scalePreview();updateTotalsBar();}
 function scalePreview(){const w=document.querySelector('.preview-wrapper'),s=document.getElementById('preview-scaler'),a=document.getElementById('factuur-preview');if(!w||!a)return;const sc=w.clientWidth/794;s.style.transform='scale('+sc+')';s.style.width='794px';w.style.height=(a.offsetHeight*sc)+'px';}
 window.addEventListener('resize',scalePreview);
 
-/* â•â•â•â•â•â•â•â•â•â•â• PDF â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ PDF ═══════════ */
 async function genPDF(data){const ra=document.getElementById('pdf-factuur');ra.innerHTML=renderFactuurHTML(data);ra.setAttribute('data-template',activeTemplate);if(activeTemplate==='huisstijl'){ra.style.setProperty('--brand',currentBrandColor);ra.style.setProperty('--brand-light',hexToRgba(currentBrandColor,0.08));ra.style.setProperty('--brand-dark',darkenHex(currentBrandColor,40));}else{ra.style.removeProperty('--brand');ra.style.removeProperty('--brand-light');ra.style.removeProperty('--brand-dark');}const c=document.getElementById('pdf-render-area');c.style.left='0';c.style.opacity='0';c.style.pointerEvents='none';await Promise.all(Array.from(ra.querySelectorAll('img')).map(img=>img.complete?Promise.resolve():new Promise(r=>{img.onload=r;img.onerror=r;})));const canvas=await html2canvas(ra,{scale:2,useCORS:true,backgroundColor:'#fff',width:794,windowWidth:794});c.style.left='-9999px';c.style.opacity='';c.style.pointerEvents='';const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const imgData=canvas.toDataURL('image/png');const aspect=canvas.height/canvas.width;const h=210*aspect;if(h<=297)pdf.addImage(imgData,'PNG',0,0,210,h);else pdf.addImage(imgData,'PNG',0,0,297/aspect,297);return pdf;}
 
 async function downloadPDF(){
@@ -803,7 +812,7 @@ async function downloadPDF(){
   const next=incrementNr(data.factuurnummer);saveNr(next);document.getElementById('factuurnummer').value=next;
   showToast('PDF'+(document.getElementById('gen-bankmutatie').checked?' + bankmutatie':'')+' gedownload');updatePreview();}
 
-/* â•â•â•â•â•â•â•â•â•â•â• HISTORIE â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ HISTORIE ═══════════ */
 function saveToHistorie(data){
   const items=data.regelitems||[];let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});
   const btw=sub*(data.btwTarief||0),tot=Math.round((sub+btw)*100)/100;
@@ -812,7 +821,7 @@ function saveToHistorie(data){
 function renderHistorie(){
   const el=document.getElementById('historie-content');
   if(!historie.length){el.innerHTML='<div class="empty-state"><p>Nog geen facturen gegenereerd.</p></div>';return;}
-  el.innerHTML='<table class="historie-tabel"><thead><tr><th>Nr</th><th>Crediteur</th><th>Debiteur</th><th>Datum</th><th>Bedrag</th><th>Status</th><th class="acties-col">Acties</th></tr></thead><tbody>'+historie.map(h=>'<tr><td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;">'+escapeHtml(h.factuurnummer)+'</td><td>'+escapeHtml(h.crediteurNaam)+'</td><td>'+escapeHtml(h.debiteurNaam)+'</td><td>'+formatDatumKort(h.datum)+'</td><td class="bedrag-col">'+formatBedrag(h.bedrag)+'</td><td><span class="badge badge-'+h.status+'">'+h.status+'</span></td><td class="acties-col"><button class="btn btn-ghost btn-sm" onclick="herdownloadFactuur(\''+h.id+'\')" title="Opnieuw downloaden">â¬‡</button><button class="btn btn-ghost btn-sm" onclick="laadFactuur(\''+h.id+'\')" title="Bewerken">âœï¸</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="verwijderHistorie(\''+h.id+'\')" title="Verwijderen">ðŸ—‘</button></td></tr>').join('')+'</tbody></table>';}
+  el.innerHTML='<table class="historie-tabel"><thead><tr><th>Nr</th><th>Crediteur</th><th>Debiteur</th><th>Datum</th><th>Bedrag</th><th>Status</th><th class="acties-col">Acties</th></tr></thead><tbody>'+historie.map(h=>'<tr><td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;">'+escapeHtml(h.factuurnummer)+'</td><td>'+escapeHtml(h.crediteurNaam)+'</td><td>'+escapeHtml(h.debiteurNaam)+'</td><td>'+formatDatumKort(h.datum)+'</td><td class="bedrag-col">'+formatBedrag(h.bedrag)+'</td><td><span class="badge badge-'+h.status+'">'+h.status+'</span></td><td class="acties-col"><button class="btn btn-ghost btn-sm" onclick="herdownloadFactuur(\''+h.id+'\')" title="Opnieuw downloaden">⬇</button><button class="btn btn-ghost btn-sm" onclick="laadFactuur(\''+h.id+'\')" title="Bewerken">✏️</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="verwijderHistorie(\''+h.id+'\')" title="Verwijderen">🗑</button></td></tr>').join('')+'</tbody></table>';}
 async function herdownloadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)return;const pdf=await genPDF(h.data);pdf.save('Factuur-'+h.factuurnummer+'.pdf');showToast('PDF opnieuw gedownload');}
 function laadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)return;const d=h.data;
   if(d.crediteur&&d.crediteur.id){const c=crediteuren.find(x=>x.id===d.crediteur.id);if(c){selectedCrediteurId=c.id;crediteurCombo.setInput(c.naam);renderCrediteurCard();}}
@@ -823,7 +832,7 @@ function laadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)retu
 function verwijderHistorie(id){historie=historie.filter(x=>x.id!==id);saveHistorie();renderHistorie();showToast('Verwijderd');}
 function clearHistorie(){if(!historie.length)return;if(confirm('Alle factuurhistorie wissen?')){historie=[];saveHistorie();renderHistorie();showToast('Historie gewist');}}
 
-/* â•â•â•â•â•â•â•â•â•â•â• MT940 â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ MT940 ═══════════ */
 function generateMT940(data){
   const c=data.crediteur||{};const items=data.regelitems||[];let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});
   const btw=sub*(data.btwTarief||0);const totaal=Math.round((sub+btw)*100)/100;
@@ -837,7 +846,7 @@ function generateMT940(data){
   return [':20:STARTUMS',':25:'+(data.type==='verkoop'?iban:debiteurIban),':28C:0',':60F:C'+datum+'EUR'+formatMT940Amount(10000),':61:'+betaalDatum+datum+dc+formatMT940Amount(totaal)+'N078NONREF',':86:/IBAN/'+rekeningNr+'/NAME/'+naam+'/REMI/'+(data.factuurnummer||'FACTUUR'),':62F:C'+betaalDatum+'EUR'+formatMT940Amount(dc==='D'?10000-totaal:10000+totaal),'-'].join('\r\n');}
 function formatMT940Amount(n){return Math.abs(n).toFixed(2).replace('.',',');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• EXCEL IMPORT â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ EXCEL IMPORT ═══════════ */
 const dropArea=document.getElementById('excel-drop-area');
 ['dragenter','dragover'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.add('dragover');});});
 ['dragleave','drop'].forEach(e=>{dropArea.addEventListener(e,ev=>{ev.preventDefault();dropArea.classList.remove('dragover');});});
@@ -847,7 +856,7 @@ function processExcel(file){const res=document.getElementById('import-result');r
 function buildColMap(h){const l=h.map(x=>x.toLowerCase().trim());return{naam:fc(h,l,['naam','name','bedrijfsnaam','bedrijf','crediteur']),adres:fc(h,l,['adres','address','straat']),kvk:fc(h,l,['kvk','kvknummer']),btw:fc(h,l,['btw','btwnummer','vat']),iban:fc(h,l,['iban','bankrekening','bank']),email:fc(h,l,['email','e-mail','mail']),termijn:fc(h,l,['termijn','betalingstermijn','dagen'])};}
 function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h[i];}for(const t of terms){let i=l.findIndex(x=>x.includes(t));if(i>=0)return h[i];}return '__';}
 
-/* â•â•â•â•â•â•â•â•â•â•â• VOORBEELD CREDITEUREN â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ VOORBEELD CREDITEUREN ═══════════ */
 function randomFactuurnr(){const prefixes=['FV','INV','F','RK','FAC'];const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];const nr=String(Math.floor(Math.random()*900000)+100000);const val=prefix+'-'+new Date().getFullYear()+'-'+nr;document.getElementById('factuurnummer').value=val;saveNr(val);updatePreview();}
 function loadVoorbeeldCrediteuren(){
   const voorbeelden=[
@@ -879,7 +888,7 @@ function loadVoorbeeldCrediteuren(){
   if(!debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'))){debiteuren=[{id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'}];saveDebs();}
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â• CREDITEUREN BEHEER â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ CREDITEUREN BEHEER ═══════════ */
 function renderCredLijst(){const g=document.getElementById('crediteuren-grid');if(!crediteuren.length){g.innerHTML='<div class="empty-state"><p>Nog geen crediteuren.</p><button class="btn btn-outline" onclick="loadVoorbeeldCrediteuren()">\uD83C\uDFE2 Demo-data laden</button></div>';return;}g.innerHTML=crediteuren.map(c=>'<div class="crediteur-card">'+(c.logo?'<img class="crediteur-card-logo" src="'+c.logo+'">':'<div class="crediteur-card-logo placeholder">\uD83C\uDFE2</div>')+'<div class="crediteur-card-info"><h4>'+escapeHtml(c.naam)+'</h4><p>'+escapeHtml(c.email||c.kvk||'\u2014')+'</p></div><div class="crediteur-card-actions"><button class="btn btn-ghost btn-sm" onclick="openCrediteurModal(\''+c.id+'\')">\u270F\uFE0F</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="confirmDel(\''+c.id+'\')">\uD83D\uDDD1</button></div></div>').join('');}
 function openCrediteurModal(id){const modal=document.getElementById('modal-crediteur');currentLogoBase64='';if(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;document.getElementById('modal-crediteur-titel').textContent='Crediteur bewerken';document.getElementById('crediteur-id').value=c.id;document.getElementById('cred-naam').value=c.naam||'';document.getElementById('cred-adres').value=c.adres||'';document.getElementById('cred-kvk').value=c.kvk||'';document.getElementById('cred-btw').value=c.btw||'';document.getElementById('cred-iban').value=c.iban||'';document.getElementById('cred-email').value=c.email||'';document.getElementById('cred-termijn').value=c.betalingstermijn||30;currentLogoBase64=c.logo||'';if(c.logo){document.getElementById('cred-logo-preview').src=c.logo;document.getElementById('cred-logo-preview').style.display='block';document.getElementById('cred-logo-text').style.display='none';}else{document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';}renderCredRegels(c.regelitems||[]);}else{document.getElementById('modal-crediteur-titel').textContent='Nieuwe crediteur';document.getElementById('crediteur-id').value='';['cred-naam','cred-adres','cred-kvk','cred-btw','cred-iban','cred-email'].forEach(i=>document.getElementById(i).value='');document.getElementById('cred-termijn').value=30;document.getElementById('cred-logo-preview').style.display='none';document.getElementById('cred-logo-text').style.display='block';renderCredRegels([{omschrijving:'',aantal:1,stuksprijs:0}]);}modal.classList.add('active');renderCredLogoGallery();}
 function sluitCrediteurModal(){document.getElementById('modal-crediteur').classList.remove('active');}
@@ -894,118 +903,113 @@ function saveCrediteur(){const naam=document.getElementById('cred-naam').value.t
 function confirmDel(id){const c=crediteuren.find(x=>x.id===id);if(!c)return;document.getElementById('confirm-message').textContent='"'+c.naam+'" verwijderen?';document.getElementById('btn-confirm-ok').onclick=()=>{crediteuren=crediteuren.filter(x=>x.id!==id);saveCred();renderCredLijst();if(selectedCrediteurId===id)clearCrediteurSelection();sluitConfirmModal();showToast('Verwijderd');};document.getElementById('modal-confirm').classList.add('active');}
 function sluitConfirmModal(){document.getElementById('modal-confirm').classList.remove('active');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• DEMO-SET â•â•â•â•â•â•â•â•â•â•â• */
 /* ═══════════ DEMO-SET ═══════════ */
-let demosetSelectedCred='',demosetTemplate='modern';
 function initDemoSetTab(){
   document.getElementById('demoset-startnr').value=loadNr();
   setDemosetPeriode(6);
   const el=document.getElementById('demoset-crediteuren-lijst');
   if(!crediteuren.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted);">Geen crediteuren. Laad eerst demo-data.</p>';return;}
-  el.innerHTML=crediteuren.map(c=>'<div class="demoset-crediteur-item'+(demosetSelectedCred===c.id?' selected':'')+'" onclick="selectDemosetCred(\''+c.id+'\',this)">'+(c.logo?'<img src="'+c.logo+'">':'<div style="width:28px;height:28px;background:var(--surface);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;">🏢</div>')+'<label>'+escapeHtml(c.naam)+'</label><span style="font-size:11px;color:var(--text-secondary);">'+escapeHtml((c.regelitems||[])[0]?.omschrijving||'')+' — '+formatBedrag((c.regelitems||[])[0]?.stuksprijs||0)+'</span></div>').join('');
+  el.innerHTML=crediteuren.map(c=>'<div class="demoset-crediteur-item'+(demosetSelectedCred===c.id?' selected':'')+'" onclick="selectDemosetCred(\''+c.id+'\',this)">'+(c.logo?'<img src="'+c.logo+'">':'')+'<label>'+escapeHtml(c.naam)+'</label><span style="font-size:11px;color:var(--text-secondary);">'+escapeHtml((c.regelitems||[])[0]?.omschrijving||'')+' &mdash; '+formatBedrag((c.regelitems||[])[0]?.stuksprijs||0)+'</span></div>').join('');
   updateVariatieSlider();
 }
+
+let demosetSelectedCred='',demosetTemplate='modern';
 function selectDemosetCred(id,el){
   demosetSelectedCred=id;
-  document.querySelectorAll('.demoset-crediteur-item').forEach(e=>e.classList.remove('selected'));
+  document.querySelectorAll('.demoset-crediteur-item').forEach(function(e){e.classList.remove('selected');});
   el.classList.add('selected');
   updateVariatieSlider();
+  renderDemosetPreview();
 }
 function setDemosetPeriode(m){
-  document.querySelectorAll('.demoset-periode-btns .btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.maanden)===m));
-  const now=new Date();
-  const start=new Date(now);start.setMonth(start.getMonth()-(m-1));
+  document.querySelectorAll('.demoset-periode-btns .btn').forEach(function(b){b.classList.toggle('active',parseInt(b.dataset.maanden)===m);});
+  var now=new Date();var start=new Date(now);start.setMonth(start.getMonth()-(m-1));
   document.getElementById('demoset-van').value=start.getFullYear()+'-'+String(start.getMonth()+1).padStart(2,'0');
   document.getElementById('demoset-tot').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  const slider=document.getElementById('demoset-variatie-slider');
-  slider.max=m;
+  var slider=document.getElementById('demoset-variatie-slider');slider.max=m;
   if(parseInt(slider.value)>m)slider.value=Math.max(1,Math.round(m*0.2));
   updateVariatieSlider();
 }
 function setDemosetTemplate(name){
   demosetTemplate=name;
-  document.querySelectorAll('.demoset-template-btns .template-card').forEach(c=>c.classList.toggle('active',c.dataset.tpl===name));
+  document.querySelectorAll('.demoset-template-btns .template-card').forEach(function(c){c.classList.toggle('active',c.dataset.tpl===name);});
+  renderDemosetPreview();
 }
 function updateVariatieSlider(){
-  const slider=document.getElementById('demoset-variatie-slider');
-  const val=parseInt(slider.value);
-  const total=parseInt(slider.max)||6;
+  var slider=document.getElementById('demoset-variatie-slider');var val=parseInt(slider.value);var total=parseInt(slider.max)||6;
   document.getElementById('demoset-variatie-val').textContent=val;
-  const preview=document.getElementById('demoset-variatie-preview');
+  var preview=document.getElementById('demoset-variatie-preview');
   if(!demosetSelectedCred){preview.innerHTML='Selecteer een crediteur om de mogelijke afwijkingen te zien.';return;}
-  const cred=crediteuren.find(c=>c.id===demosetSelectedCred);
+  var cred=crediteuren.find(function(c){return c.id===demosetSelectedCred;});
   if(!cred){preview.innerHTML='Crediteur niet gevonden.';return;}
-  const items=cred.variatieItems||[];
-  if(val===0){
-    preview.innerHTML='<strong>Geen afwijkingen</strong> — alle '+total+' facturen identiek. S&H matcht automatisch.';
-  } else if(!items.length){
-    preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen wijken af met willekeurig extra bedrag.';
-  } else {
-    preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen krijgen extra regel, bijv.:<ul>'+items.map(it=>'<li>'+escapeHtml(it.omschrijving)+' — '+it.aantal+'× '+formatBedrag(it.stuksprijs)+'</li>').join('')+'</ul>';
-  }
+  var items=cred.variatieItems||[];
+  if(val===0){preview.innerHTML='<strong>Geen afwijkingen</strong> &mdash; alle '+total+' facturen identiek. S&amp;H matcht automatisch.';}
+  else if(!items.length){preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen wijken af.';}
+  else{preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen krijgen extra regel, bijv.:<ul>'+items.map(function(it){return '<li>'+escapeHtml(it.omschrijving)+' &mdash; '+it.aantal+'&times; '+formatBedrag(it.stuksprijs)+'</li>';}).join('')+'</ul>';}
+}
+function renderDemosetPreview(){
+  var wrap=document.getElementById('demoset-preview-wrap');
+  if(!demosetSelectedCred){wrap.innerHTML='<p style="padding:40px;text-align:center;color:#94A3B8;">Selecteer een crediteur voor preview</p>';return;}
+  var cred=crediteuren.find(function(c){return c.id===demosetSelectedCred;});if(!cred)return;
+  var deb=debiteuren.length?debiteuren[0]:null;
+  var regelitems=(cred.regelitems||[]).map(function(r){return{omschrijving:r.omschrijving||'Dienstverlening',aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};});
+  var data={crediteur:cred,debiteurNaam:deb?deb.naam:'',debiteurAdres:deb?deb.adres:'',factuurnummer:loadNr(),referentie:'REF-'+loadNr(),factuurdatum:todayStr(),vervaldatum:addDagen(todayStr(),cred.betalingstermijn||30),btwTarief:0.21,status:'open',regelitems:regelitems,type:'inkoop'};
+  var origTpl=activeTemplate;setTemplate(demosetTemplate,true);
+  var html=renderFactuurHTML(data);setTemplate(origTpl,true);
+  wrap.innerHTML='<div class="factuur-a4" data-template="'+demosetTemplate+'" style="transform:scale(0.5);transform-origin:top left;width:794px;">'+html+'</div>';
+  if(cred.logo){extractDominantColor(cred.logo,function(color){var el=wrap.querySelector('.factuur-a4');if(el){el.style.setProperty('--brand',color);el.style.setProperty('--brand-light',hexToRgba(color,0.06));el.style.setProperty('--brand-dark',darkenHex(color,40));}});}
 }
 
 const VARIATIE_LABELS=['Extra verbruik','Toeslag meerwerk','Aanvullende diensten','Uitbreiding pakket','Eenmalige kosten'];
 
 async function generateDemoSet(){
   if(!demosetSelectedCred){showToast('Selecteer een crediteur');return;}
-  const cred=crediteuren.find(c=>c.id===demosetSelectedCred);
+  var cred=crediteuren.find(function(c){return c.id===demosetSelectedCred;});
   if(!cred){showToast('Crediteur niet gevonden');return;}
-  const d=debiteuren.length?debiteuren[0]:null;
-  const debiteurNaam=d?d.naam:'',debiteurAdres=d?d.adres:'';
-  const vanStr=document.getElementById('demoset-van').value,totStr=document.getElementById('demoset-tot').value;
-  let nr=document.getElementById('demoset-startnr').value;
-  const btwTarief=parseFloat(document.getElementById('demoset-btw').value);
-  const genMutatie=document.getElementById('demoset-bankmutatie').checked;
-  const variatieAantal=parseInt(document.getElementById('demoset-variatie-slider').value);
+  var d=debiteuren.length?debiteuren[0]:null;
+  var debiteurNaam=d?d.naam:'',debiteurAdres=d?d.adres:'';
+  var vanStr=document.getElementById('demoset-van').value,totStr=document.getElementById('demoset-tot').value;
+  var nr=document.getElementById('demoset-startnr').value;
+  var btwTarief=parseFloat(document.getElementById('demoset-btw').value);
+  var genMutatie=document.getElementById('demoset-bankmutatie').checked;
+  var variatieAantal=parseInt(document.getElementById('demoset-variatie-slider').value);
   if(!vanStr||!totStr){showToast('Vul van en tot maand in');return;}if(!nr){showToast('Vul startnummer in');return;}
-  const[vanJ,vanM]=vanStr.split('-').map(Number),[totJ,totM]=totStr.split('-').map(Number);
-  const totalMonths=((totJ-vanJ)*12)+(totM-vanM)+1;if(totalMonths<1||totalMonths>120){showToast('Ongeldige periode');return;}
-  const variatieIndices=new Set();
+  var vanParts=vanStr.split('-').map(Number),totParts=totStr.split('-').map(Number);
+  var vanJ=vanParts[0],vanM=vanParts[1],totJ=totParts[0],totM=totParts[1];
+  var totalMonths=((totJ-vanJ)*12)+(totM-vanM)+1;if(totalMonths<1||totalMonths>120){showToast('Ongeldige periode');return;}
+  var variatieIndices=new Set();
   while(variatieIndices.size<Math.min(variatieAantal,totalMonths)){variatieIndices.add(Math.floor(Math.random()*totalMonths));}
-  const progress=document.getElementById('demoset-progress'),fill=document.getElementById('demoset-progress-fill'),txt=document.getElementById('demoset-progress-text'),btn=document.getElementById('btn-demoset-genereer');
+  var progress=document.getElementById('demoset-progress'),fill=document.getElementById('demoset-progress-fill'),txt=document.getElementById('demoset-progress-text'),btn=document.getElementById('btn-demoset-genereer');
   progress.classList.add('active');btn.disabled=true;fill.style.width='0%';
-  const origTemplate=activeTemplate;
-  setTemplate(demosetTemplate,true);
-  const zip=new JSZip();let count=0;let allMT940=[];
-  const today=new Date();
-  for(let i=0;i<totalMonths;i++){
-    const mIdx=(vanM-1+i)%12;const jaar=vanJ+Math.floor((vanM-1+i)/12);const maand=MAANDEN[mIdx];const kwartaal=getKwartaal(mIdx);
-    const datum=jaar+'-'+String(mIdx+1).padStart(2,'0')+'-'+String(Math.floor(Math.random()*20)+1).padStart(2,'0');
-    const regelitems=(cred.regelitems||[]).map(r=>{let omschr=r.omschrijving||'Dienstverlening';omschr=omschr.replace(/\[maand\]/gi,maand).replace(/\[jaar\]/gi,String(jaar)).replace(/Q\[?\d?\]?/gi,'Q'+kwartaal).replace(/\[kenteken\]/gi,'XX-'+Math.floor(Math.random()*900+100)+'-X');if(!omschr.includes(maand)&&!omschr.includes(String(jaar)))omschr+=' \u2014 '+maand+' '+jaar;return{omschrijving:omschr,aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};});
-    if(variatieIndices.has(i)){
-      const items=cred.variatieItems||[];
-      if(items.length){
-        const vi=items[Math.floor(Math.random()*items.length)];
-        regelitems.push({omschrijving:vi.omschrijving,aantal:vi.aantal,stuksprijs:vi.stuksprijs});
-      } else {
-        const basisTotaal=regelitems.reduce((s,r)=>s+(r.aantal*r.stuksprijs),0);
-        const extraPct=0.15+Math.random()*0.25;const extraBedrag=Math.round(basisTotaal*extraPct*100)/100;
-        const label=VARIATIE_LABELS[Math.floor(Math.random()*VARIATIE_LABELS.length)];
-        regelitems.push({omschrijving:label,aantal:1,stuksprijs:extraBedrag});
-      }
-    }
-    const fDatum=new Date(datum+'T00:00:00');const dagenGeleden=Math.floor((today-fDatum)/(1000*60*60*24));const status=dagenGeleden>30?'betaald':'open';
-    const data={crediteur:cred,debiteurNaam,debiteurAdres,factuurnummer:nr,referentie:'REF-'+nr,factuurdatum:datum,vervaldatum:addDagen(datum,cred.betalingstermijn||30),btwTarief,status,regelitems,type:'inkoop'};
+  var origTemplate=activeTemplate;setTemplate(demosetTemplate,true);
+  var zip=new JSZip();var count=0;var allMT940=[];var today=new Date();
+  for(var i=0;i<totalMonths;i++){
+    var mIdx=(vanM-1+i)%12;var jaar=vanJ+Math.floor((vanM-1+i)/12);var maand=MAANDEN[mIdx];var kwartaal=getKwartaal(mIdx);
+    var datum=jaar+'-'+String(mIdx+1).padStart(2,'0')+'-'+String(Math.floor(Math.random()*20)+1).padStart(2,'0');
+    var regelitems=(cred.regelitems||[]).map(function(r){var omschr=r.omschrijving||'Dienstverlening';omschr=omschr.replace(/\[maand\]/gi,maand).replace(/\[jaar\]/gi,String(jaar)).replace(/Q\[?\d?\]?/gi,'Q'+kwartaal).replace(/\[kenteken\]/gi,'XX-'+Math.floor(Math.random()*900+100)+'-X');if(omschr.indexOf(maand)<0&&omschr.indexOf(String(jaar))<0)omschr+=' \u2014 '+maand+' '+jaar;return{omschrijving:omschr,aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};});
+    if(variatieIndices.has(i)){var items=cred.variatieItems||[];if(items.length){var vi=items[Math.floor(Math.random()*items.length)];regelitems.push({omschrijving:vi.omschrijving,aantal:vi.aantal,stuksprijs:vi.stuksprijs});}else{var basisTotaal=regelitems.reduce(function(s,r){return s+(r.aantal*r.stuksprijs);},0);var extraBedrag=Math.round(basisTotaal*(0.15+Math.random()*0.25)*100)/100;regelitems.push({omschrijving:VARIATIE_LABELS[Math.floor(Math.random()*VARIATIE_LABELS.length)],aantal:1,stuksprijs:extraBedrag});}}
+    var fDatum=new Date(datum+'T00:00:00');var status=Math.floor((today-fDatum)/(1000*60*60*24))>30?'betaald':'open';
+    var data={crediteur:cred,debiteurNaam:debiteurNaam,debiteurAdres:debiteurAdres,factuurnummer:nr,referentie:'REF-'+nr,factuurdatum:datum,vervaldatum:addDagen(datum,cred.betalingstermijn||30),btwTarief:btwTarief,status:status,regelitems:regelitems,type:'inkoop'};
     count++;fill.style.width=Math.round((count/totalMonths)*100)+'%';txt.textContent=count+'/'+totalMonths+' \u2014 '+cred.naam+' ('+maand+' '+jaar+')';
-    const pdf=await genPDF(data);zip.file('Factuur-'+nr+'.pdf',pdf.output('arraybuffer'));
+    var pdf=await genPDF(data);zip.file('Factuur-'+nr+'.pdf',pdf.output('arraybuffer'));
     if(genMutatie)allMT940.push(generateMT940(data));
-    nr=incrementNr(nr);await new Promise(r=>setTimeout(r,50));
+    nr=incrementNr(nr);await new Promise(function(r){setTimeout(r,50);});
   }
   if(genMutatie&&allMT940.length)zip.file('mutaties.sta',allMT940.join('\r\n'));
   setTemplate(origTemplate,true);
   saveNr(nr);document.getElementById('factuurnummer').value=nr;document.getElementById('demoset-startnr').value=nr;
   txt.textContent='\u2713 '+totalMonths+' facturen gedownload.';
-  const content=await zip.generateAsync({type:'blob'});const url=URL.createObjectURL(content);
-  const a=document.createElement('a');a.href=url;a.download=cred.naam.replace(/[^a-zA-Z0-9 ]/g,'')+'-'+vanStr+'-tot-'+totStr+'.zip';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  var content=await zip.generateAsync({type:'blob'});var url=URL.createObjectURL(content);
+  var a=document.createElement('a');a.href=url;a.download=cred.naam.replace(/[^a-zA-Z0-9 ]/g,'')+'-'+vanStr+'-tot-'+totStr+'.zip';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   btn.disabled=false;showToast(totalMonths+' facturen als ZIP gedownload');
 }
-/* â•â•â•â•â•â•â•â•â•â•â• INSTELLINGEN â•â•â•â•â•â•â•â•â•â•â• */
+
+/* ═══════════ INSTELLINGEN ═══════════ */
 function exportAlles(){const data={crediteuren,debiteuren,historie,factuurnummer:loadNr()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='demo-facturen-'+activeEnv+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);showToast('Backup ge\u00EBxporteerd');}
 function importAlles(event){const file=event.target.files[0];if(!file)return;event.target.value='';const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();}if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();}if(data.historie){historie=data.historie;saveHistorie();}if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}showToast('Backup ge\u00EFmporteerd');}catch(err){showToast('Ongeldig JSON-bestand');}};reader.readAsText(file);}
 function confirmWisAlles(){document.getElementById('confirm-message').textContent='ALLES wissen in omgeving "'+activeEnv+'"?';document.getElementById('btn-confirm-ok').onclick=()=>{const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'+activeEnv+'_'));keys.forEach(k=>localStorage.removeItem(k));crediteuren=[];debiteuren=[];historie=[];selectedCrediteurId='';selectedDebiteurId='';renderCredLijst();renderHistorie();document.getElementById('factuurnummer').value=loadNr();if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';sluitConfirmModal();showToast('Alles gewist');};document.getElementById('modal-confirm').classList.add('active');}
 
-/* â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════ INIT ═══════════ */
 function init(){
   if(!checkWelcome()){document.getElementById('modal-welcome').classList.add('active');return;}
   loadAllData();setupCrediteurCombo();setupDebiteurCombo();renderCredLijst();renderHistorie();
