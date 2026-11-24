@@ -151,6 +151,18 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:16px}
 .page-header h2{font-size:24px;font-weight:800;letter-spacing:-0.03em}
 .page-actions{display:flex;gap:8px;flex-wrap:wrap}
+.bankmutatie-layout{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:28px;align-items:start}
+.bankmutatie-list{display:flex;flex-direction:column;gap:8px}
+.bankmutatie-card{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.bankmutatie-card-info{flex:1;min-width:0}
+.bankmutatie-card-info strong{display:block;font-size:13px}
+.bankmutatie-card-info span{display:block;font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bankmutatie-bedrag{font-family:'JetBrains Mono',monospace;font-weight:700}
+.bankmutatie-bedrag.positief{color:var(--green)}
+.bankmutatie-bedrag.negatief{color:var(--danger)}
+.bankmutatie-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.bankmutatie-presets .btn{font-size:11px}
+@media(max-width:1100px){.bankmutatie-layout{grid-template-columns:1fr}}
 .crediteuren-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
 .crediteur-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;display:flex;align-items:center;gap:14px;transition:var(--transition);cursor:default}
 .crediteur-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-1px)}
@@ -207,9 +219,9 @@ input[type="number"]{font-family:'JetBrains Mono',monospace;font-size:13px}
 .fa4-adres-tekst{font-size:13px;white-space:pre-line;line-height:1.5}
 .fa4-tabel{width:100%;border-collapse:collapse;margin-top:8px}
 .fa4-tabel thead th{background:#0066CC;color:white;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:10px 12px;text-align:left}
-.fa4-tabel thead th:last-child,.fa4-tabel thead th:nth-child(2),.fa4-tabel thead th:nth-child(3){text-align:right}
+.fa4-tabel thead th:last-child,.fa4-tabel thead th:nth-child(2),.fa4-tabel thead th:nth-child(3),.fa4-tabel thead th:nth-child(4){text-align:right}
 .fa4-tabel tbody td{padding:10px 12px;border-bottom:1px solid #F1F5F9;font-size:13px}
-.fa4-tabel tbody td:last-child,.fa4-tabel tbody td:nth-child(2),.fa4-tabel tbody td:nth-child(3){text-align:right}
+.fa4-tabel tbody td:last-child,.fa4-tabel tbody td:nth-child(2),.fa4-tabel tbody td:nth-child(3),.fa4-tabel tbody td:nth-child(4){text-align:right}
 .fa4-totalen{margin-top:16px;display:flex;justify-content:flex-end}
 .fa4-totalen-tabel{width:280px}
 .fa4-totalen-rij{display:flex;justify-content:space-between;padding:5px 12px;font-size:13px}
@@ -395,6 +407,7 @@ body.dark .download-section{background:#1a4fa0}
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="factuur">Factuur maken</button>
     <button class="tab-btn" data-tab="historie">Mijn facturen</button>
+    <button class="tab-btn" data-tab="bankmutaties">Bankmutaties</button>
     <button class="tab-btn" data-tab="crediteuren">Crediteuren</button>
     <button class="tab-btn" data-tab="demoset">Demo-set</button>
     <button class="tab-btn" data-tab="instellingen">Instellingen</button>
@@ -474,8 +487,8 @@ body.dark .download-section{background:#1a4fa0}
         <div class="form-section">
           <div class="form-section-header"><div class="form-section-icon">📦</div><h3>Regelitems</h3></div>
           <table class="regelitems-tabel"><thead><tr><th class="col-omschrijving">Omschrijving</th><th class="col-aantal">Aantal</th><th class="col-prijs">Prijs</th><th class="col-bedrag">Bedrag</th><th class="col-actie"></th></tr></thead><tbody id="regelitems-body"></tbody></table>
-          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="addRegelitem()">+ Lege regel</button></div>
-          <div class="artikel-picker" id="artikel-picker"><div class="artikel-picker-label">Artikelen van deze crediteur — klik om toe te voegen:</div><div class="artikel-picker-grid" id="artikel-picker-grid"></div></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="addRegelitem()">+ Lege regel</button><span style="font-size:11px;color:var(--text-muted);">of klik op een artikel hieronder</span></div>
+          <div class="artikel-picker" id="artikel-picker"><div class="artikel-picker-label">Artikelen van deze crediteur — klik om regels toe te voegen (geavanceerd boeken):</div><div class="artikel-picker-grid" id="artikel-picker-grid"></div></div>
           <div class="totals-bar" id="totals-bar"></div>
         </div>
       </div>
@@ -572,6 +585,49 @@ body.dark .download-section{background:#1a4fa0}
   </div>
 </div>
 
+<!-- TAB: BANKMUTaties -->
+<div class="tab-content" id="tab-bankmutaties">
+  <div class="page-header">
+    <h2>Bankmutaties</h2>
+    <div class="page-actions">
+      <button class="btn btn-outline btn-sm" onclick="clearBankmutaties()">Alles wissen</button>
+    </div>
+  </div>
+  <div class="bankmutatie-layout">
+    <div class="form-panel">
+      <div class="form-panel-inner">
+        <div class="bankmutatie-presets">
+          <button class="btn btn-outline" onclick="setBankmutatiePreset('huur')">Huur</button>
+          <button class="btn btn-outline" onclick="setBankmutatiePreset('verzekering')">Verzekering</button>
+          <button class="btn btn-outline" onclick="setBankmutatiePreset('salaris')">Salaris</button>
+          <button class="btn btn-outline" onclick="setBankmutatiePreset('betaling')">Ontvangst klant</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Boekdatum</label><input type="date" id="bank-datum"></div>
+          <div class="form-group"><label>Periode</label><select id="bank-aantal-maanden"><option value="1">1 maand</option><option value="3">3 maanden</option><option value="6">6 maanden</option><option value="12">12 maanden</option></select></div>
+        </div>
+        <div class="form-group"><label>Omschrijving</label><input type="text" id="bank-omschrijving" placeholder="Huur kantoorruimte"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Tegenrekening / IBAN</label><input type="text" id="bank-tegenrekening" placeholder="NL00 BANK 0123 4567 89"></div>
+          <div class="form-group"><label>Tegenpartij</label><input type="text" id="bank-tegenpartij" placeholder="Regus Nederland B.V."></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Bedrag (EUR)</label><input type="number" id="bank-bedrag" min="0" step="0.01" value="1250"></div>
+          <div class="form-group"><label>Soort</label><select id="bank-richting"><option value="debit">Afboeking (-)</option><option value="credit">Bijboeking (+)</option></select></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="generateBankmutaties()">Bankmutaties genereren</button>
+      </div>
+    </div>
+    <div class="form-panel">
+      <div class="form-panel-inner">
+        <div class="form-section-header"><div class="form-section-icon">🏦</div><h3>Gegenereerde mutaties</h3></div>
+        <div id="bankmutatie-list" class="bankmutatie-list"></div>
+        <button class="btn btn-success btn-block" id="bank-download" onclick="downloadBankmutaties()" style="margin-top:12px;" disabled>⬇ Download MT940</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TAB: INSTELLINGEN -->
 <div class="tab-content" id="tab-instellingen">
   <div class="page-header"><h2>Instellingen</h2></div>
@@ -599,7 +655,11 @@ body.dark .download-section{background:#1a4fa0}
         <div class="welcome-icon">📄</div>
         <h2>Demo Factuur Generator</h2>
         <p>Maak snel realistische facturen en bankmutaties voor jouw AFAS SB demo-omgeving.</p>
-        <div class="form-group"><label>Naam of omgevingsnaam</label><input type="text" id="welcome-naam" placeholder="bijv. Jochem, of Demo Regio West"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Naam of omgevingsnaam</label><input type="text" id="welcome-naam" placeholder="bijv. Jochem"></div>
+          <div class="form-group"><label>Eigen bedrijfsnaam</label><input type="text" id="welcome-bedrijf" placeholder="Jouw MKB B.V."></div>
+        </div>
+        <div class="form-group"><label>Adres eigen bedrijf</label><textarea id="welcome-adres" rows="2" placeholder="Straat 1&#10;1234 AB Plaats"></textarea></div>
         <div class="welcome-checkbox"><input type="checkbox" id="welcome-demo" checked><label for="welcome-demo">Laad voorbeelddata automatisch in (aanbevolen)</label></div>
         <button class="btn btn-primary btn-block" style="padding:14px;font-size:15px;" onclick="startOmgeving()">Start mijn omgeving</button>
       </div>
@@ -651,9 +711,9 @@ body.dark .download-section{background:#1a4fa0}
 
 <script>
 /* ═══════════ STATE ═══════════ */
-const DATA_VERSION=5;
+const DATA_VERSION=6;
 const MAANDEN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-let crediteuren=[],debiteuren=[],historie=[],currentLogoBase64='';
+let crediteuren=[],debiteuren=[],historie=[],bankmutaties=[],profiel={},currentLogoBase64='';
 let selectedCrediteurId='',selectedDebiteurId='';
 let factuurType='inkoop';
 let activeTemplate='modern',currentBrandColor='#0066CC';
@@ -664,7 +724,7 @@ const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const formatBedrag=n=>'\u20AC '+new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
 const formatDatum=ds=>{if(!ds)return'';const d=new Date(ds+'T00:00:00');return d.getDate()+' '+MAANDEN[d.getMonth()]+' '+d.getFullYear();};
 const formatDatumKort=ds=>{if(!ds)return'';const d=new Date(ds+'T00:00:00');return String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();};
-const addDagen=(ds,d)=>{const x=new Date(ds+'T00:00:00');x.setDate(x.getDate()+d);return x.toISOString().split('T')[0];};
+const addDagen=(ds,d)=>{const x=new Date(ds+'T00:00:00');x.setDate(x.getDate()+d);return String(x.getFullYear())+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
 const todayStr=()=>new Date().toISOString().split('T')[0];
 const curMonth=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');};
 function escapeHtml(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
@@ -672,6 +732,7 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 function incrementNr(nr){const m=nr.match(/^(.*?)(\d+)$/);if(m)return m[1]+String(+m[2]+1).padStart(m[2].length,'0');return nr+'_2';}
 function varyAmount(base,pct){if(!pct)return base;const factor=1+(Math.random()*2-1)*pct;return Math.round(factor*base*100)/100;}
 function getKwartaal(m){return Math.floor(m/3)+1;}
+function calcBtwGroups(items,defaultBtw){const groups={};let sub=0;items.forEach(r=>{const bedrag=(r.aantal||0)*(r.stuksprijs||0);sub+=bedrag;const pct=r.btw!==undefined?r.btw:defaultBtw;const k=String(pct);if(!groups[k])groups[k]=0;groups[k]+=bedrag;});sub=Math.round(sub*100)/100;let totalBtw=0;const btwLines=[];for(const[k,bedrag] of Object.entries(groups).sort((a,b)=>Number(b[0])-Number(a[0]))){const p=Number(k);const btwBedrag=Math.round(bedrag*p*100)/100;totalBtw+=btwBedrag;const label=p===0.21?'21%':p===0.09?'9%':'0%';btwLines.push({pct:p,label,grondslag:Math.round(bedrag*100)/100,btw:btwBedrag});}totalBtw=Math.round(totalBtw*100)/100;return{sub,totalBtw,tot:Math.round((sub+totalBtw)*100)/100,btwLines};}
 
 /* ═══════════ TEMPLATES & DARK MODE ═══════════ */
 function hexToRgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}
@@ -707,13 +768,17 @@ document.addEventListener('click',e=>{if(!e.target.closest('.env-switcher'))docu
 
 /* ═══════════ STORAGE ═══════════ */
 function checkDataVersion(){const v=localStorage.getItem('df_data_version');if(parseInt(v)!==DATA_VERSION){const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'));keys.forEach(k=>localStorage.removeItem(k));localStorage.setItem('df_data_version',DATA_VERSION);return true;}return false;}
-function loadAllData(){const reset=checkDataVersion();loadCred();loadDebs();loadHistorie();document.getElementById('factuurnummer').value=loadNr();selectedCrediteurId='';selectedDebiteurId='';if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';if(reset||!crediteuren.length)loadVoorbeeldCrediteuren();}
+function loadAllData(){checkDataVersion();loadCred();loadDebs();loadHistorie();loadBankmutaties();loadProfiel();document.getElementById('factuurnummer').value=loadNr();selectedCrediteurId='';selectedDebiteurId='';if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';renderBankmutatieList();}
 function loadCred(){try{crediteuren=JSON.parse(localStorage.getItem(lsKey('crediteuren')))||[];}catch{crediteuren=[];}autoMatchLogos();}
 function saveCred(){localStorage.setItem(lsKey('crediteuren'),JSON.stringify(crediteuren));}
 function loadDebs(){try{debiteuren=JSON.parse(localStorage.getItem(lsKey('debiteuren')))||[];}catch{debiteuren=[];}}
 function saveDebs(){localStorage.setItem(lsKey('debiteuren'),JSON.stringify(debiteuren));}
 function loadHistorie(){try{historie=JSON.parse(localStorage.getItem(lsKey('historie')))||[];}catch{historie=[];}}
 function saveHistorie(){localStorage.setItem(lsKey('historie'),JSON.stringify(historie));}
+function loadBankmutaties(){try{bankmutaties=JSON.parse(localStorage.getItem(lsKey('bankmutaties')))||[];}catch{bankmutaties=[];}}
+function saveBankmutaties(){localStorage.setItem(lsKey('bankmutaties'),JSON.stringify(bankmutaties));}
+function loadProfiel(){try{profiel=JSON.parse(localStorage.getItem(lsKey('profiel')))||{};}catch{profiel={};}}
+function saveProfiel(){localStorage.setItem(lsKey('profiel'),JSON.stringify(profiel));}
 function loadNr(){return localStorage.getItem(lsKey('factuurnummer'))||(new Date().getFullYear()+'001');}
 function saveNr(n){localStorage.setItem(lsKey('factuurnummer'),n);}
 function autoMatchLogos(){
@@ -725,11 +790,19 @@ function autoMatchLogos(){
 /* ═══════════ WELCOME ═══════════ */
 function checkWelcome(){loadEnvList();const active=localStorage.getItem('df_active_env');if(active&&envList.includes(active)){activeEnv=active;document.getElementById('env-btn-label').textContent=active;return true;}return false;}
 function startOmgeving(){const naam=document.getElementById('welcome-naam').value.trim();if(!naam){showToast('Vul een naam in');return;}
+  const bedrijf=document.getElementById('welcome-bedrijf').value.trim();
+  const adres=document.getElementById('welcome-adres').value.trim();
   const loadDemo=document.getElementById('welcome-demo').checked;document.getElementById('modal-welcome').classList.remove('active');
-  createEnv(naam,loadDemo);showToast('Welkom, '+naam+'!');}
+  const nieuwProfiel={naam,bedrijf,adres};
+  createEnv(naam,loadDemo);
+  profiel=nieuwProfiel;
+  saveProfiel();
+  if(bedrijf){const bestaande=debiteuren.find(d=>d.naam.toLowerCase()===bedrijf.toLowerCase());if(!bestaande){debiteuren.unshift({id:genId(),naam:bedrijf,adres:adres||''});saveDebs();}}
+  init();
+  showToast('Welkom, '+naam+'!');}
 
 /* ═══════════ TABS ═══════════ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');if(btn.dataset.tab==='factuur')updatePreview();if(btn.dataset.tab==='demoset')initDemoSetTab();if(btn.dataset.tab==='historie')renderHistorie();});});
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');if(btn.dataset.tab==='factuur')updatePreview();if(btn.dataset.tab==='demoset')initDemoSetTab();if(btn.dataset.tab==='historie')renderHistorie();if(btn.dataset.tab==='bankmutaties')renderBankmutatieList();});});
 
 /* ═══════════ COMBOBOX ═══════════ */
 function initCombobox(inputId,dropdownId,comboboxId,getItems,onSelect,onFreetext){
@@ -753,9 +826,9 @@ let crediteurCombo,debiteurCombo;
 function setupCrediteurCombo(){crediteurCombo=initCombobox('crediteur-search','crediteur-dropdown','crediteur-combobox',filter=>crediteuren.filter(c=>!filter||c.naam.toLowerCase().includes(filter.toLowerCase())).map(c=>({...c,detail:c.email||c.kvk||''})),item=>{selectedCrediteurId=item.id;renderCrediteurCard();applyCredData(item);updatePreview();});}
 function renderCrediteurCard(){const card=document.getElementById('crediteur-selected-card');const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(!c){card.innerHTML='';return;}card.innerHTML='<div class="selected-card">'+(c.logo?'<img class="sc-logo" src="'+c.logo+'">':'<div class="sc-logo placeholder">\uD83C\uDFE2</div>')+'<div class="sc-info"><div class="sc-naam">'+escapeHtml(c.naam)+'</div><div class="sc-detail">'+escapeHtml(c.email||c.kvk||'')+'</div></div><button class="sc-clear" onclick="clearCrediteurSelection()" title="Deselecteren">\u00D7</button></div>';}
 function clearCrediteurSelection(){selectedCrediteurId='';crediteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';hideArtikelPicker();updatePreview();}
-function applyCredData(c){const d=document.getElementById('factuurdatum').value;if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);const items=(c.regelitems||[]).map(r=>({...r}));if(!items.length)items.push({omschrijving:'',aantal:1,stuksprijs:0});renderRegelitems(items);renderArtikelPicker(c);if(c.logo)extractDominantColor(c.logo,color=>{currentBrandColor=color;updatePreview();});}
-function renderArtikelPicker(c){const picker=document.getElementById('artikel-picker'),grid=document.getElementById('artikel-picker-grid');const artikelen=(c&&c.regelitems)?c.regelitems.filter(r=>r.omschrijving):[];if(!artikelen.length){picker.classList.remove('visible');return;}picker.classList.add('visible');grid.innerHTML=artikelen.map((r,i)=>'<button class="artikel-chip" onclick="addArtikelFromPicker('+i+')" title="'+escapeHtml(r.omschrijving)+'"><span class="chip-icon">+</span> '+escapeHtml(r.omschrijving.length>32?r.omschrijving.slice(0,30)+'\u2026':r.omschrijving)+' <span class="chip-price">'+formatBedrag(r.stuksprijs)+'</span></button>').join('');}
-function addArtikelFromPicker(idx){const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(!c||!c.regelitems||!c.regelitems[idx])return;const art=c.regelitems[idx];const items=getRegelitems();if(items.length===1&&!items[0].omschrijving&&!items[0].stuksprijs){items[0]={...art};}else{items.push({...art});}renderRegelitems(items);updatePreview();showToast('"'+art.omschrijving+'" toegevoegd');}
+function applyCredData(c){const d=document.getElementById('factuurdatum').value;if(d&&c.betalingstermijn)document.getElementById('vervaldatum').value=addDagen(d,c.betalingstermijn);const allArt=[...(c.regelitems||[]).filter(r=>r.omschrijving),...(c.variatieItems||[]).filter(r=>r.omschrijving)];const picked=allArt.length?[{...allArt[Math.floor(Math.random()*allArt.length)]}]:[{omschrijving:'',aantal:1,stuksprijs:0}];renderRegelitems(picked);renderArtikelPicker(c);if(c.logo)extractDominantColor(c.logo,color=>{currentBrandColor=color;updatePreview();});}
+function renderArtikelPicker(c){const picker=document.getElementById('artikel-picker'),grid=document.getElementById('artikel-picker-grid');const regelArtikelen=(c&&c.regelitems)?c.regelitems.filter(r=>r.omschrijving):[];const variatieArtikelen=(c&&c.variatieItems)?c.variatieItems.filter(r=>r.omschrijving):[];const artikelen=[...regelArtikelen,...variatieArtikelen];if(!artikelen.length){picker.classList.remove('visible');return;}picker.classList.add('visible');grid.innerHTML=artikelen.map((r,i)=>{const bL=r.btw===0.21?'21%':r.btw===0.09?'9%':r.btw===0?'0%':'';return '<button class="artikel-chip" onclick="addArtikelFromPicker('+i+')" title="'+escapeHtml(r.omschrijving)+(bL?' (BTW '+bL+')':'')+(r.grootboek?' — GB '+r.grootboek:'')+'"><span class="chip-icon">+</span> '+escapeHtml(r.omschrijving.length>32?r.omschrijving.slice(0,30)+'\u2026':r.omschrijving)+' <span class="chip-price">'+formatBedrag(r.stuksprijs)+(bL?' <small>'+bL+'</small>':'')+'</span></button>';}).join('');}
+function addArtikelFromPicker(idx){const c=crediteuren.find(x=>x.id===selectedCrediteurId);if(!c)return;const allArtikelen=[...(c.regelitems||[]).filter(r=>r.omschrijving),...(c.variatieItems||[]).filter(r=>r.omschrijving)];const art=allArtikelen[idx];if(!art)return;const items=getRegelitems();if(items.length===1&&!items[0].omschrijving&&!items[0].stuksprijs){items[0]={...art};}else{items.push({...art});}renderRegelitems(items);updatePreview();showToast('"'+art.omschrijving+'" toegevoegd');}
 function hideArtikelPicker(){document.getElementById('artikel-picker').classList.remove('visible');}
 
 /* ═══════════ DEBITEUR COMBOBOX ═══════════ */
@@ -786,13 +859,12 @@ document.getElementById('factuurdatum').addEventListener('change',function(){con
 /* ═══════════ FACTUUR RENDER ═══════════ */
 function renderFactuurHTML(data){
   const c=data.crediteur||{},items=data.regelitems||[],btwPct=data.btwTarief||0;
-  let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});sub=Math.round(sub*100)/100;
-  const btw=Math.round(sub*btwPct*100)/100,tot=Math.round((sub+btw)*100)/100;
-  const btwL=btwPct===0.21?'21%':btwPct===0.09?'9%':'0%';
+  const bg=calcBtwGroups(items,btwPct);const sub=bg.sub,totalBtw=bg.totalBtw,tot=bg.tot;
+  const hasMixedBtw=bg.btwLines.length>1;
   const badge=data.status==='betaald'?'<span class="fa4-badge-betaald">BETAALD</span>':'';
   const typeLabel=(data.type==='verkoop')?'VERKOOPFACTUUR':'FACTUUR';
   const det=[c.kvk?'KvK: '+escapeHtml(c.kvk):'',c.btw?'BTW: '+escapeHtml(c.btw):'',c.email?escapeHtml(c.email):''].filter(Boolean).join(' | ');
-  return '<div class="fa4-header"><div class="fa4-header-left">'+(c.logo?'<img class="fa4-logo" src="'+c.logo+'">':'')+'<div class="fa4-crediteur-naam">'+(escapeHtml(c.naam)||'Crediteur')+'</div><div class="fa4-crediteur-adres">'+(escapeHtml(c.adres)||'')+'</div>'+(det?'<div class="fa4-crediteur-detail">'+det+'</div>':'')+'</div><div class="fa4-header-right"><div class="fa4-title">'+typeLabel+' '+badge+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> '+(escapeHtml(data.factuurnummer)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> '+(formatDatum(data.factuurdatum)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> '+(formatDatum(data.vervaldatum)||'\u2014')+'</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">'+(escapeHtml(data.debiteurNaam)||'Debiteur')+'\n'+(escapeHtml(data.debiteurAdres)||'')+'\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">'+(data.referentie?'Ref: '+escapeHtml(data.referentie):'')+'</div><div class="fa4-meta-line">Betalingstermijn: '+(c.betalingstermijn||30)+' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>Bedrag</th></tr></thead><tbody>'+items.map(r=>{const b=(r.aantal||0)*(r.stuksprijs||0);return '<tr><td>'+(escapeHtml(r.omschrijving)||'\u2014')+'</td><td style="text-align:right">'+(r.aantal||0)+'</td><td style="text-align:right">'+formatBedrag(r.stuksprijs||0)+'</td><td style="text-align:right">'+formatBedrag(b)+'</td></tr>';}).join('')+'</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>'+formatBedrag(sub)+'</span></div><div class="fa4-totalen-rij"><span>BTW '+btwL+'</span><span>'+formatBedrag(btw)+'</span></div><div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>'+formatBedrag(tot)+'</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>'+formatBedrag(tot)+'</strong> over te maken op <strong>'+(escapeHtml(c.iban)||'NL00 BANK 0000 0000 00')+'</strong> t.n.v. <strong>'+(escapeHtml(c.naam)||'Crediteur')+'</strong> o.v.v. <strong>'+(escapeHtml(data.factuurnummer)||'\u2014')+'</strong>.</p></div><div class="fa4-footer">'+(escapeHtml(c.naam)||'')+(c.kvk?' | KvK: '+escapeHtml(c.kvk):'')+(c.btw?' | BTW: '+escapeHtml(c.btw):'')+'</div>';
+  return '<div class="fa4-header"><div class="fa4-header-left">'+(c.logo?'<img class="fa4-logo" src="'+c.logo+'">':'')+'<div class="fa4-crediteur-naam">'+(escapeHtml(c.naam)||'Crediteur')+'</div><div class="fa4-crediteur-adres">'+(escapeHtml(c.adres)||'')+'</div>'+(det?'<div class="fa4-crediteur-detail">'+det+'</div>':'')+'</div><div class="fa4-header-right"><div class="fa4-title">'+typeLabel+' '+badge+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurnummer:</span> '+(escapeHtml(data.factuurnummer)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Factuurdatum:</span> '+(formatDatum(data.factuurdatum)||'\u2014')+'</div><div class="fa4-meta-line"><span class="fa4-meta-label">Vervaldatum:</span> '+(formatDatum(data.vervaldatum)||'\u2014')+'</div></div></div><hr class="fa4-lijn"><div class="fa4-adressen"><div class="fa4-adressen-links"><div class="fa4-section-label">Factuur aan</div><div class="fa4-adres-tekst">'+(escapeHtml(data.debiteurNaam)||'Debiteur')+'\n'+(escapeHtml(data.debiteurAdres)||'')+'\nNederland</div></div><div class="fa4-adressen-rechts"><div class="fa4-section-label">Referentie</div><div class="fa4-meta-line">'+(data.referentie?'Ref: '+escapeHtml(data.referentie):'')+'</div><div class="fa4-meta-line">Betalingstermijn: '+(c.betalingstermijn||30)+' dagen</div></div></div><hr class="fa4-lijn"><table class="fa4-tabel"><thead><tr><th>Omschrijving</th><th>Aantal</th><th>Stuksprijs</th><th>BTW</th><th>Bedrag</th></tr></thead><tbody>'+items.map(r=>{const b=(r.aantal||0)*(r.stuksprijs||0);const rBtw=r.btw!==undefined?r.btw:btwPct;const rBtwL=rBtw===0.21?'21%':rBtw===0.09?'9%':'0%';return '<tr><td>'+(escapeHtml(r.omschrijving)||'\u2014')+'</td><td style="text-align:right">'+(r.aantal||0)+'</td><td style="text-align:right">'+formatBedrag(r.stuksprijs||0)+'</td><td style="text-align:right">'+rBtwL+'</td><td style="text-align:right">'+formatBedrag(b)+'</td></tr>';}).join('')+'</tbody></table><div class="fa4-totalen"><div class="fa4-totalen-tabel"><div class="fa4-totalen-rij"><span>Subtotaal excl. BTW</span><span>'+formatBedrag(sub)+'</span></div>'+bg.btwLines.filter(l=>l.pct>0).map(l=>'<div class="fa4-totalen-rij"><span>BTW '+l.label+(hasMixedBtw?' over '+formatBedrag(l.grondslag):'')+'</span><span>'+formatBedrag(l.btw)+'</span></div>').join('')+(bg.btwLines.every(l=>l.pct===0)?'<div class="fa4-totalen-rij"><span>BTW 0%</span><span>'+formatBedrag(0)+'</span></div>':'')+'<div class="fa4-totalen-rij totaal"><span>Totaal incl. BTW</span><span>'+formatBedrag(tot)+'</span></div></div></div><div class="fa4-betaalblok"><h4>Betalingsgegevens</h4><p>Gelieve het totaalbedrag van <strong>'+formatBedrag(tot)+'</strong> over te maken op <strong>'+(escapeHtml(c.iban)||'NL00 BANK 0000 0000 00')+'</strong> t.n.v. <strong>'+(escapeHtml(c.naam)||'Crediteur')+'</strong> o.v.v. <strong>'+(escapeHtml(data.factuurnummer)||'\u2014')+'</strong>.</p></div><div class="fa4-footer">'+(escapeHtml(c.naam)||'')+(c.kvk?' | KvK: '+escapeHtml(c.kvk):'')+(c.btw?' | BTW: '+escapeHtml(c.btw):'')+'</div>';
 }
 
 /* ═══════════ PREVIEW ═══════════ */
@@ -805,8 +877,13 @@ async function genPDF(data){const ra=document.getElementById('pdf-factuur');ra.i
 
 async function downloadPDF(){
   const data=getFactuurData();if(!data.factuurnummer){showToast('Vul factuurnummer in');return;}if(!data.crediteur.id){showToast('Selecteer een crediteur');return;}
-  const pdf=await genPDF(data);pdf.save('Factuur-'+data.factuurnummer+'.pdf');
-  if(document.getElementById('gen-bankmutatie').checked){const mt940=generateMT940(data);const blob=new Blob([mt940],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Bankmutatie-'+data.factuurnummer+'.sta';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
+  const credNaam=(data.crediteur&&data.crediteur.naam||'Factuur').replace(/[^a-zA-Z0-9 ]/g,'').trim();
+  const fDatumObj=data.factuurdatum?new Date(data.factuurdatum+'T00:00:00'):null;
+  const fMaand=fDatumObj?MAANDEN[fDatumObj.getMonth()]:'';
+  const fJaar=fDatumObj?fDatumObj.getFullYear():'';
+  const pdfNaam=credNaam+(fMaand?' - '+fMaand+' '+fJaar:'')+'.pdf';
+  const pdf=await genPDF(data);pdf.save(pdfNaam);
+  if(document.getElementById('gen-bankmutatie').checked){const mt940=generateMT940(data);const blob=new Blob([mt940],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=credNaam+(fMaand?' - '+fMaand+' '+fJaar:'')+'.sta';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
   // Opslaan in historie
   saveToHistorie(data);
   const next=incrementNr(data.factuurnummer);saveNr(next);document.getElementById('factuurnummer').value=next;
@@ -814,15 +891,14 @@ async function downloadPDF(){
 
 /* ═══════════ HISTORIE ═══════════ */
 function saveToHistorie(data){
-  const items=data.regelitems||[];let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});
-  const btw=sub*(data.btwTarief||0),tot=Math.round((sub+btw)*100)/100;
+  const items=data.regelitems||[];const bg=calcBtwGroups(items,data.btwTarief||0);const tot=bg.tot;
   historie.unshift({id:genId(),factuurnummer:data.factuurnummer,crediteurNaam:(data.crediteur||{}).naam||'',crediteurId:data.crediteur.id||'',debiteurNaam:data.debiteurNaam||'',datum:data.factuurdatum,bedrag:tot,status:data.status,type:data.type,data:data,ts:Date.now()});
   saveHistorie();}
 function renderHistorie(){
   const el=document.getElementById('historie-content');
   if(!historie.length){el.innerHTML='<div class="empty-state"><p>Nog geen facturen gegenereerd.</p></div>';return;}
   el.innerHTML='<table class="historie-tabel"><thead><tr><th>Nr</th><th>Crediteur</th><th>Debiteur</th><th>Datum</th><th>Bedrag</th><th>Status</th><th class="acties-col">Acties</th></tr></thead><tbody>'+historie.map(h=>'<tr><td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;">'+escapeHtml(h.factuurnummer)+'</td><td>'+escapeHtml(h.crediteurNaam)+'</td><td>'+escapeHtml(h.debiteurNaam)+'</td><td>'+formatDatumKort(h.datum)+'</td><td class="bedrag-col">'+formatBedrag(h.bedrag)+'</td><td><span class="badge badge-'+h.status+'">'+h.status+'</span></td><td class="acties-col"><button class="btn btn-ghost btn-sm" onclick="herdownloadFactuur(\''+h.id+'\')" title="Opnieuw downloaden">⬇</button><button class="btn btn-ghost btn-sm" onclick="laadFactuur(\''+h.id+'\')" title="Bewerken">✏️</button><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="verwijderHistorie(\''+h.id+'\')" title="Verwijderen">🗑</button></td></tr>').join('')+'</tbody></table>';}
-async function herdownloadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)return;const pdf=await genPDF(h.data);pdf.save('Factuur-'+h.factuurnummer+'.pdf');showToast('PDF opnieuw gedownload');}
+async function herdownloadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)return;const credNaam=(h.data.crediteur&&h.data.crediteur.naam||'Factuur').replace(/[^a-zA-Z0-9 ]/g,'').trim();const fDatumObj=h.data.factuurdatum?new Date(h.data.factuurdatum+'T00:00:00'):null;const fMaand=fDatumObj?MAANDEN[fDatumObj.getMonth()]:'';const fJaar=fDatumObj?fDatumObj.getFullYear():'';const pdf=await genPDF(h.data);pdf.save(credNaam+(fMaand?' - '+fMaand+' '+fJaar:'')+'.pdf');showToast('PDF opnieuw gedownload');}
 function laadFactuur(id){const h=historie.find(x=>x.id===id);if(!h||!h.data)return;const d=h.data;
   if(d.crediteur&&d.crediteur.id){const c=crediteuren.find(x=>x.id===d.crediteur.id);if(c){selectedCrediteurId=c.id;crediteurCombo.setInput(c.naam);renderCrediteurCard();}}
   document.getElementById('factuurnummer').value=d.factuurnummer||'';document.getElementById('referentie').value=d.referentie||'';document.getElementById('factuurdatum').value=d.factuurdatum||'';document.getElementById('vervaldatum').value=d.vervaldatum||'';document.getElementById('btw-tarief').value=d.btwTarief||0.21;document.getElementById('factuur-status').value=d.status||'open';
@@ -834,8 +910,8 @@ function clearHistorie(){if(!historie.length)return;if(confirm('Alle factuurhist
 
 /* ═══════════ MT940 ═══════════ */
 function generateMT940(data){
-  const c=data.crediteur||{};const items=data.regelitems||[];let sub=0;items.forEach(r=>{sub+=(r.aantal||0)*(r.stuksprijs||0);});
-  const btw=sub*(data.btwTarief||0);const totaal=Math.round((sub+btw)*100)/100;
+  const c=data.crediteur||{};const items=data.regelitems||[];
+  const bg=calcBtwGroups(items,data.btwTarief||0);const totaal=bg.tot;
   const datum=(data.factuurdatum||todayStr()).replace(/-/g,'').slice(2);
   const betaalDatum=(data.vervaldatum||data.factuurdatum||todayStr()).replace(/-/g,'').slice(2);
   const iban=(c.iban||'NL00BANK0000000000').replace(/\s/g,'');
@@ -845,6 +921,70 @@ function generateMT940(data){
   const rekeningNr=data.type==='verkoop'?debiteurIban:iban;
   return [':20:STARTUMS',':25:'+(data.type==='verkoop'?iban:debiteurIban),':28C:0',':60F:C'+datum+'EUR'+formatMT940Amount(10000),':61:'+betaalDatum+datum+dc+formatMT940Amount(totaal)+'N078NONREF',':86:/IBAN/'+rekeningNr+'/NAME/'+naam+'/REMI/'+(data.factuurnummer||'FACTUUR'),':62F:C'+betaalDatum+'EUR'+formatMT940Amount(dc==='D'?10000-totaal:10000+totaal),'-'].join('\r\n');}
 function formatMT940Amount(n){return Math.abs(n).toFixed(2).replace('.',',');}
+
+/* ═══════════ BANKMUTaties ═══════════ */
+function setBankmutatiePreset(type){
+  const presets={
+    huur:{omschrijving:'Maandhuur kantoorruimte',tegenrekening:'NL20 INGB 0002 3456 78',tegenpartij:'Regus Nederland B.V.',bedrag:1250,richting:'debit'},
+    verzekering:{omschrijving:'Zakelijke verzekeringspremie',tegenrekening:'NL91 ABNA 0417 1643 00',tegenpartij:'Nationale Nederlanden Zakelijk',bedrag:185,richting:'debit'},
+    salaris:{omschrijving:'Salarisbetaling medewerkers',tegenrekening:'NL32 RABO 0145 6789 01',tegenpartij:profiel.bedrijf||'Eigen medewerkers',bedrag:4850,richting:'debit'},
+    betaling:{omschrijving:'Betaling factuur klant',tegenrekening:'NL45 ABNA 0000 1234 56',tegenpartij:'Demo klant B.V.',bedrag:850,richting:'credit'}
+  };
+  const p=presets[type];if(!p)return;
+  document.getElementById('bank-omschrijving').value=p.omschrijving;
+  document.getElementById('bank-tegenrekening').value=p.tegenrekening;
+  document.getElementById('bank-tegenpartij').value=p.tegenpartij;
+  document.getElementById('bank-bedrag').value=p.bedrag;
+  document.getElementById('bank-richting').value=p.richting;
+}
+function addMaanden(ds,aantal){
+  const parts=ds.split('-').map(Number);
+  const d=new Date(parts[0],parts[1]-1+aantal,parts[2]);
+  return String(d.getFullYear())+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function generateBankmutaties(){
+  const datum=document.getElementById('bank-datum').value;
+  const aantal=parseInt(document.getElementById('bank-aantal-maanden').value)||1;
+  const omschrijving=document.getElementById('bank-omschrijving').value.trim();
+  const tegenrekening=document.getElementById('bank-tegenrekening').value.trim();
+  const tegenpartij=document.getElementById('bank-tegenpartij').value.trim();
+  const bedrag=parseFloat(document.getElementById('bank-bedrag').value);
+  const richting=document.getElementById('bank-richting').value;
+  if(!datum||!omschrijving||!tegenpartij||!bedrag||bedrag<=0){showToast('Vul datum, omschrijving, tegenpartij en bedrag in');return;}
+  for(let i=0;i<aantal;i++){
+    const boekdatum=i===0?datum:addMaanden(datum,i);
+    bankmutaties.push({id:genId(),datum:boekdatum,omschrijving,tegenrekening,tegenpartij,bedrag:Math.round(bedrag*100)/100,richting});
+  }
+  saveBankmutaties();renderBankmutatieList();showToast(aantal+' bankmutatie(s) gegenereerd');
+}
+function renderBankmutatieList(){
+  const list=document.getElementById('bankmutatie-list');if(!list)return;
+  const download=document.getElementById('bank-download');
+  if(!bankmutaties.length){list.innerHTML='<p style="color:var(--text-muted);font-size:13px;padding:20px 0;">Nog geen fictieve bankmutaties.</p>';if(download)download.disabled=true;return;}
+  list.innerHTML=bankmutaties.slice().reverse().map(m=>'<div class="bankmutatie-card"><div class="bankmutatie-card-info"><strong>'+escapeHtml(m.omschrijving)+'</strong><span>'+formatDatumKort(m.datum)+' | '+escapeHtml(m.tegenpartij)+(m.tegenrekening?' | '+escapeHtml(m.tegenrekening):'')+'</span></div><div class="bankmutatie-bedrag '+(m.richting==='credit'?'positief':'negatief')+'">'+(m.richting==='credit'?'+':'-')+formatBedrag(m.bedrag).replace('EUR ','\u20AC ')+'</div></div>').join('');
+  if(download)download.disabled=false;
+}
+function generateBankmutatieMT940(m,index){
+  const datum=(m.datum||todayStr()).replace(/-/g,'').slice(2);
+  const dc=m.richting==='credit'?'C':'D';
+  const bedrag=formatMT940Amount(m.bedrag);
+  const rekening=(m.tegenrekening||'NL00BANK0000000000').replace(/\s/g,'');
+  return [':20:DEMO'+String(index+1).padStart(4,'0'),':25:'+((profiel.iban||'NL91ABNA0417164300').replace(/\s/g,'')),':28C:0',':60F:C'+datum+'EUR'+formatMT940Amount(10000),':61:'+datum+datum+dc+bedrag+'N078NONREF',':86:/IBAN/'+rekening+'/NAME/'+(m.tegenpartij||'')+'/REMI/'+(m.omschrijving||''),':62F:C'+datum+'EUR'+formatMT940Amount(m.richting==='credit'?10000+Number(m.bedrag):10000-Number(m.bedrag)),'-'].join('\r\n');
+}
+function downloadBankmutaties(){
+  if(!bankmutaties.length)return;
+  const data=bankmutaties.map(generateBankmutatieMT940).join('\r\n');
+  const blob=new Blob([data],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='bankmutaties-'+activeEnv+'-'+todayStr()+'.sta';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast(bankmutaties.length+' bankmutatie(s) gedownload');
+}
+function clearBankmutaties(){
+  if(!bankmutaties.length)return;
+  if(!confirm('Alle gegenereerde bankmutaties wissen?'))return;
+  bankmutaties=[];saveBankmutaties();renderBankmutatieList();showToast('Bankmutaties gewist');
+}
 
 /* ═══════════ EXCEL IMPORT ═══════════ */
 const dropArea=document.getElementById('excel-drop-area');
@@ -860,23 +1000,25 @@ function fc(h,l,terms){for(const t of terms){let i=l.indexOf(t);if(i>=0)return h
 function randomFactuurnr(){const prefixes=['FV','INV','F','RK','FAC'];const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];const nr=String(Math.floor(Math.random()*900000)+100000);const val=prefix+'-'+new Date().getFullYear()+'-'+nr;document.getElementById('factuurnummer').value=val;saveNr(val);updatePreview();}
 function loadVoorbeeldCrediteuren(){
   const voorbeelden=[
-    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Telefoonabonnement maandelijks',aantal:1,stuksprijs:39.95}],variatieItems:[{omschrijving:'Aanschaf toestel Samsung Galaxy',aantal:1,stuksprijs:649},{omschrijving:'Internetabonnement uitbreiding',aantal:1,stuksprijs:29.95},{omschrijving:'Schermreparatie toestel',aantal:1,stuksprijs:189},{omschrijving:'Data-bundel buitenland',aantal:1,stuksprijs:24.95}]},
-    {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS ERP 10 licentie',aantal:1,stuksprijs:450}],variatieItems:[{omschrijving:'Extra consultancy',aantal:4,stuksprijs:1100},{omschrijving:'Implementatie module Projecten',aantal:1,stuksprijs:2250},{omschrijving:'Training medewerkers',aantal:1,stuksprijs:895}]},
-    {naam:'ENECO Energie Services B.V.',adres:'Marten Meesweg 5\n3068 AV Rotterdam',kvk:'24352857',btw:'NL808912345B01',iban:'NL22 INGB 0000 1234 56',email:'facturen@eneco.nl',betalingstermijn:14,regelitems:[{omschrijving:'Maandelijks voorschot energie',aantal:1,stuksprijs:485}],variatieItems:[{omschrijving:'Jaarafrekening meerverbruik',aantal:1,stuksprijs:1240},{omschrijving:'Tariefwijziging toeslag',aantal:1,stuksprijs:65},{omschrijving:'Metervervanging',aantal:1,stuksprijs:125}]},
-    {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'BTW-afdracht kwartaal',aantal:1,stuksprijs:4850}]},
-    {naam:'Dell Computer B.V.',adres:'Transformatorweg 38-72\n1014 AK Amsterdam',kvk:'34128796',btw:'NL812345678B01',iban:'NL90 ABNA 0512 3456 78',email:'invoices@dell.com',betalingstermijn:30,regelitems:[{omschrijving:'Lease Dell Latitude 5550 maandelijks',aantal:3,stuksprijs:89}],variatieItems:[{omschrijving:'Reparatie laptop beeldscherm',aantal:1,stuksprijs:345},{omschrijving:'Extra docking station',aantal:1,stuksprijs:189},{omschrijving:'Upgrade SSD 1TB',aantal:1,stuksprijs:129}]},
-    {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Acer B277 monitoren maandelijks',aantal:3,stuksprijs:29}],variatieItems:[{omschrijving:'Vervanging defecte monitor',aantal:1,stuksprijs:399},{omschrijving:'Extra monitor werkplek',aantal:1,stuksprijs:29}]},
-    {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Samsung Galaxy S24 maandelijks',aantal:3,stuksprijs:45}],variatieItems:[{omschrijving:'Schermreparatie Galaxy S24',aantal:1,stuksprijs:279},{omschrijving:'Extra hoesje en screenprotector',aantal:3,stuksprijs:39.95},{omschrijving:'Vervangtoestel',aantal:1,stuksprijs:899}]},
-    {naam:'Manutan B.V.',adres:'Zonnebaan 34\n3542 EG Utrecht',kvk:'30145678',btw:'NL818234567B01',iban:'NL88 RABO 0345 6789 01',email:'facturatie@manutan.nl',betalingstermijn:30,regelitems:[{omschrijving:'Kantoorbenodigdheden',aantal:1,stuksprijs:189.50}],variatieItems:[{omschrijving:'Bureaustoelen aanvulling',aantal:2,stuksprijs:349},{omschrijving:'Verhuisdozen en verpakkingsmateriaal',aantal:1,stuksprijs:145}]},
-    {naam:'Bidfood B.V.',adres:'Marconiweg 2\n4131 PD Vianen',kvk:'30025786',btw:'NL001248462B01',iban:'NL62 ABNA 0457 2345 67',email:'klantenservice@bidfood.nl',betalingstermijn:14,regelitems:[{omschrijving:'Cateringservice kantoor',aantal:1,stuksprijs:342.50}],variatieItems:[{omschrijving:'Extra catering bedrijfsevent',aantal:1,stuksprijs:875},{omschrijving:'Kerstpakketten medewerkers',aantal:12,stuksprijs:45}]},
-    {naam:'Securitas Beveiliging B.V.',adres:'Databankweg 26\n3821 AL Amersfoort',kvk:'30070025',btw:'NL801234567B01',iban:'NL23 RABO 0145 6789 01',email:'facturatie@securitas.nl',betalingstermijn:30,regelitems:[{omschrijving:'Bewakingsdienst abonnement',aantal:1,stuksprijs:1250}],variatieItems:[{omschrijving:'Extra surveillance weekend',aantal:1,stuksprijs:450},{omschrijving:'Installatie camera systeem',aantal:1,stuksprijs:2100}]},
-    {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering voorschot',aantal:1,stuksprijs:95}],variatieItems:[{omschrijving:'Jaarafrekening meerverbruik',aantal:1,stuksprijs:210},{omschrijving:'Aansluitkosten extra tappunt',aantal:1,stuksprijs:175}]},
-    {naam:'Mollie B.V.',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'30204462',btw:'NL815024002B01',iban:'NL45 ABNA 0000 1234 56',email:'invoices@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Transactiekosten betaalverkeer',aantal:1,stuksprijs:127.50}],variatieItems:[{omschrijving:'Toeslag hoog transactievolume',aantal:1,stuksprijs:85},{omschrijving:'iDEAL extra pakket',aantal:1,stuksprijs:49}]},
-    {naam:'Kamer van Koophandel',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@kvk.nl',betalingstermijn:30,regelitems:[{omschrijving:'Uittreksel handelsregister',aantal:1,stuksprijs:15.40}]},
-    {naam:'Centraal Bureau voor de Statistiek',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@cbs.nl',betalingstermijn:30,regelitems:[{omschrijving:'Statistische dienstverlening',aantal:1,stuksprijs:1750}]},
-    {naam:'CJIB',adres:'Postbus 1794\n8901 CB Leeuwarden',kvk:'',btw:'',iban:'NL72 INGB 0000 0044 55',email:'',betalingstermijn:0,regelitems:[{omschrijving:'Verkeersboete [kenteken]',aantal:1,stuksprijs:169}]},
-    {naam:'EnYoi Holding B.V.',adres:'Stationsplein 45\n3013 AK Rotterdam',kvk:'71234567',btw:'NL862345678B01',iban:'NL45 RABO 0198 7654 32',email:'administratie@enyoi.nl',betalingstermijn:30,regelitems:[{omschrijving:'Detachering software developer',aantal:160,stuksprijs:95}],variatieItems:[{omschrijving:'Overwerk uren',aantal:24,stuksprijs:115},{omschrijving:'Reiskosten declaratie',aantal:1,stuksprijs:385}]},
-    {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte',aantal:1,stuksprijs:4850}],variatieItems:[{omschrijving:'Servicekosten aanpassing',aantal:1,stuksprijs:350},{omschrijving:'Parkeerplaats extra',aantal:1,stuksprijs:125}]}
+    {naam:'KPN Telecom Regio Midden',adres:'Maanplein 55\n2516 CK Den Haag',kvk:'02045810',btw:'NL001316567B01',iban:'NL76 INGB 0000 0012 34',email:'zakelijk@kpn.com',betalingstermijn:14,regelitems:[{omschrijving:'Telefoonabonnement maandelijks',aantal:1,stuksprijs:39.95,btw:0.21,grootboek:'4201'}],variatieItems:[{omschrijving:'Aanschaf toestel Samsung Galaxy S24',aantal:1,stuksprijs:599,btw:0.21,grootboek:'0650'},{omschrijving:'Internetabonnement uitbreiding',aantal:1,stuksprijs:29.95,btw:0.21,grootboek:'4202'},{omschrijving:'Schermreparatie toestel',aantal:1,stuksprijs:189,btw:0.21,grootboek:'4900'},{omschrijving:'Data-bundel buitenland',aantal:1,stuksprijs:24.95,btw:0.21,grootboek:'4201'}]},
+    {naam:'AFAS Software B.V.',adres:'Stadionstraat 60\n8232 BR Lelystad',kvk:'32068808',btw:'NL810182574B01',iban:'NL55 RABO 0108 7654 32',email:'facturen@afas.nl',betalingstermijn:30,regelitems:[{omschrijving:'AFAS ERP 10 licentie',aantal:1,stuksprijs:450,btw:0.21,grootboek:'4640'}],variatieItems:[{omschrijving:'Extra consultancy',aantal:4,stuksprijs:1100,btw:0.21,grootboek:'4620'},{omschrijving:'Implementatie module Projecten',aantal:1,stuksprijs:2250,btw:0.21,grootboek:'4640'},{omschrijving:'Training medewerkers',aantal:1,stuksprijs:895,btw:0.21,grootboek:'4630'},{omschrijving:'Support pakket Premium',aantal:1,stuksprijs:175,btw:0.21,grootboek:'4640'}]},
+    {naam:'ENECO Energie Services B.V.',adres:'Marten Meesweg 5\n3068 AV Rotterdam',kvk:'24352857',btw:'NL808912345B01',iban:'NL22 INGB 0000 1234 56',email:'facturen@eneco.nl',betalingstermijn:14,regelitems:[{omschrijving:'Maandelijks voorschot energie',aantal:1,stuksprijs:485,btw:0.21,grootboek:'4300'}],variatieItems:[{omschrijving:'Jaarafrekening meerverbruik',aantal:1,stuksprijs:1240,btw:0.21,grootboek:'4300'},{omschrijving:'Tariefwijziging toeslag',aantal:1,stuksprijs:65,btw:0.09,grootboek:'4300'},{omschrijving:'Metervervanging',aantal:1,stuksprijs:125,btw:0.21,grootboek:'4100'},{omschrijving:'Netbeheerkosten elektra',aantal:1,stuksprijs:89,btw:0.21,grootboek:'4300'}]},
+    {naam:'Belastingdienst',adres:'Postbus 9001\n6401 DA Heerlen',kvk:'',btw:'',iban:'NL86 INGB 0002 4455 88',email:'',betalingstermijn:0,regelitems:[{omschrijving:'BTW-afdracht kwartaal',aantal:1,stuksprijs:4850,btw:0,grootboek:'1520'}],variatieItems:[{omschrijving:'Vennootschapsbelasting voorlopige aanslag',aantal:1,stuksprijs:3200,btw:0,grootboek:'1510'},{omschrijving:'Loonheffingen afdracht',aantal:1,stuksprijs:8750,btw:0,grootboek:'1530'},{omschrijving:'Naheffing BTW',aantal:1,stuksprijs:1250,btw:0,grootboek:'1520'},{omschrijving:'Boete te late aangifte',aantal:1,stuksprijs:68,btw:0,grootboek:'4900'}]},
+    {naam:'Dell Computer B.V.',adres:'Transformatorweg 38-72\n1014 AK Amsterdam',kvk:'34128796',btw:'NL812345678B01',iban:'NL90 ABNA 0512 3456 78',email:'invoices@dell.com',betalingstermijn:30,regelitems:[{omschrijving:'Lease Dell Latitude 5550 maandelijks',aantal:3,stuksprijs:89,btw:0.21,grootboek:'4640'}],variatieItems:[{omschrijving:'Reparatie laptop beeldscherm',aantal:1,stuksprijs:345,btw:0.21,grootboek:'4100'},{omschrijving:'Aanschaf docking station Dell WD22TB4',aantal:1,stuksprijs:189,btw:0.21,grootboek:'0650'},{omschrijving:'Upgrade SSD 1TB',aantal:1,stuksprijs:129,btw:0.21,grootboek:'0650'},{omschrijving:'Dell ProSupport Plus verlenging',aantal:3,stuksprijs:65,btw:0.21,grootboek:'4640'}]},
+    {naam:'Acer Computer B.V. (Benelux)',adres:'Achtseweg Zuid 239\n5651 GV Eindhoven',kvk:'17095498',btw:'NL809384726B01',iban:'NL38 INGB 0006 5432 10',email:'facturen@acer.nl',betalingstermijn:30,regelitems:[{omschrijving:'Lease Acer B277 monitoren maandelijks',aantal:3,stuksprijs:29,btw:0.21,grootboek:'4640'}],variatieItems:[{omschrijving:'Vervanging defecte monitor Acer B277',aantal:1,stuksprijs:399,btw:0.21,grootboek:'0650'},{omschrijving:'Extra monitor werkplek',aantal:1,stuksprijs:29,btw:0.21,grootboek:'4640'},{omschrijving:'Monitorarm Acer ergonomisch',aantal:2,stuksprijs:79,btw:0.21,grootboek:'0650'},{omschrijving:'Verlengde garantie monitoren',aantal:3,stuksprijs:25,btw:0.21,grootboek:'4640'}]},
+    {naam:'Samsung Electronics Nederland B.V.',adres:'Evert van de Beekstraat 310\n1118 CX Schiphol',kvk:'33234567',btw:'NL809876543B01',iban:'NL90 INGB 0009 8765 43',email:'b2b-invoices@samsung.nl',betalingstermijn:30,regelitems:[{omschrijving:'Samsung 55 inch smart-tv kantoor',aantal:1,stuksprijs:649,btw:0.21,grootboek:'0650'}],variatieItems:[{omschrijving:'Samsung 43 inch monitor',aantal:1,stuksprijs:329,btw:0.21,grootboek:'0650'},{omschrijving:'Wall mount televisie',aantal:1,stuksprijs:79,btw:0.21,grootboek:'0650'},{omschrijving:'Onderhoud en installatie presentatieapparatuur',aantal:1,stuksprijs:125,btw:0.21,grootboek:'4100'},{omschrijving:'Universele afstandsbediening',aantal:2,stuksprijs:39.95,btw:0.21,grootboek:'4400'}]},
+    {naam:'Manutan B.V.',adres:'Zonnebaan 34\n3542 EG Utrecht',kvk:'30145678',btw:'NL818234567B01',iban:'NL88 RABO 0345 6789 01',email:'facturatie@manutan.nl',betalingstermijn:30,regelitems:[{omschrijving:'Kantoorbenodigdheden voor klein team',aantal:1,stuksprijs:189.50,btw:0.21,grootboek:'4410'}],variatieItems:[{omschrijving:'Ergonomische bureaustoel',aantal:2,stuksprijs:349,btw:0.21,grootboek:'0650'},{omschrijving:'Werkplekopstelling printer en monitor',aantal:1,stuksprijs:145,btw:0.21,grootboek:'4400'},{omschrijving:'Printerpapier A4 en pennen',aantal:1,stuksprijs:62.50,btw:0.21,grootboek:'4410'},{omschrijving:'Keuken- en schoonmaakvoorraad',aantal:1,stuksprijs:87,btw:0.21,grootboek:'4400'}]},
+    {naam:'Bidfood B.V.',adres:'Marconiweg 2\n4131 PD Vianen',kvk:'30025786',btw:'NL001248462B01',iban:'NL62 ABNA 0457 2345 67',email:'klantenservice@bidfood.nl',betalingstermijn:14,regelitems:[{omschrijving:'Cateringservice kantoor',aantal:1,stuksprijs:342.50,btw:0.09,grootboek:'4900'}],variatieItems:[{omschrijving:'Extra catering bedrijfsevent',aantal:1,stuksprijs:875,btw:0.09,grootboek:'4900'},{omschrijving:'Kerstpakketten medewerkers',aantal:12,stuksprijs:45,btw:0.21,grootboek:'4900'},{omschrijving:'Koffie en thee voorraad',aantal:1,stuksprijs:156,btw:0.09,grootboek:'4900'},{omschrijving:'Fruitmanden wekelijks',aantal:4,stuksprijs:28.50,btw:0.09,grootboek:'4900'}]},
+    {naam:'Securitas Beveiliging B.V.',adres:'Databankweg 26\n3821 AL Amersfoort',kvk:'30070025',btw:'NL801234567B01',iban:'NL23 RABO 0145 6789 01',email:'facturatie@securitas.nl',betalingstermijn:30,regelitems:[{omschrijving:'Alarminstallatie monitoring kleinbedrijf',aantal:1,stuksprijs:95,btw:0.21,grootboek:'4510'}],variatieItems:[{omschrijving:'Maandelijkse alarmbeheersing',aantal:1,stuksprijs:65,btw:0.21,grootboek:'4510'},{omschrijving:'Uitbreiding deurcontacten',aantal:2,stuksprijs:35,btw:0.21,grootboek:'0650'},{omschrijving:'Jaarlijkse onderhoudscontrole',aantal:1,stuksprijs:125,btw:0.21,grootboek:'4510'},{omschrijving:'Vooraanmelding sleutelhouder',aantal:1,stuksprijs:25,btw:0.21,grootboek:'4510'}]},
+    {naam:'Vitens N.V.',adres:'Oude Veerweg 1\n8019 BE Zwolle',kvk:'05063706',btw:'NL001571248B01',iban:'NL22 RABO 0100 0000 01',email:'zakelijk@vitens.nl',betalingstermijn:14,regelitems:[{omschrijving:'Waterlevering voorschot',aantal:1,stuksprijs:95,btw:0.09,grootboek:'4250'}],variatieItems:[{omschrijving:'Jaarafrekening meerverbruik',aantal:1,stuksprijs:210,btw:0.09,grootboek:'4250'},{omschrijving:'Aansluitkosten extra tappunt',aantal:1,stuksprijs:175,btw:0.21,grootboek:'4100'},{omschrijving:'Rioolheffing jaarlijks',aantal:1,stuksprijs:320,btw:0,grootboek:'4250'},{omschrijving:'Leidingonderhoud',aantal:1,stuksprijs:95,btw:0.21,grootboek:'4100'}]},
+    {naam:'Mollie B.V.',adres:'Keizersgracht 126\n1015 CW Amsterdam',kvk:'30204462',btw:'NL815024002B01',iban:'NL45 ABNA 0000 1234 56',email:'invoices@mollie.com',betalingstermijn:14,regelitems:[{omschrijving:'Transactiekosten betaalverkeer',aantal:1,stuksprijs:127.50,btw:0.21,grootboek:'4900'}],variatieItems:[{omschrijving:'Toeslag hoog transactievolume',aantal:1,stuksprijs:85,btw:0.21,grootboek:'4900'},{omschrijving:'iDEAL extra pakket',aantal:1,stuksprijs:49,btw:0.21,grootboek:'4640'},{omschrijving:'Creditcard processing fee',aantal:1,stuksprijs:62,btw:0.21,grootboek:'4900'},{omschrijving:'Terugboeking chargeback',aantal:1,stuksprijs:15,btw:0.21,grootboek:'4900'}]},
+    {naam:'Kamer van Koophandel',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@kvk.nl',betalingstermijn:30,regelitems:[{omschrijving:'Uittreksel handelsregister',aantal:1,stuksprijs:15.40,btw:0,grootboek:'4900'}],variatieItems:[{omschrijving:'Jaarlijkse bijdrage KvK',aantal:1,stuksprijs:52,btw:0,grootboek:'4900'},{omschrijving:'Digitaal gewaarmerkt uittreksel',aantal:2,stuksprijs:8.50,btw:0,grootboek:'4900'},{omschrijving:'Mutatie handelsregister',aantal:1,stuksprijs:22,btw:0,grootboek:'4900'},{omschrijving:'Deponeringkosten jaarrekening',aantal:1,stuksprijs:0,btw:0,grootboek:'4900'}]},
+    {naam:'Centraal Bureau voor de Statistiek',adres:'Henri Faasdreef 312\n2492 JP Den Haag',kvk:'',btw:'',iban:'NL18 INGB 0000 3456 78',email:'info@cbs.nl',betalingstermijn:30,regelitems:[{omschrijving:'Statistische dienstverlening',aantal:1,stuksprijs:1750,btw:0.21,grootboek:'4620'}],variatieItems:[{omschrijving:'Aanvullend dataonderzoek',aantal:1,stuksprijs:450,btw:0.21,grootboek:'4620'},{omschrijving:'Branchegegevens rapportage',aantal:1,stuksprijs:295,btw:0.21,grootboek:'4620'},{omschrijving:'Maatwerk tabellenset',aantal:1,stuksprijs:850,btw:0.21,grootboek:'4620'},{omschrijving:'Toegang StatLine Premium',aantal:1,stuksprijs:120,btw:0.21,grootboek:'4640'}]},
+    {naam:'CJIB',adres:'Postbus 1794\n8901 CB Leeuwarden',kvk:'',btw:'',iban:'NL72 INGB 0000 0044 55',email:'',betalingstermijn:0,regelitems:[{omschrijving:'Verkeersboete [kenteken]',aantal:1,stuksprijs:169,btw:0,grootboek:'4900'}],variatieItems:[{omschrijving:'Administratiekosten incasso',aantal:1,stuksprijs:9,btw:0,grootboek:'4900'},{omschrijving:'Verhogingsbedrag te laat betaald',aantal:1,stuksprijs:24,btw:0,grootboek:'4900'},{omschrijving:'Wahv-beschikking parkeren',aantal:1,stuksprijs:109,btw:0,grootboek:'4900'},{omschrijving:'Boete overtreding milieuzone',aantal:1,stuksprijs:250,btw:0,grootboek:'4900'}]},
+    {naam:'EnYoi Holding B.V.',adres:'Stationsplein 45\n3013 AK Rotterdam',kvk:'71234567',btw:'NL862345678B01',iban:'NL45 RABO 0198 7654 32',email:'administratie@enyoi.nl',betalingstermijn:30,regelitems:[{omschrijving:'Detachering software developer',aantal:160,stuksprijs:95,btw:0.21,grootboek:'4630'}],variatieItems:[{omschrijving:'Overwerk uren',aantal:24,stuksprijs:115,btw:0.21,grootboek:'4630'},{omschrijving:'Reiskosten declaratie',aantal:1,stuksprijs:385,btw:0.21,grootboek:'4700'},{omschrijving:'Projectmanagement uren',aantal:40,stuksprijs:125,btw:0.21,grootboek:'4630'},{omschrijving:'Licentie development tools',aantal:1,stuksprijs:245,btw:0.21,grootboek:'4640'}]},
+    {naam:'Nationale Nederlanden Zakelijk',adres:'Prinses Beatrixlaan 35\n2595 AK Den Haag',kvk:'27004660',btw:'NL002891237B01',iban:'NL91 ABNA 0417 1643 00',email:'zakelijk@nn.nl',betalingstermijn:30,regelitems:[{omschrijving:'Bedrijfsverzekeringen maandelijkse premie',aantal:1,stuksprijs:185,btw:0.21,grootboek:'4105'}],variatieItems:[{omschrijving:'Inboedelverzekering kantoor',aantal:1,stuksprijs:45,btw:0.21,grootboek:'4105'},{omschrijving:'Bedrijfsaansprakelijkheid extra dekking',aantal:1,stuksprijs:65,btw:0.21,grootboek:'4105'},{omschrijving:'Ziektekostenverzekering werkgever',aantal:3,stuksprijs:32,btw:0.21,grootboek:'4130'},{omschrijving:'Poliskosten jaarcontract',aantal:1,stuksprijs:20,btw:0.21,grootboek:'4105'}]},
+    {naam:'Regus Nederland B.V.',adres:'Avenue Céramique 50\n6221 KV Maastricht',kvk:'17075578',btw:'NL805194931B01',iban:'NL20 INGB 0002 3456 78',email:'facturen@regus.nl',betalingstermijn:14,regelitems:[{omschrijving:'Flexwerkplek voor 3 medewerkers',aantal:3,stuksprijs:245,btw:0.21,grootboek:'4050'}],variatieItems:[{omschrijving:'Kleine vergaderzaal',aantal:1,stuksprijs:75,btw:0.21,grootboek:'4050'},{omschrijving:'Flexibele dagkantoorplek',aantal:4,stuksprijs:35,btw:0.21,grootboek:'4050'},{omschrijving:'Print- en postservice',aantal:1,stuksprijs:45,btw:0.21,grootboek:'4410'},{omschrijving:'Maandelijkse receptieservice',aantal:1,stuksprijs:95,btw:0.21,grootboek:'4050'}]},
+    {naam:'Vastgoed Midden-Nederland B.V.',adres:'Orteliuslaan 850\n3528 BB Utrecht',kvk:'30567890',btw:'NL830567890B01',iban:'NL44 ABNA 0678 9012 34',email:'huur@vastgoedmn.nl',betalingstermijn:0,regelitems:[{omschrijving:'Huur kantoorruimte kleinbedrijf',aantal:1,stuksprijs:1450,btw:0.21,grootboek:'4050'}],variatieItems:[{omschrijving:'Servicekosten gebouw',aantal:1,stuksprijs:175,btw:0.21,grootboek:'4000'},{omschrijving:'Parkeerplaats medewerkers',aantal:2,stuksprijs:75,btw:0.21,grootboek:'4000'},{omschrijving:'Kleine onderhoudsklus',aantal:1,stuksprijs:195,btw:0.21,grootboek:'4100'},{omschrijving:'Schoonmaakkosten kantoor',aantal:1,stuksprijs:145,btw:0.21,grootboek:'4000'}]}
   ];
   const logoMap={acer:'acer',afas:'afas',belastingdienst:'belastingdienst',bidfood:'bidfood',cbs:'centraal bureau',cjib:'justitieel',dell:'dell',eneco:'eneco',kpn:'kpn',kvk:'kamer van koophandel',manutan:'manutan',mollie:'mollie',primera:'primera',samsung:'samsung',securitas:'securitas',vitens:'vitens'};
   let added=0;
@@ -945,14 +1087,14 @@ function updateVariatieSlider(){
   var items=cred.variatieItems||[];
   if(val===0){preview.innerHTML='<strong>Geen afwijkingen</strong> &mdash; alle '+total+' facturen identiek. S&amp;H matcht automatisch.';}
   else if(!items.length){preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen wijken af.';}
-  else{preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen krijgen extra regel, bijv.:<ul>'+items.map(function(it){return '<li>'+escapeHtml(it.omschrijving)+' &mdash; '+it.aantal+'&times; '+formatBedrag(it.stuksprijs)+'</li>';}).join('')+'</ul>';}
+  else{preview.innerHTML='<strong>'+val+' van '+total+'</strong> facturen krijgen extra regel, bijv.:<ul>'+items.map(function(it){var btwL=it.btw===0.21?'21%':it.btw===0.09?'9%':it.btw===0?'0%':'';var gbL=it.grootboek?' (GB '+it.grootboek+')':'';return '<li>'+escapeHtml(it.omschrijving)+' &mdash; '+it.aantal+'&times; '+formatBedrag(it.stuksprijs)+(btwL?' <small style="color:var(--text-muted)">BTW '+btwL+gbL+'</small>':'')+'</li>';}).join('')+'</ul>';}
 }
 function renderDemosetPreview(){
   var wrap=document.getElementById('demoset-preview-wrap');
   if(!demosetSelectedCred){wrap.innerHTML='<p style="padding:40px;text-align:center;color:#94A3B8;">Selecteer een crediteur voor preview</p>';return;}
   var cred=crediteuren.find(function(c){return c.id===demosetSelectedCred;});if(!cred)return;
   var deb=debiteuren.length?debiteuren[0]:null;
-  var regelitems=(cred.regelitems||[]).map(function(r){return{omschrijving:r.omschrijving||'Dienstverlening',aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};});
+  var regelitems=(cred.regelitems||[]).map(function(r){var item={omschrijving:r.omschrijving||'Dienstverlening',aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};if(r.btw!==undefined)item.btw=r.btw;if(r.grootboek)item.grootboek=r.grootboek;return item;});
   var data={crediteur:cred,debiteurNaam:deb?deb.naam:'',debiteurAdres:deb?deb.adres:'',factuurnummer:loadNr(),referentie:'REF-'+loadNr(),factuurdatum:todayStr(),vervaldatum:addDagen(todayStr(),cred.betalingstermijn||30),btwTarief:0.21,status:'open',regelitems:regelitems,type:'inkoop'};
   var origTpl=activeTemplate;setTemplate(demosetTemplate,true);
   var html=renderFactuurHTML(data);setTemplate(origTpl,true);
@@ -986,12 +1128,12 @@ async function generateDemoSet(){
   for(var i=0;i<totalMonths;i++){
     var mIdx=(vanM-1+i)%12;var jaar=vanJ+Math.floor((vanM-1+i)/12);var maand=MAANDEN[mIdx];var kwartaal=getKwartaal(mIdx);
     var datum=jaar+'-'+String(mIdx+1).padStart(2,'0')+'-'+String(Math.floor(Math.random()*20)+1).padStart(2,'0');
-    var regelitems=(cred.regelitems||[]).map(function(r){var omschr=r.omschrijving||'Dienstverlening';omschr=omschr.replace(/\[maand\]/gi,maand).replace(/\[jaar\]/gi,String(jaar)).replace(/Q\[?\d?\]?/gi,'Q'+kwartaal).replace(/\[kenteken\]/gi,'XX-'+Math.floor(Math.random()*900+100)+'-X');if(omschr.indexOf(maand)<0&&omschr.indexOf(String(jaar))<0)omschr+=' \u2014 '+maand+' '+jaar;return{omschrijving:omschr,aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};});
-    if(variatieIndices.has(i)){var items=cred.variatieItems||[];if(items.length){var vi=items[Math.floor(Math.random()*items.length)];regelitems.push({omschrijving:vi.omschrijving,aantal:vi.aantal,stuksprijs:vi.stuksprijs});}else{var basisTotaal=regelitems.reduce(function(s,r){return s+(r.aantal*r.stuksprijs);},0);var extraBedrag=Math.round(basisTotaal*(0.15+Math.random()*0.25)*100)/100;regelitems.push({omschrijving:VARIATIE_LABELS[Math.floor(Math.random()*VARIATIE_LABELS.length)],aantal:1,stuksprijs:extraBedrag});}}
+    var regelitems=(cred.regelitems||[]).map(function(r){var omschr=r.omschrijving||'Dienstverlening';omschr=omschr.replace(/\[maand\]/gi,maand).replace(/\[jaar\]/gi,String(jaar)).replace(/Q\[?\d?\]?/gi,'Q'+kwartaal).replace(/\[kenteken\]/gi,'XX-'+Math.floor(Math.random()*900+100)+'-X');if(omschr.indexOf(maand)<0&&omschr.indexOf(String(jaar))<0)omschr+=' \u2014 '+maand+' '+jaar;var item={omschrijving:omschr,aantal:r.aantal||1,stuksprijs:r.stuksprijs||0};if(r.btw!==undefined)item.btw=r.btw;if(r.grootboek)item.grootboek=r.grootboek;return item;});
+    if(variatieIndices.has(i)){var items=cred.variatieItems||[];if(items.length){var vi=items[Math.floor(Math.random()*items.length)];var viItem={omschrijving:vi.omschrijving,aantal:vi.aantal,stuksprijs:vi.stuksprijs};if(vi.btw!==undefined)viItem.btw=vi.btw;if(vi.grootboek)viItem.grootboek=vi.grootboek;regelitems.push(viItem);}else{var basisTotaal=regelitems.reduce(function(s,r){return s+(r.aantal*r.stuksprijs);},0);var extraBedrag=Math.round(basisTotaal*(0.15+Math.random()*0.25)*100)/100;regelitems.push({omschrijving:VARIATIE_LABELS[Math.floor(Math.random()*VARIATIE_LABELS.length)],aantal:1,stuksprijs:extraBedrag});}}
     var fDatum=new Date(datum+'T00:00:00');var status=Math.floor((today-fDatum)/(1000*60*60*24))>30?'betaald':'open';
     var data={crediteur:cred,debiteurNaam:debiteurNaam,debiteurAdres:debiteurAdres,factuurnummer:nr,referentie:'REF-'+nr,factuurdatum:datum,vervaldatum:addDagen(datum,cred.betalingstermijn||30),btwTarief:btwTarief,status:status,regelitems:regelitems,type:'inkoop'};
     count++;fill.style.width=Math.round((count/totalMonths)*100)+'%';txt.textContent=count+'/'+totalMonths+' \u2014 '+cred.naam+' ('+maand+' '+jaar+')';
-    var pdf=await genPDF(data);zip.file('Factuur-'+nr+'.pdf',pdf.output('arraybuffer'));
+    var pdf=await genPDF(data);var pdfFileName=cred.naam.replace(/[^a-zA-Z0-9 ]/g,'').trim()+' - '+maand+' '+jaar+'.pdf';zip.file(pdfFileName,pdf.output('arraybuffer'));
     if(genMutatie)allMT940.push(generateMT940(data));
     nr=incrementNr(nr);await new Promise(function(r){setTimeout(r,50);});
   }
@@ -1005,22 +1147,24 @@ async function generateDemoSet(){
 }
 
 /* ═══════════ INSTELLINGEN ═══════════ */
-function exportAlles(){const data={crediteuren,debiteuren,historie,factuurnummer:loadNr()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='demo-facturen-'+activeEnv+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);showToast('Backup ge\u00EBxporteerd');}
-function importAlles(event){const file=event.target.files[0];if(!file)return;event.target.value='';const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();}if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();}if(data.historie){historie=data.historie;saveHistorie();}if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}showToast('Backup ge\u00EFmporteerd');}catch(err){showToast('Ongeldig JSON-bestand');}};reader.readAsText(file);}
-function confirmWisAlles(){document.getElementById('confirm-message').textContent='ALLES wissen in omgeving "'+activeEnv+'"?';document.getElementById('btn-confirm-ok').onclick=()=>{const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'+activeEnv+'_'));keys.forEach(k=>localStorage.removeItem(k));crediteuren=[];debiteuren=[];historie=[];selectedCrediteurId='';selectedDebiteurId='';renderCredLijst();renderHistorie();document.getElementById('factuurnummer').value=loadNr();if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';sluitConfirmModal();showToast('Alles gewist');};document.getElementById('modal-confirm').classList.add('active');}
+function exportAlles(){const data={crediteuren,debiteuren,historie,bankmutaties,profiel,factuurnummer:loadNr()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='demo-facturen-'+activeEnv+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);showToast('Backup ge\u00EBxporteerd');}
+function importAlles(event){const file=event.target.files[0];if(!file)return;event.target.value='';const reader=new FileReader();reader.onload=function(e){try{const data=JSON.parse(e.target.result);if(data.crediteuren){crediteuren=data.crediteuren;saveCred();renderCredLijst();}if(data.debiteuren){debiteuren=data.debiteuren;saveDebs();}if(data.historie){historie=data.historie;saveHistorie();}if(data.bankmutaties){bankmutaties=data.bankmutaties;saveBankmutaties();renderBankmutatieList();}if(data.profiel){profiel=data.profiel;saveProfiel();}if(data.factuurnummer){saveNr(data.factuurnummer);document.getElementById('factuurnummer').value=data.factuurnummer;}showToast('Backup ge\u00EFmporteerd');}catch(err){showToast('Ongeldig JSON-bestand');}};reader.readAsText(file);}
+function confirmWisAlles(){document.getElementById('confirm-message').textContent='ALLES wissen in omgeving "'+activeEnv+'"?';document.getElementById('btn-confirm-ok').onclick=()=>{const keys=Object.keys(localStorage).filter(k=>k.startsWith('dfenv_'+activeEnv+'_'));keys.forEach(k=>localStorage.removeItem(k));crediteuren=[];debiteuren=[];historie=[];bankmutaties=[];profiel={};selectedCrediteurId='';selectedDebiteurId='';renderCredLijst();renderHistorie();renderBankmutatieList();document.getElementById('factuurnummer').value=loadNr();if(crediteurCombo)crediteurCombo.clear();if(debiteurCombo)debiteurCombo.clear();document.getElementById('crediteur-selected-card').innerHTML='';document.getElementById('debiteur-selected-card').innerHTML='';sluitConfirmModal();showToast('Alles gewist');};document.getElementById('modal-confirm').classList.add('active');}
 
 /* ═══════════ INIT ═══════════ */
 function init(){
   if(!checkWelcome()){document.getElementById('modal-welcome').classList.add('active');return;}
   loadAllData();setupCrediteurCombo();setupDebiteurCombo();renderCredLijst();renderHistorie();
   document.getElementById('factuurnummer').value=loadNr();document.getElementById('factuurdatum').value=todayStr();
+  if(document.getElementById('bank-datum'))document.getElementById('bank-datum').value=todayStr();
   const savedTpl=localStorage.getItem('df_template');if(savedTpl)setTemplate(savedTpl,true);
   if(localStorage.getItem('df_darkmode')==='false'){document.body.classList.remove('dark');document.getElementById('dark-toggle').textContent='\uD83C\uDF19';}
   renderRegelitems([{omschrijving:'',aantal:1,stuksprijs:0}]);
-  // Auto-select EnYoi ICT Services als debiteur (altijd enige debiteur)
-  let enyoiDeb=debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'));
-  if(!enyoiDeb){enyoiDeb={id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'};debiteuren=[enyoiDeb];saveDebs();}
-  selectedDebiteurId=enyoiDeb.id;debiteurCombo.setInput(enyoiDeb.naam);document.getElementById('debiteur-adres').value=enyoiDeb.adres||'';renderDebiteurCard();
+  // Auto-select het eigen MKB-bedrijf als debiteur; val terug op EnYoi voor bestaande omgevingen.
+  let eigenDeb=profiel.bedrijf?debiteuren.find(d=>d.naam.toLowerCase()===profiel.bedrijf.toLowerCase())||null:null;
+  if(!eigenDeb)eigenDeb=debiteuren.find(d=>d.naam.toLowerCase().includes('enyoi ict services'));
+  if(!eigenDeb){eigenDeb={id:genId(),naam:'EnYoi ICT Services B.V.',adres:'Inspiratielaan 1\n3833 AV LEUSDEN'};debiteuren=[eigenDeb];saveDebs();}
+  selectedDebiteurId=eigenDeb.id;debiteurCombo.setInput(eigenDeb.naam);document.getElementById('debiteur-adres').value=eigenDeb.adres||'';renderDebiteurCard();
   updatePreview();}
 init();
 </script>
